@@ -50,6 +50,17 @@ num_layers/heads`, `model.readout_types` (pooling multi-scala), sbilanciamento
 Metrica primaria: **macro-F1** (proposta sez. 5). Verificato end-to-end su GPU:
 il modello impara (val macro-F1 0.16→0.40 in 3 epoch di smoke).
 
+Ogni run scrive una cartella `results/<experiment_name>/<timestamp>/`:
+- `model_best.pt` — checkpoint del best model (per validazione o riuso)
+- `run.log` — log completo (oltre allo stdout)
+- `history.csv` — metriche per-epoca (per i grafici di training)
+- `metrics.json` — risultati finali (best val + test)
+- `config.json` — config usato (riproducibilità)
+
+`make evaluate` (o `scripts/kg_hgnn/evaluate.py`) ricarica automaticamente
+l'ultimo `model_best.pt` per quell'experiment e riproduce le metriche di test
+senza ri-addestrare (passa `CKPT=path` per un run specifico).
+
 **Perché non si sovrappone a MOGNN-TF:** la logica sta in package separati
 (`multiomics_gnn` vs `multiomics_kg_hgnn`), gli entrypoint in cartelle separate
 (`scripts/` vs `scripts/kg_hgnn/`) e i config sono file distinti. Nessun file
