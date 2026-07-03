@@ -1,19 +1,18 @@
 # MOKG-HGNN — pipeline orchestration (heterogeneous multi-scale model, Proposta B)
 #
-# `make` reads a file named `Makefile` by default, so run this one explicitly:
-#     make -f Makefile-mokghgnn <target>
-# (Or rename it to `Makefile` to make it the default — but that shadows the
-#  MOGNN-TF Makefile. Keeping them as two files is the non-destructive choice.)
+# This is the default `Makefile` for the NEW model. The MOGNN-TF pipeline lives
+# in its own Makefile (run it with `make -f <that-file> <target>`).
 #
 # Usage:
-#   make -f Makefile-mokghgnn help
-#   make -f Makefile-mokghgnn data              # shared preprocessing (omics + priors)
-#   make -f Makefile-mokghgnn graph             # feature-selection -> build hetero template
-#   make -f Makefile-mokghgnn train             # single run (configs/config_kg_hgnn.yml)
-#   make -f Makefile-mokghgnn all               # data -> graph -> train
+#   make help
+#   make data              # shared preprocessing (omics + priors)
+#   make graph             # feature-selection -> build hetero template
+#   make train             # single run (configs/config_kg_hgnn.yml)
+#   make evaluate          # test the latest run (or pass CKPT=path/to/model_best.pt)
+#   make all               # data -> graph -> train
 #
 # Runs inside the conda env `gnn`. Override the interpreter with e.g.
-#   make -f Makefile-mokghgnn train PY="python"
+#   make train PY="python"
 
 PY ?= conda run -n gnn python
 export PYTHONPATH := src            # so `python -m multiomics_kg_hgnn...` resolves
@@ -101,8 +100,9 @@ build-graph:
 train:
 	$(PY) scripts/kg_hgnn/train.py --config $(CONFIG)
 
+# Evaluate the latest run by default; override with CKPT=path/to/model_best.pt
 evaluate:
-	$(PY) scripts/kg_hgnn/evaluate.py --config $(CONFIG) --checkpoint $(CKPT)
+	$(PY) scripts/kg_hgnn/evaluate.py --config $(CONFIG) $(if $(CKPT),--checkpoint $(CKPT),)
 
 # Quick end-to-end sanity check (real data -> HeteroData -> HGT -> 27 classes)
 check:

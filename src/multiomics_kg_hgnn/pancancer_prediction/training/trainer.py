@@ -26,6 +26,7 @@ class HeteroTrainer:
         self.criterion = nn.CrossEntropyLoss(weight=w)
         self._best_state = None
         self._best_val = -1.0
+        self.history = []  # per-epoch metrics, for logging/plots
 
     def _run_epoch(self, loader, train):
         self.model.train(train)
@@ -56,6 +57,9 @@ class HeteroTrainer:
             va = self._run_epoch(val_loader, train=False)
             if self.scheduler is not None:
                 self.scheduler.step()
+            self.history.append({
+                "epoch": epoch, "train_loss": tr["loss"], "train_macro_f1": tr["macro_f1"],
+                "val_loss": va["loss"], "val_macro_f1": va["macro_f1"], "val_accuracy": va["accuracy"]})
             self.log(f"epoch {epoch:03d} | train loss {tr['loss']:.4f} f1 {tr['macro_f1']:.4f} "
                      f"| val loss {va['loss']:.4f} f1 {va['macro_f1']:.4f} acc {va['accuracy']:.4f}")
             if va["macro_f1"] > self._best_val:
