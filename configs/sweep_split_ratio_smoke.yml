@@ -1,0 +1,7 @@
+# Smoke test: 2 fractions × 1 seed × 10 epochs.
+name: ablation_split_ratio_smoke
+fixed_overrides:
+  train: { num_epochs: 10 }
+grid:
+  tuning.train_fraction: [0.5, 0.8]
+  project.seed: [2025]

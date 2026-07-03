@@ -1,0 +1,91 @@
+# ============================================
+# Dataset, model artifacts, run outputs
+# ============================================
+#*.csv
+*.tsv
+*.npz
+*.zip
+*.gz
+*.parquet
+*.txt
+*.json
+*.pdf
+# Exceptions for tracked config-like files
+!*config_test.json
+
+# Images and plots (regenerable)
+*.png
+*.jpg
+
+# Saved models
+*.pkl
+*.pt
+*.pth
+
+# ============================================
+# Editor / OS
+# ============================================
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*vscode*
+run.bat
+
+# ============================================
+# Python
+# ============================================
+venv/
+.venv/
+.env/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+
+# ============================================
+# Experiment tracking
+# ============================================
+*.wandb
+wandb/
+temp_wandb/
+mlruns/
+
+# ============================================
+# Project-specific generated content
+# ============================================
+data/
+results/pancan/a*
+results/pancan/o*
+results/pancan/p*
+results/pancan/s*
+results/pancan/T3*
+logs/
+figures/
+models/
+notes/
+datasets/data/
+datasets/refseq2gene_mappings.tsv
+
+# Local-only directories (thesis sources, scratch tests)
+docs/
+docs*/
+Tests/
+tcga-pancan/
+analysis/*
+
+# Benchmark outputs
+benchmark/AMOGEL/output/
+benchmark/AMOGEL/mlruns/
+benchmark/AMOGEL/.venv/
+benchmark/MOGONET/BRCA/
+benchmark/MOGONET/ROSMAP/
+benchmark/MPK-GNN/data/processed_data/
+
+
+# escusion
+!results\pancan\tf_interpretation\tf_global_ranking.csv
+!results\pancan\tf_interpretation\tf_fscore_per_subtype.csv

@@ -1,0 +1,8 @@
+# Thesis ablation: gene count (300 / 500 / 700 / 1000) × {gcn_tf, gat_tf} × 11 seeds.
+# Cartesian product = 4 × 2 × 11 = 88 runs.
+name: ablation_genes
+fixed_overrides: {}
+grid:
+  data.num_gene: [300, 500, 700, 1000]
+  model.name: [gcn_tf, gat_tf]
+  project.seed: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]

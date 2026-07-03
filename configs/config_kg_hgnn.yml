@@ -1,0 +1,44 @@
+# Config for the heterogeneous multi-scale model (multiomics_kg_hgnn).
+# Same schema family as MOGNN-TF's config.yml, plus keys for the hetero backbone.
+
+project:
+  experiment_name: kg_hgnn_hgt
+  seed: 42
+
+paths:
+  results_dir: results
+
+data:
+  # shared topology template built by scripts/preprocessing/priors/build_hetero_graph.py
+  template_path: data/prior_knowledge/hetero/hetero_graph_template.pt
+  hetero_dir: data/prior_knowledge/hetero
+  split_dir: data/training/splits/splits_seed_42
+  use_cnv: true          # ablation: false -> drop CNV channel
+  use_mirna: true        # ablation: false -> drop miRNA features
+  scaler: standard       # standard | minmax | robust | none (fit on train only)
+  batch_size: 16
+  num_workers: 0
+
+model:
+  backbone: hgt          # hgt (implemented) | hetero_sage, rgcn (TODO)
+  hidden: 64
+  num_layers: 2
+  heads: 2
+  dropout: 0.2
+  readout_types: [gene, pathway, GO_term]   # multi-scale pooling
+
+train:
+  num_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0005
+  class_weighted_loss: true   # weighted cross-entropy for the 27-class imbalance
+
+early_stopping:
+  patience: 20
+
+# imbalance handling on the sampler (alternative/complement to class_weighted_loss)
+sampler_strategy: none        # none | weighted
+sampler_gamma: 0.98
+
+runtime:
+  device: null                # null -> cuda if available, else cpu

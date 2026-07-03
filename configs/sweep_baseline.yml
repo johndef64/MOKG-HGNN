@@ -1,0 +1,58 @@
+# Thesis Table: model comparison (MOGNN-TF vs Li24 vs MoGCN).
+# 5 models × 11 seeds = 55 runs.
+# MOGNN-TF is run from this repo. Li24 and MoGCN must be run from
+# benchmark/ on the SAME seeds (see benchmark/README.md).
+#
+# Generate the 55 entries below by enumerating SEEDS × MODELS.
+# For a quick smoke test use configs/sweep_baseline_smoke.yml instead.
+
+# The base config is configs/config_final.yml -> pass it via:
+#   make ablation-baseline   (full, 22 runs MOGNN-TF; baselines run separately)
+
+experiments:
+# ---------------- MOGNN-TF (GCN) — 11 seeds ----------------
+- name: mognn_tf_gcn_seed_2020
+  overrides: { project: { seed: 2020 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2021
+  overrides: { project: { seed: 2021 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2022
+  overrides: { project: { seed: 2022 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2023
+  overrides: { project: { seed: 2023 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2024
+  overrides: { project: { seed: 2024 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2025
+  overrides: { project: { seed: 2025 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2026
+  overrides: { project: { seed: 2026 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2027
+  overrides: { project: { seed: 2027 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2028
+  overrides: { project: { seed: 2028 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2029
+  overrides: { project: { seed: 2029 }, model: { name: gcn_tf } }
+- name: mognn_tf_gcn_seed_2030
+  overrides: { project: { seed: 2030 }, model: { name: gcn_tf } }
+# ---------------- MOGNN-TF (GAT) — 11 seeds ----------------
+- name: mognn_tf_gat_seed_2020
+  overrides: { project: { seed: 2020 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2021
+  overrides: { project: { seed: 2021 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2022
+  overrides: { project: { seed: 2022 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2023
+  overrides: { project: { seed: 2023 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2024
+  overrides: { project: { seed: 2024 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2025
+  overrides: { project: { seed: 2025 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2026
+  overrides: { project: { seed: 2026 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2027
+  overrides: { project: { seed: 2027 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2028
+  overrides: { project: { seed: 2028 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2029
+  overrides: { project: { seed: 2029 }, model: { name: gat_tf } }
+- name: mognn_tf_gat_seed_2030
+  overrides: { project: { seed: 2030 }, model: { name: gat_tf } }

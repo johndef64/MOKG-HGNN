@@ -1,0 +1,9 @@
+# Thesis ablation: training set fraction (80% / 70% / 60% / 50%).
+# 4 ratios × {gcn_tf, gat_tf} × 11 seeds = 88 runs.
+# Achieved through tuning.train_fraction (0.5 / 0.6 / 0.7 / 0.8).
+name: ablation_split_ratio
+fixed_overrides: {}
+grid:
+  tuning.train_fraction: [0.5, 0.6, 0.7, 0.8]
+  model.name: [gcn_tf, gat_tf]
+  project.seed: [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]

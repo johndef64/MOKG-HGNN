@@ -1,0 +1,13 @@
+# Smoke test for the sampler ablation.
+# 2 strategies × 2 seeds = 4 runs, 10 epochs each.
+# Uses the same T3_<strategy>_seed<NNNN> naming as the full sweep so that
+# analize_metrics.py (Wilcoxon vs T3_random) can be exercised end-to-end.
+experiments:
+- name: T3_random_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: random, train: { num_epochs: 10 } }
+- name: T3_random_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: random, train: { num_epochs: 10 } }
+- name: T3_gamma_098_seed2025
+  overrides: { project: { seed: 2025 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98, train: { num_epochs: 10 } }
+- name: T3_gamma_098_seed2026
+  overrides: { project: { seed: 2026 }, sampler_strategy: weighted, sampler_mode: nulite, sampler_gamma: 0.98, train: { num_epochs: 10 } }

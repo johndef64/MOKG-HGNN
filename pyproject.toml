@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mognn-tf"
+version = "0.1.0"
+description = "MOGNN-TF: Multi-Omics Graph Neural Network with Transcription Factors for pan-cancer molecular subtype prediction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Giuseppe Laterza" },
+]
+keywords = ["bioinformatics", "graph-neural-networks", "multi-omics", "tcga", "cancer-subtype"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "networkx",
+    "pyarrow",
+    "pyyaml",
+    "openpyxl",
+    "torch==2.7.0",
+    "torch_geometric==2.7.0",
+    "torcheval",
+    "termcolor",
+    "optuna",
+    "wandb",
+    "python-dotenv",
+    "gdown",
+    "mygene",
+    "requests",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"

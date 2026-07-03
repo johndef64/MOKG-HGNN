@@ -1,0 +1,31 @@
+data_preprocessing:
+  BRCA:
+    variance: 0.001
+    annova_f: 1000
+  KIPAN: 
+    variance: 0.001
+    annova_f: 2000
+
+arm: 
+  BRCA: 
+    min_confidence: 0.5
+  KIPAN:
+    min_confidence: 0.5
+
+graph: 
+  BRCA: 
+    information_filter: 0.2
+    ppi_score_filter: 300
+    p_filter: 0.05
+  KIPAN: 
+    information_filter: 0.3
+    ppi_score_filter: 300
+    p_filter: 0.05
+
+model: 
+  epochs: 500
+  batch_size: 50 
+  learning_rate: 0.00005
+  weight_decay: 0.001
+  dropout: 0.05
+  hidden_unit: 32

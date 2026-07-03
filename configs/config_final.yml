@@ -1,0 +1,104 @@
+# MOGNN-TF — FINAL configuration (thesis, trial 18 of the Optuna study + TF layer).
+# This file is the result of the hyperparameter search documented in the
+# thesis (§ "Hyperparameter tuning"). For the *starting* baseline used by
+# Laterza before tuning, see configs/config.yml.
+#
+# Differences vs configs/config.yml:
+#   - model.name              : gat_tf  -> gcn_tf      (GCN was the best backbone)
+#   - data.batch_size         : 16      -> 64
+#   - data.num_tf             : 0       -> 200         (TF nodes enabled)
+#   - data.tf_gene/tf_tf/tf_mirna: False -> True       (full TF prior knowledge)
+#   - model.dropout           : 0.6     -> 0.2
+#   - train.learning_rate     : 0.01    -> 0.0008
+#   - train.num_epochs        : 50      -> 100
+#   - early_stopping.patience : 5       -> 10
+#   - sampler_strategy        : random  -> weighted    (gamma=0.98)
+#   - model.poolsize          : 8       -> 16
+
+project:
+  seed: 2025
+  split_seed: 42
+  experiment_name: "pancan_mognn_tf_final"
+  device: "cuda"
+paths:
+  training_data_dir: "./data/training"
+  results_dir: "./results/pancan"
+  models_dir: "./models/pancan"
+  logs_dir: "./logs/pancan"
+  figures_dir: "./figures/pancan"
+  external_data_dir: "./data/external"
+  raw_data_dir: "./data/pancan_tcga/raw"
+pancan_paths:
+  expression_variance_path: "expression_fvalues.tsv"
+  expression_path: "expression_data_pancan.tsv"
+  cnv_path: "cnv_data_pancan.tsv"
+  mirna_path: "mirna_data_top_100.tsv"
+  clinical_data_path: "molecular_subtype.csv"
+  adj_path: "adj_matrix_biogrid.npz"
+  mirna_gene_matrix_path: "standardized_mirna_mrna_edge_filtered_at_eight_with_top_100_mirna.npz"
+  tf_gene_matrix_path: "tf_gene_adj_global.npz"
+  tf_nodes_path: "tf_nodes_all_in_vocab.csv"
+brca_paths:
+  expression_variance_path: "expression_fvalues.tsv"
+  expression_path: "expression_data_brca.tsv"
+  cnv_path: "brca_cnv_data.tsv"
+  mirna_path: "brca_mirna_data_top_100.tsv"
+  clinical_data_path: "brca_molecular_subtype.csv"
+  adj_path: "brca_adj_matrix_biogrid.npz"
+  mirna_gene_matrix_path: "brca_standardized_mirna_mrna_edge_filtered_at_eight_with_top_100_mirna.npz"
+data:
+  num_gene: 700
+  num_mirna: 100
+  num_tf: 200
+  omic_mode: 4
+  batch_size: 64
+  num_workers: 1
+  gene_gene: True
+  mirna_gene: True
+  mirna_mirna: True
+  tf_gene: True
+  tf_tf: True
+  tf_mirna: True
+  feature_selection_method: variance
+  normalization: min-max
+model:
+  name: "gcn_tf"           # final backbone (GCN > GAT in the thesis comparison)
+  parallel: true
+  poolsize: 16
+  poolrate: 0.8
+  dropout: 0.2
+  jumping_knowledge: false
+  jk_mode: "max"
+graph:
+  edge_weight: true
+  edge_attribute: false
+train:
+  num_epochs: 100
+  l2: true
+  l2_reg_factor: 0.0005
+  decoder: true
+  learning_rate: 0.0008
+  weight_decay: 0.0001
+  validation_split: 0.2
+  shuffle: true
+  ce_weighted: false
+early_stopping:
+  enabled: true
+  patience: 10
+  metric: f1
+  strategy: "maximize"
+optimizer:
+  name: "adamw"
+scheduler:
+  name: "cosine"
+sampler_strategy: "weighted"
+sampler_gamma: 0.98
+sampler_mode: "nulite"
+tuning:
+  train_fraction: 1.0
+misc:
+  debug: false
+wandb:
+  enabled: false
+  project_name: "multiomics_gnn"
+  tags: ["gnn", "multiomics", "tcga", "pancan", "final"]

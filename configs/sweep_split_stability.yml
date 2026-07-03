@@ -1,0 +1,55 @@
+# TODO 5 — Esperimento 1: stabilità sotto split multipli (validità interna).
+#
+# Riallena la configurazione finale del paper (config_final.yml: gcn_tf,
+# 700 geni + 100 miRNA + 200 TF, prior knowledge completo, 100 epoche) su
+# 5 partizioni train/val/test stratificate INDIPENDENTI, variando solo lo
+# split (project.split_seed) e tenendo FISSO il seed del modello
+# (project.seed = 2025), così la varianza osservata sul macro-F1 è
+# attribuibile esclusivamente alla scelta dello split.
+#
+# Scopo: dimostrare che il risultato del paper non dipende dalla particolare
+# partizione stratificata usata (split_seed=42), rispondendo in anticipo
+# all'obiezione di validità esterna n.1 dei reviewer (vedi TODO 5).
+#
+# split_seed=42 è incluso = è esattamente lo split riportato nel paper, così
+# il run "42" funge da ancora/sanity-check rispetto ai numeri pubblicati.
+#
+# 5 esperimenti × 1 (seed modello fisso) = 5 run.
+# Eseguire con:
+#   python scripts/run_sweep.py --sweep configs/sweep_split_stability.yml \
+#          --config configs/config_final.yml
+# oppure, per la raccolta automatica + report, con lo script dedicato:
+#   python scripts/run_split_stability.py
+
+name: split_stability
+
+experiments:
+  - name: split_stability_seed42
+    overrides:
+      project:
+        split_seed: 42
+        seed: 2025
+
+  - name: split_stability_seed43
+    overrides:
+      project:
+        split_seed: 43
+        seed: 2025
+
+  - name: split_stability_seed44
+    overrides:
+      project:
+        split_seed: 44
+        seed: 2025
+
+  - name: split_stability_seed45
+    overrides:
+      project:
+        split_seed: 45
+        seed: 2025
+
+  - name: split_stability_seed46
+    overrides:
+      project:
+        split_seed: 46
+        seed: 2025

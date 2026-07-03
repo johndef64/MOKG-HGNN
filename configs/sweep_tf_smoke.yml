@@ -1,0 +1,12 @@
+# Smoke test: TF on vs off, 1 seed, 10 epochs.
+experiments:
+- name: smoke_no_tf
+  overrides:
+    data: { num_tf: 0, tf_gene: false, tf_tf: false, tf_mirna: false }
+    project: { seed: 2025 }
+    train: { num_epochs: 10 }
+- name: smoke_with_tf
+  overrides:
+    data: { num_tf: 200, tf_gene: true, tf_tf: true, tf_mirna: true }
+    project: { seed: 2025 }
+    train: { num_epochs: 10 }

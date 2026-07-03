@@ -1,0 +1,7 @@
+# Smoke test: 2 gene counts × 1 seed × 10 epochs = 2 runs.
+name: ablation_genes_smoke
+fixed_overrides:
+  train: { num_epochs: 10 }
+grid:
+  data.num_gene: [300, 700]
+  project.seed: [2025]

@@ -1,0 +1,60 @@
+# Thesis ablation: TF prior-knowledge integration.
+# 4 graph configurations × {gcn_tf, gat_tf} × 16 seeds = 128 runs.
+#
+# Configurations (matching Table "results-tf-std" in the thesis):
+#   - gene only            : tf_gene=F, tf_tf=F, tf_mirna=F, mirna_*=F, num_tf=0
+#   - gene + miRNA         : tf_gene=F, tf_tf=F, tf_mirna=F, mirna_*=T, num_tf=0
+#   - gene + TF            : tf_gene=T, tf_tf=T, tf_mirna=F, mirna_*=F, num_tf=200
+#   - gene + miRNA + TF    : all True, num_tf=200
+#
+# To remain within ~hundreds of runs, fix the random sampler here (so the
+# table isolates the TF contribution, not the imbalance correction).
+name: ablation_tf
+fixed_overrides:
+  sampler_strategy: random
+experiments:
+# ---------- gene only ----------
+- name: tf_gene_only_gcn
+  overrides:
+    model: { name: gcn_tf }
+    data: { num_tf: 0, tf_gene: false, tf_tf: false, tf_mirna: false,
+            mirna_gene: false, mirna_mirna: false, num_mirna: 0 }
+- name: tf_gene_only_gat
+  overrides:
+    model: { name: gat_tf }
+    data: { num_tf: 0, tf_gene: false, tf_tf: false, tf_mirna: false,
+            mirna_gene: false, mirna_mirna: false, num_mirna: 0 }
+# ---------- gene + miRNA ----------
+- name: tf_gene_mirna_gcn
+  overrides:
+    model: { name: gcn_tf }
+    data: { num_tf: 0, tf_gene: false, tf_tf: false, tf_mirna: false,
+            mirna_gene: true, mirna_mirna: true, num_mirna: 100 }
+- name: tf_gene_mirna_gat
+  overrides:
+    model: { name: gat_tf }
+    data: { num_tf: 0, tf_gene: false, tf_tf: false, tf_mirna: false,
+            mirna_gene: true, mirna_mirna: true, num_mirna: 100 }
+# ---------- gene + TF ----------
+- name: tf_gene_tf_gcn
+  overrides:
+    model: { name: gcn_tf }
+    data: { num_tf: 200, tf_gene: true, tf_tf: true, tf_mirna: false,
+            mirna_gene: false, mirna_mirna: false, num_mirna: 0 }
+- name: tf_gene_tf_gat
+  overrides:
+    model: { name: gat_tf }
+    data: { num_tf: 200, tf_gene: true, tf_tf: true, tf_mirna: false,
+            mirna_gene: false, mirna_mirna: false, num_mirna: 0 }
+# ---------- gene + miRNA + TF (== config_final) ----------
+- name: tf_gene_mirna_tf_gcn
+  overrides:
+    model: { name: gcn_tf }
+    data: { num_tf: 200, tf_gene: true, tf_tf: true, tf_mirna: true,
+            mirna_gene: true, mirna_mirna: true, num_mirna: 100 }
+- name: tf_gene_mirna_tf_gat
+  overrides:
+    model: { name: gat_tf }
+    data: { num_tf: 200, tf_gene: true, tf_tf: true, tf_mirna: true,
+            mirna_gene: true, mirna_mirna: true, num_mirna: 100 }
+# Repeat the 8 entries above across 16 seeds to reach the 128-run table.
