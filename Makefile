@@ -27,27 +27,30 @@ TOP_MIRNA ?= 100
 GO_MIN_SUPPORT ?= 3
 METAPATH ?=                          # set to "--metapath" to add miRNA-miRNA / TF-TF
 CONFIG ?= configs/config_kg_hgnn.yml
+SEEDS ?= 42                          # seeds for data-splits (e.g. SEEDS="42 43 44")
 
 .PHONY: help install \
-        data data-download data-omics data-priors \
+        data data-download data-omics data-priors data-wrap data-splits \
         graph feature-selection build-graph \
         train evaluate check \
         all clean
 
 help:
-	@echo "MOKG-HGNN pipeline (run with: make -f Makefile-mokghgnn <target>)"
+	@echo "MOKG-HGNN pipeline"
 	@echo "  install            - pip install -e ."
-	@echo "  data               - shared preprocessing (omics + priors). PKT KG is provided separately."
+	@echo "  data               - FULL preprocessing: download -> omics -> priors -> wrap -> splits"
+	@echo "  data-wrap          - build data/training/* (expression/cnv/labels/tf_nodes/variance)"
+	@echo "  data-splits        - stratified train/val/test indices (SEEDS='42 43 ...')"
 	@echo "  feature-selection  - unified variance FS (gene/TF/miRNA) on the train split -> $(FS_DIR)"
 	@echo "  build-graph        - build the hetero template from the selected panels"
 	@echo "  graph              - feature-selection + build-graph"
 	@echo "  train              - single run ($(CONFIG))"
-	@echo "  evaluate           - test a checkpoint (pass CKPT=...)"
+	@echo "  evaluate           - test the latest run (or pass CKPT=...)"
 	@echo "  check              - end-to-end sanity check (data -> HeteroData -> HGT)"
 	@echo "  all                - data + graph + train"
 	@echo "  clean              - remove __pycache__ and stale outputs"
 	@echo ""
-	@echo "  knobs: SEED=$(SEED) TOP_GENES=$(TOP_GENES) TOP_TF=$(TOP_TF) TOP_MIRNA=$(TOP_MIRNA) METAPATH='$(METAPATH)'"
+	@echo "  knobs: SEED=$(SEED) SEEDS='$(SEEDS)' TOP_GENES=$(TOP_GENES) TOP_TF=$(TOP_TF) TOP_MIRNA=$(TOP_MIRNA) METAPATH='$(METAPATH)'"
 
 install:
 	$(PY) -m pip install -e .
@@ -55,8 +58,11 @@ install:
 # --------------------------------------------------------------------
 # Data preprocessing (shared with MOGNN-TF). The PKT knowledge graph
 # (data/prior_knowledge/PKT) is provided by the user, not downloaded here.
+# Full chain: download -> omics -> priors -> wrap (writes data/training/*) ->
+# splits. `data-wrap` and `data-splits` produce the training files that
+# feature-selection and training consume.
 # --------------------------------------------------------------------
-data: data-download data-omics data-priors
+data: data-download data-omics data-priors data-wrap data-splits
 
 data-download:
 	$(PY) scripts/download_pancan.py --out data/raw/tcga_pancan
@@ -71,6 +77,16 @@ data-priors:
 	$(PY) scripts/preprocessing/priors/get_raw_data.py
 	$(PY) scripts/preprocessing/priors/refseq2gene.py
 	$(PY) scripts/preprocessing/priors/load_interaction.py
+
+# Produces data/training/*: expression/cnv/labels, tf_nodes_all_in_vocab.csv,
+# expression_variance/fvalues, gene_nodes_filtered_for_tf.csv. (Also writes the
+# top-100 miRNA panel, which the hetero pipeline bypasses via unified FS.)
+data-wrap:
+	$(PY) scripts/preprocessing/omics/data_wrapper.py
+
+# Stratified train/val/test indices per seed (data/training/splits/splits_seed_*).
+data-splits:
+	$(PY) -m multiomics_kg_hgnn.pancancer_prediction.preprocessing.make_splits --seeds $(SEEDS)
 
 # --------------------------------------------------------------------
 # Heterogeneous graph construction (NEW — the MOKG-HGNN-specific steps)
