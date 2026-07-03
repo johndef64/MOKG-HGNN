@@ -13,6 +13,7 @@ dependencies:
   - seaborn
   - networkx
   - pyarrow
+  - ijson
   - pip:
       # torch / torch_geometric and the PyG C++ extensions are CUDA 12.8
       # builds for torch 2.7.0. They are NOT on PyPI — install them from the

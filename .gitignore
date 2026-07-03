@@ -65,7 +65,7 @@ results/pancan/s*
 results/pancan/T3*
 logs/
 figures/
-models/
+# models/
 notes/
 datasets/data/
 datasets/refseq2gene_mappings.tsv
@@ -87,5 +87,6 @@ benchmark/MPK-GNN/data/processed_data/
 
 
 # escusion
+!src\multiomics_kg_hgnn\models
 !results\pancan\tf_interpretation\tf_global_ranking.csv
 !results\pancan\tf_interpretation\tf_fscore_per_subtype.csv
