@@ -28,7 +28,8 @@ from multiomics_gnn.config.loader import load_config  # reuse the simple YAML lo
 from multiomics_kg_hgnn.pancancer_prediction.experiments.runner import run_experiment
 
 
-def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12):
+def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12,
+                      verbose=True):
     def objective(trial):
         cfg = copy.deepcopy(base_cfg)
 
@@ -67,10 +68,23 @@ def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12)
 
         # heads must divide hidden for HGTConv — skip invalid combos cleanly
         if cfg["model"]["hidden"] % cfg["model"]["heads"] != 0:
+            if verbose:
+                print(f"[trial {trial.number}] pruned (hidden {cfg['model']['hidden']} "
+                      f"not divisible by heads {cfg['model']['heads']})", flush=True)
             raise optuna.TrialPruned()
 
+        if verbose:
+            print(f"\n[trial {trial.number}] START params={trial.params}", flush=True)
+
+        # during tuning: don't write per-epoch spam, but DO print one line/epoch so
+        # you can see progress. flush=True so it streams through nohup/tee.
+        def tlog(msg):
+            s = str(msg)
+            if verbose and ("epoch" in s or "[TEST]" in s or "training done" in s):
+                print(f"  [t{trial.number}] {s}", flush=True)
+
         try:
-            summary = run_experiment(cfg, logger=lambda *_: None)  # quiet during tuning
+            summary = run_experiment(cfg, logger=tlog)
             score = summary.get("best_val_macro_f1")
             trial.set_user_attr("test_macro_f1", summary.get("macro_f1"))
             trial.set_user_attr("test_accuracy", summary.get("accuracy"))
@@ -79,10 +93,25 @@ def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12)
         except RuntimeError as e:
             if "out of memory" in str(e).lower():
                 torch.cuda.empty_cache()
+                if verbose:
+                    print(f"[trial {trial.number}] OOM -> score 0.0", flush=True)
                 return 0.0
             raise
 
     return objective
+
+
+def _progress_callback(study, trial):
+    """Printed after every finished trial: score, best-so-far, elapsed."""
+    dur = trial.duration.total_seconds() if trial.duration else 0.0
+    val = "pruned" if trial.value is None else f"{trial.value:.4f}"
+    try:
+        best = f"{study.best_value:.4f} (trial {study.best_trial.number})"
+    except ValueError:
+        best = "n/a"
+    done = len([t for t in study.trials if t.state.is_finished()])
+    print(f"[optuna] trial {trial.number} done: val_macroF1={val} | "
+          f"best={best} | {dur:.0f}s | finished {done} trials", flush=True)
 
 
 def run_study(config_path="configs/config_kg_hgnn.yml", n_trials=35, timeout_hours=10.0,
@@ -91,9 +120,15 @@ def run_study(config_path="configs/config_kg_hgnn.yml", n_trials=35, timeout_hou
     base_cfg = load_config(config_path)
     objective = objective_factory(base_cfg, fixed_seed, tune_epochs, tune_patience)
 
+    # make Optuna's own logs visible (it defaults to quiet under some setups)
+    optuna.logging.set_verbosity(optuna.logging.INFO)
+
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=15)
     study = optuna.create_study(direction="maximize", pruner=pruner, study_name=study_name)
-    study.optimize(objective, n_trials=n_trials, timeout=int(timeout_hours * 3600))
+    print(f"[optuna] starting study '{study_name}': {n_trials} trials, "
+          f"{timeout_hours}h timeout, {tune_epochs} epochs/trial", flush=True)
+    study.optimize(objective, n_trials=n_trials, timeout=int(timeout_hours * 3600),
+                   callbacks=[_progress_callback])
 
     import pandas as pd
     df = study.trials_dataframe(attrs=("number", "state", "value", "params", "user_attrs", "duration"))

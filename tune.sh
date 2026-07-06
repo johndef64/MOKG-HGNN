@@ -30,7 +30,10 @@ fi
 
 echo "==> Optuna tuning | $N_TRIALS trials | ${TIMEOUT_HOURS}h timeout | epochs $TUNE_EPOCHS"
 echo "    objective: validation macro-F1 | template: fixed | study: $STUDY_NAME"
-conda run -n "$ENV_NAME" python scripts/kg_hgnn/run_optuna.py \
+# --no-capture-output + python -u: stream progress LIVE. Without it, `conda run`
+# buffers stdout and nothing appears until the whole study ends.
+export PYTHONUNBUFFERED=1
+conda run --no-capture-output -n "$ENV_NAME" python -u scripts/kg_hgnn/run_optuna.py \
     --config "$CONFIG" \
     --n-trials "$N_TRIALS" --timeout-hours "$TIMEOUT_HOURS" \
     --tune-epochs "$TUNE_EPOCHS" --tune-patience "$TUNE_PATIENCE" \
