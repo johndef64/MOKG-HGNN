@@ -84,6 +84,16 @@ def run_experiment(cfg, logger=None):
         model.parameters(), lr=float(train_cfg.get("learning_rate", 1e-3)),
         weight_decay=float(train_cfg.get("weight_decay", 5e-4)))
 
+    # LR scheduler (reuses MOGNN-TF's OmicScheduler: constant/step/exponential/
+    # cosine/warmup_cosine/reduce_on_plateau). None -> constant LR.
+    scheduler = None
+    sched_name = cfg.get("scheduler", {}).get("name")
+    if sched_name and str(sched_name).lower() not in {"none", "null", ""}:
+        from multiomics_gnn.base_ml.scheduler import OmicScheduler
+        scheduler = OmicScheduler(optimizer, str(sched_name),
+                                  total_epochs=int(train_cfg.get("num_epochs", 100)))
+        logger(f"scheduler: {sched_name}")
+
     class_weights = None
     if train_cfg.get("class_weighted_loss", False):
         y = train_ds.y[train_ds.patient_idx].numpy()
@@ -91,7 +101,7 @@ def run_experiment(cfg, logger=None):
         class_weights = counts.sum() / (num_classes * np.clip(counts, 1, None))
 
     trainer = HeteroTrainer(
-        model, optimizer, device=device, class_weights=class_weights,
+        model, optimizer, device=device, class_weights=class_weights, scheduler=scheduler,
         patience=int(cfg.get("early_stopping", {}).get("patience", 20)), logger=logger)
 
     # --- train + test -----------------------------------------------------

@@ -71,6 +71,9 @@ class HeteroTrainer:
             tr = self._run_epoch(train_loader, train=True)
             va = self._run_epoch(val_loader, train=False)
             if self.scheduler is not None:
+                # reduce_on_plateau needs the monitored metric; drive it on val loss
+                if getattr(self.scheduler, "is_plateau", False):
+                    self.scheduler.metric = va["loss"]
                 self.scheduler.step()
             epoch_time = time.perf_counter() - t0
             # ETA from the running average epoch time over the full schedule
