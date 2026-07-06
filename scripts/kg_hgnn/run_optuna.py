@@ -61,6 +61,11 @@ def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12,
 
         cfg["data"]["batch_size"] = trial.suggest_categorical("batch_size", [8, 16, 32, 64])
 
+        # LR schedule (runner reads cfg["scheduler"]["name"]; OmicScheduler supports
+        # these). Stabilises the late-epoch collapse seen with constant LR.
+        cfg.setdefault("scheduler", {})["name"] = trial.suggest_categorical(
+            "scheduler", ["reduce_on_plateau", "cosine", "step", "constant"])
+
         # imbalance handling on the sampler
         cfg["sampler_strategy"] = trial.suggest_categorical("sampler_strategy", ["none", "weighted"])
         if cfg["sampler_strategy"] == "weighted":
@@ -127,8 +132,11 @@ def run_study(config_path="configs/config_kg_hgnn.yml", n_trials=35, timeout_hou
     study = optuna.create_study(direction="maximize", pruner=pruner, study_name=study_name)
     print(f"[optuna] starting study '{study_name}': {n_trials} trials, "
           f"{timeout_hours}h timeout, {tune_epochs} epochs/trial", flush=True)
+    # catch=(Exception,): one failing trial (transient CUDA/driver error, etc.)
+    # is marked FAILED and the study CONTINUES with the next trial instead of
+    # aborting the whole search.
     study.optimize(objective, n_trials=n_trials, timeout=int(timeout_hours * 3600),
-                   callbacks=[_progress_callback])
+                   callbacks=[_progress_callback], catch=(Exception,))
 
     import pandas as pd
     df = study.trials_dataframe(attrs=("number", "state", "value", "params", "user_attrs", "duration"))
