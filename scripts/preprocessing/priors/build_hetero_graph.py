@@ -435,7 +435,7 @@ def _save_vocabs(out_dir, genes, mol_vocabs, pathway_vocab, go_vocab, disease_vo
     if disease_vocab:
         pd.DataFrame({"mondo_id": disease_vocab, "idx": range(len(disease_vocab))}).to_csv(
             os.path.join(out_dir, "node_disease.csv"), index=False)
-    print(f"[saved] node vocabularies -> {out_dir}node_*.csv")
+    print(f"[saved] node vocabularies -> {os.path.join(out_dir, 'node_*.csv')}")
 
 
 def _save_edge_lists(out_dir, genes, mol_vocabs, pathway_vocab, go_vocab,
@@ -489,7 +489,7 @@ def _save_edge_lists(out_dir, genes, mol_vocabs, pathway_vocab, go_vocab,
         counts["TF_shares_target"] = dump(
             "edge_TF_shares_target_TF.csv", mol_edges["tf_tf"],
             tf_v, ("TF_a_idx", "TF_a"), tf_v, ("TF_b_idx", "TF_b"))
-    print(f"[saved] edge lists       -> {out_dir}edge_*.csv")
+    print(f"[saved] edge lists       -> {os.path.join(out_dir, 'edge_*.csv')}")
 
     # manifest: node + edge counts in one place, for quick inspection
     node_counts = {
@@ -501,7 +501,7 @@ def _save_edge_lists(out_dir, genes, mol_vocabs, pathway_vocab, go_vocab,
     rows = [{"kind": "node", "name": k, "count": v} for k, v in node_counts.items()]
     rows += [{"kind": "edge", "name": k, "count": v} for k, v in counts.items()]
     pd.DataFrame(rows).to_csv(os.path.join(out_dir, "graph_manifest.csv"), index=False)
-    print(f"[saved] manifest         -> {out_dir}graph_manifest.csv")
+    print(f"[saved] manifest         -> {os.path.join(out_dir, 'graph_manifest.csv')}")
 
 
 def _assemble_heterodata(n_gene, n_mirna, n_tf, n_pathway, n_go, n_disease,

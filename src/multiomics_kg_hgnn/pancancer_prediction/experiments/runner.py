@@ -118,4 +118,7 @@ def run_experiment(cfg, logger=None):
 
     logger(f"[saved] checkpoint -> {ckpt_path}")
     logger(f"[saved] history/metrics/config/log -> {run_dir}")
-    return {**test_metrics, "run_dir": run_dir, "checkpoint": ckpt_path}
+    # best_val_macro_f1 is the objective for hyperparameter tuning (tune on the
+    # validation split, never on test); test_* are reported for the final table.
+    return {**test_metrics, "best_val_macro_f1": best_val,
+            "run_dir": run_dir, "checkpoint": ckpt_path}

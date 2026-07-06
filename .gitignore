@@ -69,6 +69,7 @@ figures/
 notes/
 datasets/data/
 datasets/refseq2gene_mappings.tsv
+benchmark/*
 
 # Local-only directories (thesis sources, scratch tests)
 docs/
