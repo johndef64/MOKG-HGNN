@@ -28,8 +28,8 @@ from multiomics_gnn.config.loader import load_config  # reuse the simple YAML lo
 from multiomics_kg_hgnn.pancancer_prediction.experiments.runner import run_experiment
 
 
-def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12,
-                      verbose=True):
+def objective_factory(base_cfg, backbone="hgt", fixed_seed=42, tune_epochs=60,
+                      tune_patience=12, verbose=True):
     def objective(trial):
         cfg = copy.deepcopy(base_cfg)
 
@@ -41,10 +41,15 @@ def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12,
         cfg.setdefault("early_stopping", {})["patience"] = tune_patience
 
         # ---- search space (this model's real knobs) ----
-        cfg["model"]["backbone"] = "hgt"     # only hgt implemented; sage/rgcn are TODO
+        # backbone is FIXED per study (each of hgt/hetero_sage/rgcn is tuned
+        # separately, so every model gets its own best config — see the paper,
+        # which keeps the backbone as an axis outside the search).
+        cfg["model"]["backbone"] = backbone
         cfg["model"]["hidden"] = trial.suggest_categorical("hidden", [32, 64, 128, 256])
         cfg["model"]["num_layers"] = trial.suggest_int("num_layers", 1, 3)
-        cfg["model"]["heads"] = trial.suggest_categorical("heads", [1, 2, 4, 8])
+        # heads only matters for HGT (attention); SAGE/RGCN ignore it
+        if backbone == "hgt":
+            cfg["model"]["heads"] = trial.suggest_categorical("heads", [1, 2, 4, 8])
         cfg["model"]["dropout"] = trial.suggest_float("dropout", 0.0, 0.6, step=0.1)
         # multi-scale readout: which scales feed the classifier
         cfg["model"]["readout_types"] = trial.suggest_categorical(
@@ -71,8 +76,8 @@ def objective_factory(base_cfg, fixed_seed=42, tune_epochs=60, tune_patience=12,
         if cfg["sampler_strategy"] == "weighted":
             cfg["sampler_gamma"] = trial.suggest_categorical("sampler_gamma", [0.90, 0.95, 0.98, 0.99])
 
-        # heads must divide hidden for HGTConv — skip invalid combos cleanly
-        if cfg["model"]["hidden"] % cfg["model"]["heads"] != 0:
+        # HGT only: heads must divide hidden — skip invalid combos cleanly
+        if backbone == "hgt" and cfg["model"]["hidden"] % cfg["model"]["heads"] != 0:
             if verbose:
                 print(f"[trial {trial.number}] pruned (hidden {cfg['model']['hidden']} "
                       f"not divisible by heads {cfg['model']['heads']})", flush=True)
@@ -119,18 +124,18 @@ def _progress_callback(study, trial):
           f"best={best} | {dur:.0f}s | finished {done} trials", flush=True)
 
 
-def run_study(config_path="configs/config_kg_hgnn.yml", n_trials=35, timeout_hours=10.0,
-              fixed_seed=42, tune_epochs=60, tune_patience=12,
+def run_study(config_path="configs/config_kg_hgnn.yml", backbone="hgt", n_trials=35,
+              timeout_hours=10.0, fixed_seed=42, tune_epochs=60, tune_patience=12,
               study_name="kg_hgnn_optuna", out_dir="./results/optuna"):
     base_cfg = load_config(config_path)
-    objective = objective_factory(base_cfg, fixed_seed, tune_epochs, tune_patience)
+    objective = objective_factory(base_cfg, backbone, fixed_seed, tune_epochs, tune_patience)
 
     # make Optuna's own logs visible (it defaults to quiet under some setups)
     optuna.logging.set_verbosity(optuna.logging.INFO)
 
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=15)
     study = optuna.create_study(direction="maximize", pruner=pruner, study_name=study_name)
-    print(f"[optuna] starting study '{study_name}': {n_trials} trials, "
+    print(f"[optuna] starting study '{study_name}': backbone={backbone}, {n_trials} trials, "
           f"{timeout_hours}h timeout, {tune_epochs} epochs/trial", flush=True)
     # catch=(Exception,): one failing trial (transient CUDA/driver error, etc.)
     # is marked FAILED and the study CONTINUES with the next trial instead of
@@ -169,17 +174,23 @@ def _cli():
     import argparse
     ap = argparse.ArgumentParser(description="Optuna hyperparameter search for MOKG-HGNN")
     ap.add_argument("--config", default="configs/config_kg_hgnn.yml")
+    ap.add_argument("--backbone", default="hgt", choices=["hgt", "hetero_sage", "rgcn"],
+                    help="Which backbone to tune (one study per backbone).")
     ap.add_argument("--n-trials", type=int, default=35)
     ap.add_argument("--timeout-hours", type=float, default=10.0)
     ap.add_argument("--fixed-seed", type=int, default=42)
     ap.add_argument("--tune-epochs", type=int, default=60,
                     help="Epoch cap during tuning (shorter than a final run).")
     ap.add_argument("--tune-patience", type=int, default=12)
-    ap.add_argument("--study-name", default="kg_hgnn_optuna")
+    ap.add_argument("--study-name", default=None,
+                    help="Default: kg_hgnn_optuna_<backbone>.")
     ap.add_argument("--out-dir", default="./results/optuna")
     args = ap.parse_args()
-    run_study(args.config, args.n_trials, args.timeout_hours, args.fixed_seed,
-              args.tune_epochs, args.tune_patience, args.study_name, args.out_dir)
+    study_name = args.study_name or f"kg_hgnn_optuna_{args.backbone}"
+    run_study(config_path=args.config, backbone=args.backbone, n_trials=args.n_trials,
+              timeout_hours=args.timeout_hours, fixed_seed=args.fixed_seed,
+              tune_epochs=args.tune_epochs, tune_patience=args.tune_patience,
+              study_name=study_name, out_dir=args.out_dir)
 
 
 if __name__ == "__main__":

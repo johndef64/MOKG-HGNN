@@ -25,6 +25,7 @@ TOP_TF="${TOP_TF:-200}"
 TOP_MIRNA="${TOP_MIRNA:-100}"
 GO_MIN_SUPPORT="${GO_MIN_SUPPORT:-3}"
 METAPATH="${METAPATH:-}"                  # "--metapath" to add miRNA-miRNA / TF-TF
+BACKBONE="${BACKBONE:-}"                  # hgt | hetero_sage | rgcn (empty -> config default)
 
 RUNS=1
 case "${1:-}" in
@@ -81,27 +82,34 @@ for i in $(seq 0 $((RUNS - 1))); do
     # keep a per-seed copy of the template so parallel/rerun seeds don't clash
     cp data/prior_knowledge/hetero/hetero_graph_template.pt "$TEMPLATE"
 
-    # 3) per-run config: fixed model seed, this split's dir + template
+    # 3) per-run config: fixed model seed, this split's dir + template,
+    #    optional backbone override. Prints the effective experiment_name so we
+    #    collect the run dir from the right folder (backbones don't mix).
     RUN_CFG="$(mktemp --suffix=.yml)"
     MKCFG="$(mktemp --suffix=.py)"
     cat > "$MKCFG" <<'PY'
 import sys, yaml
-src, dst, mseed, split_dir, template = sys.argv[1:6]
+src, dst, mseed, split_dir, template, backbone = sys.argv[1:7]
 cfg = yaml.safe_load(open(src))
 cfg["project"]["seed"] = int(mseed)
 cfg["data"]["split_dir"] = split_dir
 cfg["data"]["template_path"] = template
+if backbone:
+    cfg["model"]["backbone"] = backbone
+    # keep runs of different backbones in separate result folders
+    cfg["project"]["experiment_name"] = f"{cfg['project']['experiment_name']}_{backbone}"
 yaml.safe_dump(cfg, open(dst, "w"))
+print(cfg["project"]["experiment_name"])   # effective experiment name
 PY
-    run "$MKCFG" "$CONFIG" "$RUN_CFG" "$MODEL_SEED" "$SPLIT_DIR" "$TEMPLATE"
+    RUN_EXP="$(run "$MKCFG" "$CONFIG" "$RUN_CFG" "$MODEL_SEED" "$SPLIT_DIR" "$TEMPLATE" "$BACKBONE" | tail -1)"
     rm -f "$MKCFG"
 
     # 4) train
     run scripts/kg_hgnn/train.py --config "$RUN_CFG"
     rm -f "$RUN_CFG"
 
-    # newest run dir for this experiment = the one we just wrote
-    RUN_DIRS+=("$(ls -1dt "$RESULTS_DIR/$EXP_NAME"/*/ | head -1)")
+    # newest run dir for this (possibly backbone-suffixed) experiment
+    RUN_DIRS+=("$(ls -1dt "$RESULTS_DIR/$RUN_EXP"/*/ | head -1)")
 done
 
 # --- aggregate mean +/- s.d. across runs (from each run's metrics.json) -------

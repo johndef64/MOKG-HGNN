@@ -13,11 +13,12 @@ set -euo pipefail
 
 ENV_NAME="${ENV_NAME:-gnn}"
 CONFIG="${CONFIG:-configs/config_kg_hgnn.yml}"
+BACKBONE="${BACKBONE:-hgt}"               # hgt | hetero_sage | rgcn (one study each)
 N_TRIALS="${N_TRIALS:-35}"
 TIMEOUT_HOURS="${TIMEOUT_HOURS:-10}"
 TUNE_EPOCHS="${TUNE_EPOCHS:-60}"
 TUNE_PATIENCE="${TUNE_PATIENCE:-12}"
-STUDY_NAME="${STUDY_NAME:-kg_hgnn_optuna}"
+STUDY_NAME="${STUDY_NAME:-kg_hgnn_optuna_${BACKBONE}}"
 OUT_DIR="${OUT_DIR:-results/optuna}"
 
 export PYTHONPATH="src${PYTHONPATH:+:$PYTHONPATH}"
@@ -28,13 +29,13 @@ if [ ! -f "$TEMPLATE" ]; then
     exit 1
 fi
 
-echo "==> Optuna tuning | $N_TRIALS trials | ${TIMEOUT_HOURS}h timeout | epochs $TUNE_EPOCHS"
+echo "==> Optuna tuning | backbone=$BACKBONE | $N_TRIALS trials | ${TIMEOUT_HOURS}h timeout | epochs $TUNE_EPOCHS"
 echo "    objective: validation macro-F1 | template: fixed | study: $STUDY_NAME"
 # --no-capture-output + python -u: stream progress LIVE. Without it, `conda run`
 # buffers stdout and nothing appears until the whole study ends.
 export PYTHONUNBUFFERED=1
 conda run --no-capture-output -n "$ENV_NAME" python -u scripts/kg_hgnn/run_optuna.py \
-    --config "$CONFIG" \
+    --config "$CONFIG" --backbone "$BACKBONE" \
     --n-trials "$N_TRIALS" --timeout-hours "$TIMEOUT_HOURS" \
     --tune-epochs "$TUNE_EPOCHS" --tune-patience "$TUNE_PATIENCE" \
     --study-name "$STUDY_NAME" --out-dir "$OUT_DIR"
