@@ -1,0 +1,37 @@
+# Fast-comparison config: like config_kg_hgnn.yml but with a SHORTER early
+# stopping (patience 12) so each backbone stops when IT stops improving, rather
+# than at a fixed epoch count. High num_epochs ceiling -> early stopping decides.
+project:
+  experiment_name: kg_hgnn
+  seed: 42
+paths:
+  results_dir: results
+data:
+  template_path: data/prior_knowledge/hetero/hetero_graph_template.pt
+  hetero_dir: data/prior_knowledge/hetero
+  split_dir: data/training/splits/splits_seed_42
+  use_cnv: true
+  use_mirna: true
+  scaler: standard
+  batch_size: 16
+  num_workers: 0
+model:
+  backbone: hgt            # overridden per run by BACKBONE=...
+  hidden: 64
+  num_layers: 2
+  heads: 2
+  dropout: 0.2
+  readout_types: [gene, pathway, GO_term]
+train:
+  num_epochs: 300          # high ceiling; early stopping decides when to stop
+  learning_rate: 0.001
+  weight_decay: 0.0005
+  class_weighted_loss: true
+early_stopping:
+  patience: 12             # SHORT: fast comparison, stops soon after plateau
+scheduler:
+  name: reduce_on_plateau
+sampler_strategy: none
+sampler_gamma: 0.98
+runtime:
+  device: null
