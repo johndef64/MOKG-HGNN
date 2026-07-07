@@ -43,16 +43,20 @@ def _file_logger(run_dir):
     return log
 
 
-def run_experiment(cfg, logger=None):
+def run_experiment(cfg, logger=None, save_artifacts=True):
+    """save_artifacts=False (used during Optuna tuning) skips the per-run folder,
+    checkpoint, logs and history — the tuner only needs the returned score, and
+    writing a folder+checkpoint per trial just litters results/ and wastes I/O."""
     proj, data_cfg, model_cfg, train_cfg = cfg["project"], cfg["data"], cfg["model"], cfg["train"]
     _seed_everything(int(proj.get("seed", 42)))
     device = cfg.get("runtime", {}).get("device") or ("cuda" if torch.cuda.is_available() else "cpu")
 
     results_dir = cfg.get("paths", {}).get("results_dir", "results")
-    run_dir = _make_run_dir(results_dir, proj.get("experiment_name", "kg_hgnn"))
+    run_dir = _make_run_dir(results_dir, proj.get("experiment_name", "kg_hgnn")) if save_artifacts else None
     if logger is None:
-        logger = _file_logger(run_dir)
-    logger(f"run dir: {run_dir}")
+        logger = _file_logger(run_dir) if save_artifacts else print
+    if run_dir:
+        logger(f"run dir: {run_dir}")
     logger(f"device: {device}")
 
     # --- data -------------------------------------------------------------
@@ -111,23 +115,26 @@ def run_experiment(cfg, logger=None):
            f"accuracy {test_metrics['accuracy']:.4f} | best val macro-F1 {best_val:.4f}")
 
     # --- persist run artifacts (checkpoint + logs + metrics) --------------
-    ckpt_path = os.path.join(run_dir, "model_best.pt")
-    torch.save(trainer.model.state_dict(), ckpt_path)
+    # skipped during tuning (save_artifacts=False): no per-trial folder/checkpoint
+    ckpt_path = None
+    if save_artifacts:
+        ckpt_path = os.path.join(run_dir, "model_best.pt")
+        torch.save(trainer.model.state_dict(), ckpt_path)
 
-    with open(os.path.join(run_dir, "config.json"), "w") as fh:
-        json.dump(cfg, fh, indent=2, default=str)
+        with open(os.path.join(run_dir, "config.json"), "w") as fh:
+            json.dump(cfg, fh, indent=2, default=str)
 
-    if trainer.history:
-        with open(os.path.join(run_dir, "history.csv"), "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(trainer.history[0].keys()))
-            w.writeheader(); w.writerows(trainer.history)
+        if trainer.history:
+            with open(os.path.join(run_dir, "history.csv"), "w", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(trainer.history[0].keys()))
+                w.writeheader(); w.writerows(trainer.history)
 
-    summary = {"best_val_macro_f1": best_val, **{f"test_{k}": v for k, v in test_metrics.items()}}
-    with open(os.path.join(run_dir, "metrics.json"), "w") as fh:
-        json.dump(summary, fh, indent=2)
+        summary = {"best_val_macro_f1": best_val, **{f"test_{k}": v for k, v in test_metrics.items()}}
+        with open(os.path.join(run_dir, "metrics.json"), "w") as fh:
+            json.dump(summary, fh, indent=2)
 
-    logger(f"[saved] checkpoint -> {ckpt_path}")
-    logger(f"[saved] history/metrics/config/log -> {run_dir}")
+        logger(f"[saved] checkpoint -> {ckpt_path}")
+        logger(f"[saved] history/metrics/config/log -> {run_dir}")
     # best_val_macro_f1 is the objective for hyperparameter tuning (tune on the
     # validation split, never on test); test_* are reported for the final table.
     return {**test_metrics, "best_val_macro_f1": best_val,

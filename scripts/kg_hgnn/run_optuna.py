@@ -94,11 +94,11 @@ def objective_factory(base_cfg, backbone="hgt", fixed_seed=42, tune_epochs=60,
                 print(f"  [t{trial.number}] {s}", flush=True)
 
         try:
-            summary = run_experiment(cfg, logger=tlog)
+            # save_artifacts=False: no per-trial folder/checkpoint clutters results/
+            summary = run_experiment(cfg, logger=tlog, save_artifacts=False)
             score = summary.get("best_val_macro_f1")
             trial.set_user_attr("test_macro_f1", summary.get("macro_f1"))
             trial.set_user_attr("test_accuracy", summary.get("accuracy"))
-            trial.set_user_attr("run_dir", summary.get("run_dir"))
             return float(score) if score is not None else 0.0
         except RuntimeError as e:
             if "out of memory" in str(e).lower():
@@ -111,17 +111,27 @@ def objective_factory(base_cfg, backbone="hgt", fixed_seed=42, tune_epochs=60,
     return objective
 
 
-def _progress_callback(study, trial):
-    """Printed after every finished trial: score, best-so-far, elapsed."""
-    dur = trial.duration.total_seconds() if trial.duration else 0.0
-    val = "pruned" if trial.value is None else f"{trial.value:.4f}"
-    try:
-        best = f"{study.best_value:.4f} (trial {study.best_trial.number})"
-    except ValueError:
-        best = "n/a"
-    done = len([t for t in study.trials if t.state.is_finished()])
-    print(f"[optuna] trial {trial.number} done: val_macroF1={val} | "
-          f"best={best} | {dur:.0f}s | finished {done} trials", flush=True)
+def _callback_factory(out_dir):
+    """Callback run after EVERY finished trial: prints progress AND writes
+    best.json incrementally, so a server disconnect never loses the best-so-far."""
+    def cb(study, trial):
+        dur = trial.duration.total_seconds() if trial.duration else 0.0
+        val = "pruned" if trial.value is None else f"{trial.value:.4f}"
+        try:
+            best = f"{study.best_value:.4f} (trial {study.best_trial.number})"
+            # persist best-so-far after every trial (crash-safe)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / "best.json").write_text(json.dumps(
+                {"best_value": study.best_value, "best_params": study.best_params,
+                 "best_trial_number": study.best_trial.number,
+                 "n_finished": len([t for t in study.trials if t.state.is_finished()])},
+                indent=2))
+        except ValueError:
+            best = "n/a"
+        done = len([t for t in study.trials if t.state.is_finished()])
+        print(f"[optuna] trial {trial.number} done: val_macroF1={val} | "
+              f"best={best} | {dur:.0f}s | finished {done} trials", flush=True)
+    return cb
 
 
 def run_study(config_path="configs/config_kg_hgnn.yml", backbone="hgt", n_trials=35,
@@ -133,28 +143,43 @@ def run_study(config_path="configs/config_kg_hgnn.yml", backbone="hgt", n_trials
     # make Optuna's own logs visible (it defaults to quiet under some setups)
     optuna.logging.set_verbosity(optuna.logging.INFO)
 
+    out = Path(out_dir) / study_name
+    out.mkdir(parents=True, exist_ok=True)
+
+    # SQLite storage -> the study is persisted to disk AFTER EVERY TRIAL. If the
+    # server disconnects mid-run, finished trials survive; re-running with the
+    # same storage + load_if_exists RESUMES instead of starting over.
+    db_path = out / "study.db"
+    storage = f"sqlite:///{db_path.as_posix()}"
+
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=15)
-    study = optuna.create_study(direction="maximize", pruner=pruner, study_name=study_name)
-    print(f"[optuna] starting study '{study_name}': backbone={backbone}, {n_trials} trials, "
-          f"{timeout_hours}h timeout, {tune_epochs} epochs/trial", flush=True)
+    study = optuna.create_study(direction="maximize", pruner=pruner, study_name=study_name,
+                                storage=storage, load_if_exists=True)
+
+    already = len([t for t in study.trials if t.state.is_finished()])
+    if already:
+        print(f"[optuna] RESUMING '{study_name}': {already} trials already on disk "
+              f"({db_path}); will run up to {n_trials} total.", flush=True)
+        n_trials = max(0, n_trials - already)   # top up to the target, don't redo
+    print(f"[optuna] study '{study_name}': backbone={backbone}, target {already + n_trials} trials, "
+          f"{timeout_hours}h timeout, {tune_epochs} epochs/trial, storage={db_path}", flush=True)
+
     # catch=(Exception,): one failing trial (transient CUDA/driver error, etc.)
-    # is marked FAILED and the study CONTINUES with the next trial instead of
-    # aborting the whole search.
+    # is marked FAILED and the study CONTINUES with the next trial.
     study.optimize(objective, n_trials=n_trials, timeout=int(timeout_hours * 3600),
-                   callbacks=[_progress_callback], catch=(Exception,))
+                   callbacks=[_callback_factory(out)], catch=(Exception,))
 
     import pandas as pd
     df = study.trials_dataframe(attrs=("number", "state", "value", "params", "user_attrs", "duration"))
     core = [c for c in ["number", "value", "user_attrs_test_macro_f1", "user_attrs_test_accuracy",
-                        "state", "duration", "user_attrs_run_dir"] if c in df.columns]
+                        "state", "duration"] if c in df.columns]
     params = [c for c in df.columns if c.startswith("params_")]
     df = df[core + params].sort_values("value", ascending=False)
 
     print("\n=== OPTUNA TRIALS (sorted by val macro-F1) ===")
     print(df.to_string(index=False))
 
-    out = Path(out_dir) / study_name
-    out.mkdir(parents=True, exist_ok=True)
+    # `out` and best.json already exist (written incrementally); refresh the report.
     df.to_csv(out / "optuna_trials_report.csv", index=False)
     try:
         df.to_excel(out / "optuna_trials_report.xlsx", index=False)
