@@ -51,11 +51,14 @@ def objective_factory(base_cfg, backbone="hgt", fixed_seed=42, tune_epochs=60,
         if backbone == "hgt":
             cfg["model"]["heads"] = trial.suggest_categorical("heads", [1, 2, 4, 8])
         cfg["model"]["dropout"] = trial.suggest_float("dropout", 0.0, 0.6, step=0.1)
-        # multi-scale readout: which scales feed the classifier
-        cfg["model"]["readout_types"] = trial.suggest_categorical(
+        # multi-scale readout: which scales feed the classifier. Suggested as a
+        # STRING ("+"-joined) — SQLite storage rejects list-valued categoricals —
+        # then split back into a list for the config.
+        readout = trial.suggest_categorical(
             "readout_types",
-            [["gene"], ["gene", "pathway"], ["gene", "pathway", "GO_term"],
-             ["gene", "pathway", "GO_term", "disease"]])
+            ["gene", "gene+pathway", "gene+pathway+GO_term",
+             "gene+pathway+GO_term+disease"])
+        cfg["model"]["readout_types"] = readout.split("+")
 
         cfg["train"]["learning_rate"] = trial.suggest_categorical(
             "lr", [1e-2, 5e-3, 3e-3, 2e-3, 1e-3, 5e-4, 2e-4, 1e-4])
