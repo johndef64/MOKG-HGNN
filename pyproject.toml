@@ -36,6 +36,7 @@ dependencies = [
     "termcolor",
     "optuna",
     "wandb",
+    "ijson",
     "python-dotenv",
     "gdown",
     "mygene",
