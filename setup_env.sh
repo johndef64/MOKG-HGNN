@@ -48,3 +48,6 @@ print('torch', torch.__version__, '| PyG', torch_geometric.__version__, \
 echo ""
 echo "==> done. Activate with:  conda activate $ENV_NAME"
 echo "    then run training:     python scripts/kg_hgnn/train.py --config configs/config_kg_hgnn.yml"
+
+# Activate the env at the end so that the user can immediately run training without
+conda activate $ENV_NAME
