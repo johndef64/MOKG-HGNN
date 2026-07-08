@@ -362,9 +362,9 @@ def finalize_hierarchy(hier_pairs, x2idx):
 # ---------------------------------------------------------------------------
 # 5. Assemble HeteroData + persist
 # ---------------------------------------------------------------------------
-def build(gene_nodes_file=GGI_NODES, with_disease=True, go_min_support=1,
-          make_undirected=True, mirna_keep=None, tf_keep=None, metapath=False,
-          out_dir=OUT_DIR):
+def build(gene_nodes_file=GGI_NODES, with_disease=True, with_pathway=True, with_go=True,
+          go_min_support=1, make_undirected=True, mirna_keep=None, tf_keep=None,
+          metapath=False, out_dir=OUT_DIR):
     os.makedirs(out_dir, exist_ok=True)
 
     # --- gene anchor + molecular layer -------------------------------------
@@ -373,13 +373,19 @@ def build(gene_nodes_file=GGI_NODES, with_disease=True, go_min_support=1,
     mol_edges, mol_vocabs = load_molecular_edges(
         sym2idx, mirna_keep=mirna_keep, tf_keep=tf_keep, metapath=metapath)
 
-    # --- KG superior scales -------------------------------------------------
+    # --- KG superior scales (each can be ablated away) ---------------------
     uri2cc, uri2eid = build_node_index()
     kg = extract_kg_edges(uri2cc, uri2eid, entrez2idx)
 
-    gene_pathway, pathway_vocab, _ = finalize_scale(kg["gene_pathway"])
-    gene_go, go_vocab, go2idx = finalize_scale(kg["gene_go"], go_min_support)
-    go_go = finalize_hierarchy(kg["go_go"], go2idx)
+    if with_pathway:
+        gene_pathway, pathway_vocab, _ = finalize_scale(kg["gene_pathway"])
+    else:
+        gene_pathway, pathway_vocab = np.empty((0, 2), np.int64), []
+    if with_go:
+        gene_go, go_vocab, go2idx = finalize_scale(kg["gene_go"], go_min_support)
+        go_go = finalize_hierarchy(kg["go_go"], go2idx)
+    else:
+        gene_go, go_vocab, go_go = np.empty((0, 2), np.int64), [], np.empty((0, 2), np.int64)
     if with_disease:
         gene_disease, disease_vocab, _ = finalize_scale(kg["gene_disease"])
     else:
@@ -410,7 +416,7 @@ def build(gene_nodes_file=GGI_NODES, with_disease=True, go_min_support=1,
         n_pathway=len(pathway_vocab), n_go=len(go_vocab), n_disease=len(disease_vocab),
         mol_edges=mol_edges, gene_pathway=gene_pathway, gene_go=gene_go,
         go_go=go_go, gene_disease=gene_disease, with_disease=with_disease,
-        make_undirected=make_undirected,
+        with_pathway=with_pathway, with_go=with_go, make_undirected=make_undirected,
     )
     if hetero is not None:
         import torch
@@ -506,7 +512,7 @@ def _save_edge_lists(out_dir, genes, mol_vocabs, pathway_vocab, go_vocab,
 
 def _assemble_heterodata(n_gene, n_mirna, n_tf, n_pathway, n_go, n_disease,
                          mol_edges, gene_pathway, gene_go, go_go, gene_disease,
-                         with_disease, make_undirected):
+                         with_disease, make_undirected, with_pathway=True, with_go=True):
     try:
         import torch
         from torch_geometric.data import HeteroData
@@ -524,17 +530,21 @@ def _assemble_heterodata(n_gene, n_mirna, n_tf, n_pathway, n_go, n_disease,
     data["gene"].num_nodes = n_gene
     data["miRNA"].num_nodes = n_mirna
     data["TF"].num_nodes = n_tf
-    data["pathway"].num_nodes = n_pathway
-    data["GO_term"].num_nodes = n_go
+    if with_pathway:
+        data["pathway"].num_nodes = n_pathway
+    if with_go:
+        data["GO_term"].num_nodes = n_go
     if with_disease:
         data["disease"].num_nodes = n_disease
 
     data["gene", "interacts", "gene"].edge_index = ei(mol_edges["gene_gene"])
     data["miRNA", "targets", "gene"].edge_index = ei(mol_edges["mirna_gene"])
     data["TF", "regulates", "gene"].edge_index = ei(mol_edges["tf_gene"])
-    data["gene", "member_of", "pathway"].edge_index = ei(gene_pathway)
-    data["gene", "annotated_with", "GO_term"].edge_index = ei(gene_go)
-    data["GO_term", "is_a", "GO_term"].edge_index = ei(go_go)
+    if with_pathway:
+        data["gene", "member_of", "pathway"].edge_index = ei(gene_pathway)
+    if with_go:
+        data["gene", "annotated_with", "GO_term"].edge_index = ei(gene_go)
+        data["GO_term", "is_a", "GO_term"].edge_index = ei(go_go)
     if with_disease:
         data["gene", "associated_with", "disease"].edge_index = ei(gene_disease)
     # optional co-target metapaths (MOGNN-TF molecular layer)
@@ -559,6 +569,10 @@ if __name__ == "__main__":
     ap.add_argument("--go-min-support", type=int, default=1,
                     help="Drop GO terms annotated by fewer than N genes (anti blow-up).")
     ap.add_argument("--no-disease", action="store_true", help="Exclude the gene->disease scale.")
+    ap.add_argument("--no-pathway", action="store_true",
+                    help="Exclude the pathway (Reactome) scale from the graph (hierarchy ablation).")
+    ap.add_argument("--no-go", action="store_true",
+                    help="Exclude the GO_term scale (and GO->GO hierarchy) from the graph.")
     ap.add_argument("--directed", action="store_true",
                     help="Keep directional edges (skip ToUndirected).")
     ap.add_argument("--mirna-list", default=None,
@@ -604,6 +618,8 @@ if __name__ == "__main__":
         build(
             gene_nodes_file=args.gene_list,
             with_disease=not args.no_disease,
+            with_pathway=not args.no_pathway,
+            with_go=not args.no_go,
             go_min_support=args.go_min_support,
             make_undirected=not args.directed,
             mirna_keep=mirna_keep,

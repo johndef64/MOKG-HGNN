@@ -130,30 +130,29 @@ Dopo il tuning: copia i params vincenti in `configs/config_kg_hgnn.yml` e lancia
 Gli esperimenti che giustificano il lavoro oltre l'accuratezza aggregata (vedi
 `docs/TODO_esperimenti_tesi.md` per la motivazione di ciascuno).
 
-### 0. Ablation: con / senza METAPATH e rimozione di componenti del grafo
+### 0. Ablation (metapath + rimozione componenti del grafo)
 
-I metapath si attivano alla **costruzione del grafo** (vedi sezione METAPATH sopra):
+Studio di ablation "un fattore per volta" a partire dalla configurazione completa,
+via l'orchestratore `ablation.sh` (rebuild del template solo per gli assi che
+cambiano il grafo, riuso per quelli solo-config):
 ```bash
-BACKBONE=hgt bash train_and_eval.sh                    # senza metapath (default)
-METAPATH=--metapath BACKBONE=hgt bash train_and_eval.sh  # con metapath
+bash ablation.sh                                   # tutte le 9 varianti, 5 seed
+VARIANTS="full no_pathway no_go" bash ablation.sh  # sottoinsieme
+BACKBONE=rgcn SEEDS="42 43 44" bash ablation.sh
 ```
-Rimozione di componenti (asse di ablation, un fattore per volta):
-```bash
-# togli la scala 'disease' dal grafo (ricostruisce il template)
-METAPATH= bash make_graph.sh   # poi rilancia build con --no-disease (vedi build_hetero_graph.py)
-# togli scale dal readout multi-scala (nel config):
-#   model.readout_types: [gene]                    -> solo molecolare
-#   model.readout_types: [gene, pathway]           -> + pathway
-#   model.readout_types: [gene, pathway, GO_term]  -> + GO
-# togli una modalità omica (nel config):
-#   data.use_cnv: false     |   data.use_mirna: false
-```
-Per sapere con che grafo è stata addestrata una run (metapath sì/no):
+Varianti: `full` (baseline) · `no_metapath` · `no_disease` · `no_pathway` ·
+`no_go` · `readout_mol` · `readout_pathway` · `no_cnv` · `no_mirna`.
+Output in `results/ablation/`: `ablation_table.csv` (macro-F1 media ± s.d. + Δ vs
+`full`) e `ablation_bars.png`.
+
+Leve sottostanti (usabili anche singolarmente): grafo → `--metapath`,
+`--no-disease`, `--no-pathway`, `--no-go` (in `build_hetero_graph.py`); config →
+`model.readout_types`, `data.use_cnv`, `data.use_mirna`.
+
+Con che grafo è stata addestrata una run (metapath/scale):
 ```bash
 conda run -n gnn python scripts/kg_hgnn/which_graph.py
 ```
-> Nota: l'ablation "rimozione componenti" non ha ancora un unico orchestratore
-> (è nel TODO). I flag esistono già tutti; si combinano a mano come sopra.
 
 ### 1. Performance per-classe (27 classi)
 
