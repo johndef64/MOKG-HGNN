@@ -105,3 +105,15 @@ class HeteroTrainer:
     @torch.no_grad()
     def evaluate(self, loader):
         return self._run_epoch(loader, train=False)
+
+    @torch.no_grad()
+    def predict(self, loader):
+        """Return (y_true, y_pred) over the loader, for per-class metrics."""
+        self.model.eval()
+        ys, preds = [], []
+        for batch in loader:
+            batch = batch.to(self.device)
+            logits = self.model(batch)
+            ys.append(batch.y.cpu().numpy())
+            preds.append(logits.argmax(1).cpu().numpy())
+        return np.concatenate(ys), np.concatenate(preds)

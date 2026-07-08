@@ -133,6 +133,29 @@ def run_experiment(cfg, logger=None, save_artifacts=True):
         with open(os.path.join(run_dir, "metrics.json"), "w") as fh:
             json.dump(summary, fh, indent=2)
 
+        # graph provenance: record the ACTUAL node/edge types of the template this
+        # run was trained on, so with/without --metapath is unambiguous later
+        # (independent of the template file, which may be overwritten).
+        node_types, edge_types = train_ds.template.metadata()
+        rels = [rel for (_, rel, _) in edge_types]
+        graph_info = {
+            "template_path": data_cfg.get("template_path"),
+            "node_types": list(node_types),
+            "edge_types": [list(et) for et in edge_types],
+            "has_metapath": any("shares_target" in rel for rel in rels),
+            "num_relations": len(edge_types),
+            "num_nodes": {nt: int(train_ds.template[nt].num_nodes) for nt in node_types},
+        }
+        with open(os.path.join(run_dir, "graph_info.json"), "w") as fh:
+            json.dump(graph_info, fh, indent=2)
+        logger(f"[graph] metapath={'yes' if graph_info['has_metapath'] else 'no'} "
+               f"| {graph_info['num_relations']} relations")
+
+        # per-class precision/recall/F1 + confusion matrix on the test set
+        from multiomics_kg_hgnn.pancancer_prediction.training.per_class_metrics import save_per_class
+        y_true, y_pred = trainer.predict(test_loader)
+        save_per_class(run_dir, y_true, y_pred, num_classes=num_classes)
+
         logger(f"[saved] checkpoint -> {ckpt_path}")
         logger(f"[saved] history/metrics/config/log -> {run_dir}")
     # best_val_macro_f1 is the objective for hyperparameter tuning (tune on the
