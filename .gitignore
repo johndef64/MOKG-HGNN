@@ -87,6 +87,9 @@ benchmark/MOGONET/ROSMAP/
 benchmark/MPK-GNN/data/processed_data/
 
 
+# results
+results/*
+
 # escusion
 !src\multiomics_kg_hgnn\models
 !results\pancan\tf_interpretation\tf_global_ranking.csv
