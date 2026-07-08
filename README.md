@@ -125,6 +125,72 @@ Dopo il tuning: copia i params vincenti in `configs/config_kg_hgnn.yml` e lancia
 
 ---
 
+## Esperimenti (studi della tesi)
+
+Gli esperimenti che giustificano il lavoro oltre l'accuratezza aggregata (vedi
+`docs/TODO_esperimenti_tesi.md` per la motivazione di ciascuno).
+
+### 0. Ablation: con / senza METAPATH e rimozione di componenti del grafo
+
+I metapath si attivano alla **costruzione del grafo** (vedi sezione METAPATH sopra):
+```bash
+BACKBONE=hgt bash train_and_eval.sh                    # senza metapath (default)
+METAPATH=--metapath BACKBONE=hgt bash train_and_eval.sh  # con metapath
+```
+Rimozione di componenti (asse di ablation, un fattore per volta):
+```bash
+# togli la scala 'disease' dal grafo (ricostruisce il template)
+METAPATH= bash make_graph.sh   # poi rilancia build con --no-disease (vedi build_hetero_graph.py)
+# togli scale dal readout multi-scala (nel config):
+#   model.readout_types: [gene]                    -> solo molecolare
+#   model.readout_types: [gene, pathway]           -> + pathway
+#   model.readout_types: [gene, pathway, GO_term]  -> + GO
+# togli una modalità omica (nel config):
+#   data.use_cnv: false     |   data.use_mirna: false
+```
+Per sapere con che grafo è stata addestrata una run (metapath sì/no):
+```bash
+conda run -n gnn python scripts/kg_hgnn/which_graph.py
+```
+> Nota: l'ablation "rimozione componenti" non ha ancora un unico orchestratore
+> (è nel TODO). I flag esistono già tutti; si combinano a mano come sopra.
+
+### 1. Performance per-classe (27 classi)
+
+Ogni run salva già `per_class_metrics.csv/.json` + `confusion_matrix.csv`. Per una
+run esistente (dal checkpoint, senza riaddestrare):
+```bash
+conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --run results/kg_hgnn_hgt/<...>
+conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --all
+```
+Confronta la tabella per-classe col baseline: l'eterogeneo può vincere su classi
+rare pur perdendo sull'aggregato.
+
+### 2. Crollo delle feature ("il grafo salva le performance")
+
+Entrambi i modelli su una griglia decrescente di geni (700→20), con confronto
+della pendenza di degrado:
+```bash
+bash run_feature_collapse.sh                                   # entrambi, griglia default, 5 seed
+MODELS="mokghgnn" GENE_GRID="700 300 100 50" SEEDS="42 43 44" bash run_feature_collapse.sh
+```
+Output in `results/feature_collapse/`: `feature_collapse_table.csv` (macro-F1
+media ± s.d. per modello×n-geni) e `feature_collapse_curve.png` (le due curve
+sovrapposte). **Cosa guardare**: la curva MOKG-HGNN più alta a 50-100-20 geni.
+Rigenerare solo tabella/curva:
+```bash
+conda run -n gnn python scripts/kg_hgnn/collapse_aggregate.py --results results/feature_collapse
+```
+
+### 3. Explainability (interpretabilità meccanicistica)
+
+**Da implementare** (TODO P1.2): attribuzioni su nodi `pathway`/`GO_term`
+(GNNExplainer / Captum / attention di HGT) → tabella "per sottotipo → top
+pathway/GO", validata contro l'oncologia nota. È il *selling point* della tesi:
+ciò che un modello gene-only non può dare. Nessuno script ancora disponibile.
+
+---
+
 ## Analisi dei risultati
 
 ```bash
