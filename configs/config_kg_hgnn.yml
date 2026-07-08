@@ -1,5 +1,10 @@
 # Config for the heterogeneous multi-scale model (multiomics_kg_hgnn).
 # Same schema family as MOGNN-TF's config.yml, plus keys for the hetero backbone.
+#
+# TUNED (Optuna, hgt study, trial 14): val macro-F1 0.6995 (12 trials finished).
+# Best pattern: wide & shallow (hidden 256 / 1 layer), minimal regularisation
+# (dropout 0, low weight_decay), higher LR (3e-3), + disease readout scale.
+# The un-tuned baseline lives in config_kg_hgnn_base.yml (hidden 64 / 2 layers).
 
 project:
   experiment_name: kg_hgnn_hgt
@@ -21,16 +26,16 @@ data:
 
 model:
   backbone: hgt          # hgt (implemented) | hetero_sage, rgcn (TODO)
-  hidden: 64
-  num_layers: 2
-  heads: 2
-  dropout: 0.2
-  readout_types: [gene, pathway, GO_term]   # multi-scale pooling
+  hidden: 256               # tuned (was 64); heads must divide hidden -> 256/8 ok
+  num_layers: 1             # tuned (was 2): one hop mixes gene->pathway->GO->disease
+  heads: 8                  # tuned (was 2): 256/8=32, valid HGT head split
+  dropout: 0.0              # tuned (was 0.2): best trial ran without dropout
+  readout_types: [gene, pathway, GO_term, disease]  # tuned: + disease scale
 
 train:
   num_epochs: 300           # higher ceiling; early stopping decides when to stop
-  learning_rate: 0.001
-  weight_decay: 0.0005
+  learning_rate: 0.003      # tuned (was 0.001)
+  weight_decay: 0.0001      # tuned (was 0.0005): lighter L2
   class_weighted_loss: true   # weighted cross-entropy for the 27-class imbalance
 
 early_stopping:
