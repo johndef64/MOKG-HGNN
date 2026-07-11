@@ -1,0 +1,55 @@
+# Config for the heterogeneous multi-scale model (multiomics_kg_hgnn) — hetero_sage backbone.
+# TUNED (Optuna study kg_hgnn_optuna_hetero_sage, trial 4): val macro-F1 0.7505.
+# ** Best of the three backbones ** (beats hgt 0.6995 and rgcn 0.7285).
+# Best pattern: wide & DEEP (hidden 256 / 3 layers), light dropout (0.1),
+# weighted sampler (gamma 0.99) on top of class-weighted loss.
+#
+# NOTE (readout): readout_types is deliberately kept FULL and decided by ablation,
+# NOT by the tuner — the multi-scale readout is delicate and we want every scale
+# to stay informative. For reference, the tuner's best readout for hetero_sage was:
+#   gene+pathway+GO_term   (i.e. it dropped 'disease' — kept below for the ablation).
+
+project:
+  experiment_name: kg_hgnn_hetero_sage
+  seed: 42
+
+paths:
+  results_dir: results
+
+data:
+  template_path: data/prior_knowledge/hetero/hetero_graph_template.pt
+  hetero_dir: data/prior_knowledge/hetero
+  split_dir: data/training/splits/splits_seed_42
+  use_cnv: true          # ablation: false -> drop CNV channel
+  use_mirna: true        # ablation: false -> drop miRNA features
+  scaler: standard       # standard | minmax | robust | none (fit on train only)
+  batch_size: 8          # tuned
+  num_workers: 0
+
+model:
+  backbone: hetero_sage
+  hidden: 256             # tuned (base 64)
+  num_layers: 3           # tuned (base 2): SAGE benefits from more hops here
+  heads: 2                # unused by hetero_sage (kept for schema uniformity)
+  dropout: 0.1            # tuned (base 0.2)
+  # readout: FULL set, chosen by ablation (not the tuner). Tuner's best for
+  # hetero_sage: [gene, pathway, GO_term] (dropped 'disease'). Full set below.
+  readout_types: [gene, pathway, GO_term, disease]
+
+train:
+  num_epochs: 300           # high ceiling; early stopping decides when to stop
+  learning_rate: 0.0005     # tuned (base 0.001)
+  weight_decay: 0.0005      # tuned (= base)
+  class_weighted_loss: true   # tuned true; weighted CE for the 27-class imbalance
+
+early_stopping:
+  patience: 50
+
+scheduler:
+  name: reduce_on_plateau   # tuned
+
+sampler_strategy: weighted    # tuned (base none): weighted sampler helped here
+sampler_gamma: 0.99           # tuned
+
+runtime:
+  device: null                # null -> cuda if available, else cpu
