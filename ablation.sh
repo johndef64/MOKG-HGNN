@@ -13,13 +13,26 @@
 #   no_mirna         drop the miRNA omic features                      (config only)
 #
 # "rebuild graph" variants build their own template; "config only" variants reuse
-# the FULL template (faster). Results under results/ablation/<variant>/<seed>/.
+# the FULL template (faster). Results under $OUT_ROOT/<variant>/<timestamp>/, where
+# OUT_ROOT defaults to results/ablation_<BACKBONE> (so backbones never mix).
 #
 # Usage (from the repo root):
 #   bash ablation.sh
+#   BACKBONE=hetero_sage CONFIG=configs/config_kg_hgnn_sage.yml bash ablation.sh
 #   SEEDS="42 43 44" VARIANTS="full no_metapath no_disease" bash ablation.sh
-#   BACKBONE=rgcn bash ablation.sh
+#   bash ablation.sh --resume        # continue an interrupted study (skip done variants)
 set -euo pipefail
+
+# --resume: skip any VARIANT that already has all its runs completed on disk
+# (N_SEEDS run dirs with metrics.json). A partially-done variant is cleared and
+# redone. Lets you continue after an interruption without redoing finished
+# variants. Any other argument -> error.
+RESUME=0
+case "${1:-}" in
+    --resume) RESUME=1 ;;
+    "")       ;;
+    *) echo "unknown argument: $1 (use --resume)" >&2; exit 1 ;;
+esac
 
 ENV_NAME="${ENV_NAME:-gnn}"
 CONFIG="${CONFIG:-configs/config_kg_hgnn.yml}"     # "best available" MOKG-HGNN config
@@ -30,7 +43,9 @@ TOP_GENES="${TOP_GENES:-700}"
 TOP_TF="${TOP_TF:-200}"
 TOP_MIRNA="${TOP_MIRNA:-100}"
 GO_MIN_SUPPORT="${GO_MIN_SUPPORT:-3}"
-OUT_ROOT="${OUT_ROOT:-results/ablation}"
+# backbone-aware default: each backbone lands in its OWN folder, so hgt/sage/rgcn
+# ablations never mix (override with an explicit OUT_ROOT if you want).
+OUT_ROOT="${OUT_ROOT:-results/ablation_${BACKBONE}}"
 VARIANTS="${VARIANTS:-full no_metapath no_disease no_pathway no_go readout_mol readout_pathway no_cnv no_mirna}"
 
 export PYTHONPATH="src${PYTHONPATH:+:$PYTHONPATH}"
@@ -52,6 +67,13 @@ graph_flags() {
 # does this variant need its own template? (else reuse the FULL one)
 needs_rebuild() {
   case "$1" in no_metapath|no_disease|no_pathway|no_go) return 0 ;; *) return 1 ;; esac;
+}
+# how many COMPLETED runs (dirs with metrics.json) a variant already has on disk.
+# used by --resume to decide whether a (variant, seed) still needs running.
+completed_runs() {
+  local dir="$1"
+  [ -d "$dir" ] || { echo 0; return; }
+  find "$dir" -mindepth 2 -maxdepth 2 -name metrics.json 2>/dev/null | wc -l | tr -d ' '
 }
 # config overrides (dotted key=value, space separated). empty = no override.
 # For scale-removing variants also drop that scale from the readout (the model
@@ -103,11 +125,29 @@ echo "# ABLATION | backbone=$BACKBONE | seeds: $SEEDS"
 echo "# variants: $VARIANTS | out: $OUT_ROOT"
 echo "############################################################"
 
+# number of seeds we expect per variant (a variant is "done" when it has this
+# many completed runs on disk).
+N_SEEDS="$(echo $SEEDS | wc -w | tr -d ' ')"
+
 for V in $VARIANTS; do
   GF="$(graph_flags "$V")"
   OV="$(config_overrides "$V")"
   echo ""
   echo "===================== variant: $V ====================="
+
+  # --resume: if this variant already has all N_SEEDS completed runs, skip it.
+  if [ "$RESUME" = "1" ]; then
+    HAVE="$(completed_runs "$OUT_ROOT/$V")"
+    if [ "$HAVE" -ge "$N_SEEDS" ]; then
+      echo "  [resume] '$V' already has $HAVE/$N_SEEDS completed runs -> SKIP"
+      continue
+    elif [ "$HAVE" -gt 0 ]; then
+      # partial variant: clear its incomplete runs so we redo it cleanly (a
+      # variant's runs share one folder and can't be matched to a seed by name).
+      echo "  [resume] '$V' partial ($HAVE/$N_SEEDS) -> clearing and redoing this variant"
+      rm -rf "$OUT_ROOT/$V"
+    fi
+  fi
   echo "  graph_flags='$GF' | overrides='$OV' | rebuild=$(needs_rebuild "$V" && echo yes || echo no)"
 
   for S in $SEEDS; do
@@ -146,10 +186,13 @@ for V in $VARIANTS; do
       TEMPLATE="$FULL_T"
     fi
 
-    # 3) per-run config (experiment_name = ablation/<variant>) + train
+    # 3) per-run config + train. experiment_name is derived from OUT_ROOT (which is
+    #    backbone-aware) so runs land under $OUT_ROOT/<variant>/ — exactly where the
+    #    aggregator reads them. (Previously hard-coded to "ablation/<variant>", which
+    #    ignored OUT_ROOT and mixed backbones.)
     RUN_CFG="$(mktemp --suffix=.yml)"
     run "$MKCFG" "$CONFIG" "$RUN_CFG" "$MODEL_SEED" "$SPLIT_DIR" "$TEMPLATE" \
-        "ablation/${V}" "$BACKBONE" $OV
+        "${OUT_ROOT#results/}/${V}" "$BACKBONE" $OV
     run scripts/kg_hgnn/train.py --config "$RUN_CFG"
     rm -f "$RUN_CFG"
   done
