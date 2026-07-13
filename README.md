@@ -183,10 +183,20 @@ conda run -n gnn python scripts/kg_hgnn/collapse_aggregate.py --results results/
 
 ### 3. Explainability (interpretabilità meccanicistica)
 
-**Da implementare** (TODO P1.2): attribuzioni su nodi `pathway`/`GO_term`
-(GNNExplainer / Captum / attention di HGT) → tabella "per sottotipo → top
-pathway/GO", validata contro l'oncologia nota. È il *selling point* della tesi:
-ciò che un modello gene-only non può dare. Nessuno script ancora disponibile.
+Attribuzione a livello di meccanismo: quali `pathway`/`GO_term` guidano la
+predizione per ogni sottotipo (GNNExplainer su un checkpoint addestrato).
+```bash
+conda run -n gnn python scripts/kg_hgnn/explain.py --run results/<...>/<ts> \
+    --per-class 15 --epochs 50
+conda run -n gnn python scripts/kg_hgnn/explain.py --run <dir> --reuse-template  # salta il rebuild
+```
+Output in `results/explanations/<run>/`: `top_pathway_by_subtype.csv`,
+`top_GO_term_by_subtype.csv` (id reali Reactome/GO, con `distinctive_score` =
+quanto un meccanismo è specifico di quel sottotipo vs la media) e le heatmap
+sottotipo×meccanismo. Ricostruisce il template dalla run e legge gli iperparametri
+dal suo `config.json`. **La validazione biologica** (i pathway trovati sono sensati
+per quel tumore?) resta manuale — è il selling point della tesi, ciò che un modello
+gene-only non può dare.
 
 ---
 
@@ -199,6 +209,12 @@ conda run -n gnn python scripts/kg_hgnn/plot_training.py --aggregate
 # metriche per-classe da un checkpoint gia salvato (senza riaddestrare)
 conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --run results/kg_hgnn_hgt/<...>
 conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --all
+
+# con che grafo e stata addestrata una run (metapath / scale)
+conda run -n gnn python scripts/kg_hgnn/which_graph.py
+
+# explainability meccanicistica (pathway/GO per sottotipo) — vedi esperimento 3
+conda run -n gnn python scripts/kg_hgnn/explain.py --run results/<...>/<ts> --per-class 15
 ```
 
 ---
