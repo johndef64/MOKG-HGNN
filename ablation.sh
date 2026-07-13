@@ -97,14 +97,18 @@ MKCFG="$(mktemp --suffix=.py)"
 trap 'rm -f "$MKCFG"' EXIT
 cat > "$MKCFG" <<'PY'
 import sys, yaml
-src, dst, mseed, split_dir, template, exp, backbone = sys.argv[1:8]
-overrides = sys.argv[8:]  # "dotted.key=value"
+src, dst, mseed, split_dir, template, hetero_dir, exp, backbone = sys.argv[1:9]
+overrides = sys.argv[9:]  # "dotted.key=value"
 cfg = yaml.safe_load(open(src))
 cfg["project"]["seed"] = int(mseed)
 cfg["project"]["experiment_name"] = exp
 cfg["paths"]["results_dir"] = "results"
 cfg["data"]["split_dir"] = split_dir
 cfg["data"]["template_path"] = template
+# hetero_dir MUST match the template: node_*.csv there define feature<->node
+# alignment. A shared hetero_dir gets overwritten by the next variant's build,
+# desyncing node counts from a saved .pt -> CUDA index assert. Keep them together.
+cfg["data"]["hetero_dir"] = hetero_dir
 cfg["model"]["backbone"] = backbone
 for ov in overrides:
     key, val = ov.split("=", 1)
@@ -117,8 +121,6 @@ for ov in overrides:
     d[ks[-1]] = val
 yaml.safe_dump(cfg, open(dst, "w"))
 PY
-
-FULL_TEMPLATE="data/prior_knowledge/hetero/ablation_full_seed__SEED__.pt"
 
 echo "############################################################"
 echo "# ABLATION | backbone=$BACKBONE | seeds: $SEEDS"
@@ -153,7 +155,6 @@ for V in $VARIANTS; do
   for S in $SEEDS; do
     SPLIT_DIR="data/training/splits/splits_seed_${S}"
     FS_DIR="data/training/feature_selection/splits_seed_${S}"
-    FULL_T="${FULL_TEMPLATE/__SEED__/$S}"
     echo ""
     echo "----- $V | split seed $S -----"
 
@@ -166,32 +167,37 @@ for V in $VARIANTS; do
           --out-dir "$FS_DIR"
     fi
 
-    # 2) template: rebuild for graph-changing variants; else reuse the FULL one
+    # 2) template + its node_*.csv, kept TOGETHER in a per-(variant,seed) dir.
+    #    The dataset aligns features to node_*.csv in hetero_dir, NOT to the .pt.
+    #    If we only saved the .pt (shared hetero_dir), the next variant's build
+    #    would overwrite those CSVs and desync node counts -> CUDA index assert.
+    #    Build straight into HDIR so template and CSVs always match.
     if needs_rebuild "$V"; then
-      TEMPLATE="data/prior_knowledge/hetero/ablation_${V}_seed${S}.pt"
-      run scripts/preprocessing/priors/build_hetero_graph.py \
-          --gene-list "$FS_DIR/selected_genes.csv" --tf-list "$FS_DIR/selected_tf.csv" \
-          --mirna-list "$FS_DIR/selected_mirna.txt" --go-min-support "$GO_MIN_SUPPORT" \
-          $GF --out-dir data/prior_knowledge/hetero --force
-      cp data/prior_knowledge/hetero/hetero_graph_template.pt "$TEMPLATE"
-    else
-      # build the FULL template once per seed, reuse it for all config-only variants
-      if [ ! -f "$FULL_T" ]; then
+      HDIR="data/prior_knowledge/hetero/ablation_${V}_seed${S}"
+      if [ ! -f "$HDIR/hetero_graph_template.pt" ]; then
         run scripts/preprocessing/priors/build_hetero_graph.py \
             --gene-list "$FS_DIR/selected_genes.csv" --tf-list "$FS_DIR/selected_tf.csv" \
             --mirna-list "$FS_DIR/selected_mirna.txt" --go-min-support "$GO_MIN_SUPPORT" \
-            --metapath --out-dir data/prior_knowledge/hetero --force
-        cp data/prior_knowledge/hetero/hetero_graph_template.pt "$FULL_T"
+            $GF --out-dir "$HDIR" --force
       fi
-      TEMPLATE="$FULL_T"
+    else
+      # FULL graph: build once per seed (with metapath), reuse for config-only variants
+      HDIR="data/prior_knowledge/hetero/ablation_full_seed_${S}"
+      if [ ! -f "$HDIR/hetero_graph_template.pt" ]; then
+        run scripts/preprocessing/priors/build_hetero_graph.py \
+            --gene-list "$FS_DIR/selected_genes.csv" --tf-list "$FS_DIR/selected_tf.csv" \
+            --mirna-list "$FS_DIR/selected_mirna.txt" --go-min-support "$GO_MIN_SUPPORT" \
+            --metapath --out-dir "$HDIR" --force
+      fi
     fi
+    TEMPLATE="$HDIR/hetero_graph_template.pt"
 
     # 3) per-run config + train. experiment_name is derived from OUT_ROOT (which is
     #    backbone-aware) so runs land under $OUT_ROOT/<variant>/ — exactly where the
     #    aggregator reads them. (Previously hard-coded to "ablation/<variant>", which
     #    ignored OUT_ROOT and mixed backbones.)
     RUN_CFG="$(mktemp --suffix=.yml)"
-    run "$MKCFG" "$CONFIG" "$RUN_CFG" "$MODEL_SEED" "$SPLIT_DIR" "$TEMPLATE" \
+    run "$MKCFG" "$CONFIG" "$RUN_CFG" "$MODEL_SEED" "$SPLIT_DIR" "$TEMPLATE" "$HDIR" \
         "${OUT_ROOT#results/}/${V}" "$BACKBONE" $OV
     run scripts/kg_hgnn/train.py --config "$RUN_CFG"
     rm -f "$RUN_CFG"
