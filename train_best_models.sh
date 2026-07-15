@@ -27,7 +27,11 @@ set -euo pipefail
 
 ENV_NAME="${ENV_NAME:-gnn}"
 BACKBONE="${BACKBONE:-hetero_sage}"       # the winning backbone (tuning)
-RUNS="${RUNS:-10}"                        # seeds for the final multi-seed estimate
+RUNS="${RUNS:-5}"                         # seeds for the final multi-seed estimate
+                                          # (5 is enough here; runs converge ~epoch
+                                          # 80 via early stopping, ~1h each, so 5
+                                          # seeds x 2 variants ~= 10h. Set RUNS=10
+                                          # for tighter error bands if time allows.)
 START_SEED="${START_SEED:-42}"
 VARIANTS="${VARIANTS:-full optimized}"    # which final models to train
 
