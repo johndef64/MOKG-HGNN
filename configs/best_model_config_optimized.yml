@@ -1,0 +1,67 @@
+# ============================================================================
+# BEST MODEL — versione OTTIMIZZATA (grafo SENZA la scala GO)
+# ============================================================================
+# Stessa base del modello completo (best_model_config.yml): backbone hetero_sage,
+# stessi iperparametri tunati. UNICA differenza: il GRAFO è costruito SENZA la
+# scala GO_term (nodi + edge GO rimossi), e il readout esclude GO di conseguenza.
+#
+# RAZIONALE (ablation-driven, non selezione sul test):
+#   - L'ablation mostra che rimuovere GO dal grafo dà la val-F1 PIÙ ALTA
+#     (no_go: val 0.7478 vs full 0.7321) e la test-F1 più alta (0.7364 vs 0.7210).
+#   - Meccanicismo: GO_term è la scala più grande (973 nodi) e la più rumorosa;
+#     l'analisi per-classe attribuisce il danno quasi tutto a UNA classe (C24,
+#     -0.238). GO porta più rumore che segnale in aggregato.
+#   - La scelta è guidata dalla VALIDATION + un razionale, non dal picco di test.
+#
+# GRAFO: costruire con --no-go (rimuove nodi/edge GO_term dal grafo, non solo dal
+# readout — l'ablation mostra che togliere GO DAL GRAFO batte il solo escluderlo
+# dal readout: no_go +0.0154 vs readout_pathway +0.0083).
+#   NO_GO=--no-go bash make_graph.sh          # se supportato via env, altrimenti
+#   build_hetero_graph.py ... --no-go         # direttamente
+# ============================================================================
+
+project:
+  experiment_name: best_model_optimized
+  seed: 42
+
+paths:
+  results_dir: results
+
+data:
+  # template SENZA GO — costruito con --no-go (percorso dedicato per non
+  # sovrascrivere il template completo).
+  template_path: data/prior_knowledge/hetero/hetero_graph_template_no_go.pt
+  hetero_dir: data/prior_knowledge/hetero
+  split_dir: data/training/splits/splits_seed_42
+  use_cnv: true
+  use_mirna: true
+  scaler: standard
+  batch_size: 8          # tuned
+
+model:
+  backbone: hetero_sage
+  hidden: 256             # tuned
+  num_layers: 3           # tuned
+  heads: 2                # unused by hetero_sage (kept for schema uniformity)
+  dropout: 0.1            # tuned
+  # readout senza GO: coerente col grafo (GO non esiste più). Il modello filtra
+  # comunque le scale assenti, ma teniamo il readout esplicito e coerente.
+  readout_types: [gene, pathway, disease]
+
+train:
+  num_epochs: 300           # high ceiling; early stopping decides when to stop
+  learning_rate: 0.0005     # tuned
+  weight_decay: 0.0005      # tuned
+  class_weighted_loss: true # tuned
+
+early_stopping:
+  patience: 50
+
+scheduler:
+  name: reduce_on_plateau   # tuned
+
+sampler_strategy: weighted  # tuned
+sampler_gamma: 0.99         # tuned
+
+runtime:
+  device: null              # null -> cuda if available, else cpu

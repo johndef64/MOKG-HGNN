@@ -25,6 +25,9 @@ TOP_TF="${TOP_TF:-200}"
 TOP_MIRNA="${TOP_MIRNA:-100}"
 GO_MIN_SUPPORT="${GO_MIN_SUPPORT:-3}"
 METAPATH="${METAPATH:-}"                  # "--metapath" to add miRNA-miRNA / TF-TF
+# extra flags forwarded verbatim to build_hetero_graph.py, e.g. to drop a scale
+# for the ablation-driven "optimized" model:  GRAPH_FLAGS="--no-go"
+GRAPH_FLAGS="${GRAPH_FLAGS:-}"
 BACKBONE="${BACKBONE:-}"                  # hgt | hetero_sage | rgcn (empty -> config default)
 
 RUNS=1
@@ -77,7 +80,7 @@ for i in $(seq 0 $((RUNS - 1))); do
         --gene-list "$FS_DIR/selected_genes.csv" \
         --tf-list "$FS_DIR/selected_tf.csv" \
         --mirna-list "$FS_DIR/selected_mirna.txt" \
-        --go-min-support "$GO_MIN_SUPPORT" $METAPATH \
+        --go-min-support "$GO_MIN_SUPPORT" $METAPATH $GRAPH_FLAGS \
         --out-dir data/prior_knowledge/hetero --force
     # keep a per-seed copy of the template so parallel/rerun seeds don't clash
     cp data/prior_knowledge/hetero/hetero_graph_template.pt "$TEMPLATE"

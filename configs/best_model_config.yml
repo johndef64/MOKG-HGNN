@@ -1,0 +1,62 @@
+# ============================================================================
+# BEST MODEL — versione COMPLETA (full multi-scale graph)
+# ============================================================================
+# Modello finale MOKG-HGNN dopo tuning (Optuna) + ablation. Backbone hetero_sage
+# (il migliore dei tre: val 0.7505 al tuning). Iperparametri = quelli tunati.
+#
+# GRAFO: COMPLETO — tutte le scale (gene, pathway, GO_term, disease), readout
+# multi-scala completo. È la versione "ricca"/interpretabile: massima integrazione
+# del knowledge graph, per l'analisi multi-scala e l'interpretabilità.
+#
+# Ablation (results/ablation_hetero_sage, 5 seed): full = 0.7210 ± 0.0124 test-F1.
+# La variante 'optimized' (grafo senza GO) fa meglio (0.7364); vedi
+# best_model_config_optimized.yml e docs/ablation_report_hetero_sage.md.
+#
+# "Completo" = tutte le SCALE SEMANTICHE (gene, pathway, GO, disease). NIENTE
+# metapath: l'ablation l'ha mostrato inutile (+0.0002) e non era nel tuning.
+# Grafo costruito senza flag --no-* (default, tutte le scale):
+#   TOP_GENES=700 bash make_graph.sh               # oppure via train_and_eval.sh
+# ============================================================================
+
+project:
+  experiment_name: best_model_full
+  seed: 42
+
+paths:
+  results_dir: results
+
+data:
+  template_path: data/prior_knowledge/hetero/hetero_graph_template.pt
+  hetero_dir: data/prior_knowledge/hetero
+  split_dir: data/training/splits/splits_seed_42
+  use_cnv: true          # CNV è il fattore singolo più importante (ablation: -0.026)
+  use_mirna: true        # miRNA contributo lieve (ablation: -0.006)
+  scaler: standard
+  batch_size: 8          # tuned
+
+model:
+  backbone: hetero_sage
+  hidden: 256             # tuned
+  num_layers: 3           # tuned
+  heads: 2                # unused by hetero_sage (kept for schema uniformity)
+  dropout: 0.1            # tuned
+  # readout COMPLETO: tutte le scale del KG (scelta di design, non del tuner).
+  readout_types: [gene, pathway, GO_term, disease]
+
+train:
+  num_epochs: 300           # high ceiling; early stopping decides when to stop
+  learning_rate: 0.0005     # tuned
+  weight_decay: 0.0005      # tuned
+  class_weighted_loss: true # tuned
+
+early_stopping:
+  patience: 50
+
+scheduler:
+  name: reduce_on_plateau   # tuned
+
+sampler_strategy: weighted  # tuned
+sampler_gamma: 0.99         # tuned
+
+runtime:
+  device: null              # null -> cuda if available, else cpu

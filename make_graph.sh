@@ -17,6 +17,7 @@ TOP_TF="${TOP_TF:-200}"
 TOP_MIRNA="${TOP_MIRNA:-100}"
 GO_MIN_SUPPORT="${GO_MIN_SUPPORT:-3}"
 METAPATH="${METAPATH:-}"                 # set to "--metapath" to add miRNA-miRNA / TF-TF
+GRAPH_FLAGS="${GRAPH_FLAGS:-}"           # extra builder flags, e.g. "--no-go" (optimized model)
 SPLIT_DIR="${SPLIT_DIR:-data/training/splits/splits_seed_${SEED}}"
 FS_DIR="${FS_DIR:-data/training/feature_selection/splits_seed_${SEED}}"
 OUT_DIR="${OUT_DIR:-data/prior_knowledge/hetero}"
@@ -36,7 +37,7 @@ run scripts/preprocessing/priors/build_hetero_graph.py \
     --gene-list "$FS_DIR/selected_genes.csv" \
     --tf-list "$FS_DIR/selected_tf.csv" \
     --mirna-list "$FS_DIR/selected_mirna.txt" \
-    --go-min-support "$GO_MIN_SUPPORT" $METAPATH \
+    --go-min-support "$GO_MIN_SUPPORT" $METAPATH $GRAPH_FLAGS \
     --out-dir "$OUT_DIR" --force
 
 echo ""
