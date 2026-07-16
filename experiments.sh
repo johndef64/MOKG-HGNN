@@ -75,7 +75,12 @@ esac
 pick_best_run() {
   local base="$1"
   [ -d "$base" ] || { echo ""; return; }
-  conda run -n "$ENV_NAME" python - "$base" <<'PY'
+  # NB: `conda run python - <args> <<HEREDOC` is BROKEN (stdin+args clash) and can
+  # spiral into repeated shells ("shell level too high"). Write the helper to a
+  # temp file and pass it as an argument instead — same pattern as the other
+  # launchers in this repo.
+  local helper; helper="$(mktemp --suffix=.py)"
+  cat > "$helper" <<'PY'
 import glob, json, os, sys
 base = sys.argv[1]
 best_dir, best_f1 = None, -1.0
@@ -103,6 +108,8 @@ if chosen and best_dir:
 elif chosen:
     print(f"[pick] no metrics.json; using newest -> {chosen}", file=sys.stderr)
 PY
+  conda run -n "$ENV_NAME" python "$helper" "$base"
+  rm -f "$helper"
 }
 
 case "$WHICH" in
