@@ -89,16 +89,22 @@ def main():
     ap.add_argument("--results", default="results")
     args = ap.parse_args()
 
+    # Exit non-zero on failure: callers (experiments.sh) must not report success
+    # when a run was skipped or refused because of a template mismatch.
     if args.run:
-        eval_run(args.run)
+        ok = eval_run(args.run)
     elif args.all:
         runs = sorted(os.path.dirname(p) for p in
                       glob.glob(os.path.join(args.results, "**", "model_best.pt"), recursive=True))
         print(f"Found {len(runs)} run(s) with a checkpoint.")
-        for r in runs:
-            eval_run(r)
+        results = [eval_run(r) for r in runs]
+        ok = all(results) and bool(results)
+        if not ok:
+            print(f"\n[summary] {sum(results)}/{len(results)} run(s) recomputed; the rest failed.")
     else:
         ap.error("pass --run <dir> or --all")
+
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":

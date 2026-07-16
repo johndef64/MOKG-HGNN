@@ -156,14 +156,34 @@ conda run -n gnn python scripts/kg_hgnn/which_graph.py
 
 ### 1. Performance per-classe (27 classi)
 
-Ogni run salva già `per_class_metrics.csv/.json` + `confusion_matrix.csv`. Per una
-run esistente (dal checkpoint, senza riaddestrare):
+Ogni run salva **già** `per_class_metrics.csv/.json` + `confusion_matrix.csv`:
+l'esperimento vero è l'**aggregazione multi-seed** + il confronto con MOGNN-TF.
+
+```bash
+bash experiments.sh per_class                    # su results/best_model_full_hetero_sage
+MODEL=optimized bash experiments.sh per_class    # su un'altra cartella best-model
+```
+Legge i `per_class_metrics.csv` di **tutte** le run della cartella e scrive lì:
+- `per_class_aggregate.csv` — P/R/F1 media ± s.d. per classe;
+- `per_class_vs_mognntf.csv` — affiancamento con la tabella del paper + delta;
+- `per_class_vs_mognntf.png` — F1 per classe, ordinato per delta.
+
+Il riferimento è `paper/table_per_class_mognn-tf.csv`, generato una tantum dalla
+tabella LaTeX (`scripts/kg_hgnn/tex_per_class_to_csv.py`, invocato in automatico
+se manca). Baseline di default: `MOGNN-TF (GCN)`; con `--baseline "MoGCN"` (o gli
+altri) si confrontano gli altri modelli della tabella.
+
+Sanity check: la media delle F1 per-classe deve tornare uguale al macro-F1
+riportato (0.7308 per il best model) — se non torna, l'aggregazione è sbagliata.
+
+Per run **vecchie** senza i file per-classe, ricalcolarli dal checkpoint (non
+riaddestra):
 ```bash
 conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --run results/kg_hgnn_hgt/<...>
 conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --all
 ```
-Confronta la tabella per-classe col baseline: l'eterogeneo può vincere su classi
-rare pur perdendo sull'aggregato.
+⚠️ Esce con codice ≠ 0 se il template corrente non combacia col checkpoint
+(template sovrascritto): si **rifiuta** di produrre numeri su un grafo diverso.
 
 ### 2. Crollo delle feature ("il grafo salva le performance")
 

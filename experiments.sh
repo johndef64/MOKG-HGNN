@@ -61,12 +61,12 @@ fi
 # --- locate the trained best model (for per_class / explain) -----------------
 # Priority: explicit --run/RUN  >  best-test-F1 run in MODEL's folder  >  newest.
 # MODEL=full|optimized picks which best-model folder to search.
+# Best-model runs are saved per backbone: results/best_model_<MODEL>_<BACKBONE>.
+# Fall back to the unsuffixed name for older runs.
 MODEL="${MODEL:-full}"
-case "$MODEL" in
-  full)      EXP_DIR="results/best_model_full" ;;
-  optimized) EXP_DIR="results/best_model_optimized" ;;
-  *)         EXP_DIR="results/best_model_${MODEL}" ;;
-esac
+EXP_BACKBONE="${BACKBONE:-hetero_sage}"
+EXP_DIR="results/best_model_${MODEL}_${EXP_BACKBONE}"
+[ -d "$EXP_DIR" ] || [ ! -d "results/best_model_${MODEL}" ] || EXP_DIR="results/best_model_${MODEL}"
 [ -n "$RUN" ] && echo "[run] using explicit --run/RUN: $RUN"
 
 # Pick the run with the HIGHEST test macro-F1 (the correct choice for explain:
@@ -115,12 +115,23 @@ PY
 case "$WHICH" in
   # -------------------------------------------------------------------------
   per_class)
-    RUN="${RUN:-$(pick_best_run "$EXP_DIR")}"
-    [ -n "$RUN" ] || { echo "No run with model_best.pt under $EXP_DIR/ (train it first, or pass --run <dir>)." >&2; exit 1; }
-    echo "==> per-class metrics | run: $RUN"
-    # writes per_class_metrics.csv/.json into the run dir (no retraining)
-    run scripts/kg_hgnn/eval_per_class.py --run "$RUN"
-    echo "==> done. per_class_metrics.csv in: $RUN"
+    # Aggregate across ALL seeds of the experiment and compare with MOGNN-TF.
+    # Every run already writes its own per_class_metrics.csv at training time, so
+    # there is nothing to recompute here: the experiment is the multi-seed
+    # mean ± s.d. and the head-to-head against the published baseline.
+    # (For OLD runs predating that, recompute first: eval_per_class.py --run <dir>.)
+    echo "==> per-class aggregation | experiment: $EXP_DIR"
+    [ -d "$EXP_DIR" ] || { echo "No such experiment folder: $EXP_DIR (train it first, or set MODEL=<name>)." >&2; exit 1; }
+
+    # reference table (from the paper's LaTeX); build it once if missing
+    REF="paper/table_per_class_mognn-tf.csv"
+    if [ ! -f "$REF" ]; then
+      echo "    [ref] $REF missing — converting from the LaTeX table"
+      run scripts/kg_hgnn/tex_per_class_to_csv.py
+    fi
+
+    run scripts/kg_hgnn/per_class_aggregate.py --results "$EXP_DIR"
+    echo "==> done. per_class_aggregate.csv + per_class_vs_mognntf.csv/.png in: $EXP_DIR"
     ;;
 
   # -------------------------------------------------------------------------
