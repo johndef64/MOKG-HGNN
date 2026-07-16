@@ -50,7 +50,7 @@ class MultiScaleHGT(nn.Module):
 
 
 def main():
-    tr, va, te, ncls = make_datasets("data/training/splits/splits_seed_42")
+    tr, va, te, ncls, _ = make_datasets("data/training/splits/splits_seed_42")
     train_loader, _, _ = build_loaders(tr, va, te, batch_size=8)
     batch = next(iter(train_loader))
 

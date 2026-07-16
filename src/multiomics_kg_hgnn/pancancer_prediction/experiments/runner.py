@@ -60,7 +60,7 @@ def run_experiment(cfg, logger=None, save_artifacts=True):
     logger(f"device: {device}")
 
     # --- data -------------------------------------------------------------
-    train_ds, val_ds, test_ds, num_classes = make_datasets(
+    train_ds, val_ds, test_ds, num_classes, classes = make_datasets(
         split_dir=data_cfg["split_dir"],
         template_path=data_cfg.get("template_path", "data/prior_knowledge/hetero/hetero_graph_template.pt"),
         hetero_dir=data_cfg.get("hetero_dir", "data/prior_knowledge/hetero"),
@@ -68,6 +68,10 @@ def run_experiment(cfg, logger=None, save_artifacts=True):
         use_mirna=data_cfg.get("use_mirna", True),
         scaler=data_cfg.get("scaler", "standard"),
     )
+    # real iCluster subtype names for each contiguous model index (e.g. index 23 ->
+    # "C25" because C24/LAML is absent). Used so per-class reports carry the TRUE
+    # iCluster label, matching MOGNN-TF, instead of a renumbered C{idx+1}.
+    class_names = [f"C{int(v)}" for v in classes]
     weighted = str(cfg.get("sampler_strategy", "none")).lower() == "weighted"
     train_loader, val_loader, test_loader = build_loaders(
         train_ds, val_ds, test_ds,
@@ -154,7 +158,8 @@ def run_experiment(cfg, logger=None, save_artifacts=True):
         # per-class precision/recall/F1 + confusion matrix on the test set
         from multiomics_kg_hgnn.pancancer_prediction.training.per_class_metrics import save_per_class
         y_true, y_pred = trainer.predict(test_loader)
-        save_per_class(run_dir, y_true, y_pred, num_classes=num_classes)
+        save_per_class(run_dir, y_true, y_pred, num_classes=num_classes,
+                       class_names=class_names)
 
         logger(f"[saved] checkpoint -> {ckpt_path}")
         logger(f"[saved] history/metrics/config/log -> {run_dir}")

@@ -42,7 +42,13 @@ def make_datasets(
     use_mirna=True,
     scaler="standard",
 ):
-    """Return (train_ds, val_ds, test_ds, num_classes)."""
+    """Return (train_ds, val_ds, test_ds, num_classes, classes).
+
+    ``classes`` are the ORIGINAL iCluster label values present in the data (e.g.
+    1..28 with 24/LAML absent), in the same order as the contiguous 0..C-1 encoding
+    used for training. It maps each model index back to its real subtype so that
+    per-class reports carry the true iCluster name (not a renumbered C{idx+1}).
+    """
     template = torch.load(template_path, weights_only=False)
     samples, y, classes = pf.load_labels(labels_csv)
     train_idx, val_idx, test_idx = pf.load_split(split_dir)
@@ -57,7 +63,7 @@ def make_datasets(
     make = lambda idx: HeteroOmicsDataset(template, feats, y, idx)
     print(f"[datasets] train={len(train_idx)} val={len(val_idx)} test={len(test_idx)} "
           f"| classes={len(classes)}")
-    return make(train_idx), make(val_idx), make(test_idx), len(classes)
+    return make(train_idx), make(val_idx), make(test_idx), len(classes), classes
 
 
 def build_loaders(train_ds, val_ds, test_ds, batch_size=16, num_workers=0,
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     ap.add_argument("--no-mirna", action="store_true")
     args = ap.parse_args()
 
-    tr, va, te, ncls = make_datasets(
+    tr, va, te, ncls, _ = make_datasets(
         args.split_dir, use_cnv=not args.no_cnv, use_mirna=not args.no_mirna)
     train_loader, _, _ = build_loaders(tr, va, te, batch_size=args.batch_size)
     batch = next(iter(train_loader))

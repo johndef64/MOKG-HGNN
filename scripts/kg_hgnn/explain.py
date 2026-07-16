@@ -93,7 +93,7 @@ def load_model_and_data(run_dir, template_path, hetero_dir):
     cfg = json.load(open(os.path.join(run_dir, "config.json")))
     d, m = cfg["data"], cfg["model"]
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    train_ds, _, test_ds, ncls = make_datasets(
+    train_ds, _, test_ds, ncls, _classes = make_datasets(
         split_dir=d["split_dir"], template_path=template_path, hetero_dir=hetero_dir,
         use_cnv=d.get("use_cnv", True), use_mirna=d.get("use_mirna", True),
         scaler=d.get("scaler", "standard"))

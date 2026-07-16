@@ -101,7 +101,7 @@ Da codice:
 ```python
 from multiomics_kg_hgnn.pancancer_prediction.preprocessing.make_datasets import (
     make_datasets, build_loaders)
-tr, va, te, ncls = make_datasets("data/training/splits/splits_seed_42")
+tr, va, te, ncls, classes = make_datasets("data/training/splits/splits_seed_42")
 train_loader, val_loader, test_loader = build_loaders(tr, va, te, batch_size=16)
 ```
 

@@ -50,7 +50,7 @@ def main():
     checkpoint = args.checkpoint or _latest_checkpoint(cfg)
     print(f"checkpoint: {checkpoint}")
 
-    train_ds, val_ds, test_ds, num_classes = make_datasets(
+    train_ds, val_ds, test_ds, num_classes, _ = make_datasets(
         split_dir=d["split_dir"], template_path=d["template_path"], hetero_dir=d["hetero_dir"],
         use_cnv=d.get("use_cnv", True), use_mirna=d.get("use_mirna", True),
         scaler=d.get("scaler", "standard"))

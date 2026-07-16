@@ -39,10 +39,11 @@ def eval_run(run_dir):
     d, m = cfg["data"], cfg["model"]
     device = cfg.get("runtime", {}).get("device") or ("cuda" if torch.cuda.is_available() else "cpu")
 
-    train_ds, val_ds, test_ds, num_classes = make_datasets(
+    train_ds, val_ds, test_ds, num_classes, classes = make_datasets(
         split_dir=d["split_dir"], template_path=d["template_path"], hetero_dir=d["hetero_dir"],
         use_cnv=d.get("use_cnv", True), use_mirna=d.get("use_mirna", True),
         scaler=d.get("scaler", "standard"))
+    class_names = [f"C{int(v)}" for v in classes]  # true iCluster names (C24/LAML absent)
     _, _, test_loader = build_loaders(train_ds, val_ds, test_ds,
                                       batch_size=int(d.get("batch_size", 16)))
 
@@ -71,7 +72,8 @@ def eval_run(run_dir):
 
     trainer = HeteroTrainer(model, optimizer=None, device=device)
     y_true, y_pred = trainer.predict(test_loader)
-    res = save_per_class(run_dir, y_true, y_pred, num_classes=num_classes)
+    res = save_per_class(run_dir, y_true, y_pred, num_classes=num_classes,
+                         class_names=class_names)
 
     print(f"[done] {run_dir}")
     print(f"       macro-F1 {res['macro_f1']:.4f} | weighted-F1 {res['weighted_f1']:.4f} | "
