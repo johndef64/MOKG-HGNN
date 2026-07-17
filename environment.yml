@@ -12,6 +12,7 @@ dependencies:
   - matplotlib
   - seaborn
   - networkx
+  - statsmodels
   - pyarrow
   - ijson
   - pip:

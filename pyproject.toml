@@ -27,6 +27,7 @@ dependencies = [
     "matplotlib",
     "seaborn",
     "networkx",
+    "statsmodels",
     "pyarrow",
     "pyyaml",
     "openpyxl",
