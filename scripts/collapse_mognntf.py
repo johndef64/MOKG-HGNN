@@ -93,13 +93,15 @@ def main():
             _set(cfg, "data.num_tf", int(n_tf))
             _set(cfg, "project.split_seed", int(s))
             _set(cfg, "project.seed", int(args.model_seed))
-            _set(cfg, "paths.results_dir", args.out_root)
+            # Nest the runs like MOKG-HGNN: results_dir carries the gene level
+            # (mognntf_gN) and the runner appends "run_<ts>" as the run dir, giving
+            # OUT_ROOT/mognntf_gN/run_<ts>/ instead of OUT_ROOT/mognntf_gN_<ts>/.
+            _set(cfg, "paths.results_dir", os.path.join(args.out_root, f"mognntf_g{g}"))
             if args.smoke:
                 _set(cfg, "train.num_epochs", 3)
-            name = f"mognntf_g{g}"
             print(f"\n[collapse-mognntf] === genes={g} | miRNA={n_mirna} | TF={n_tf} "
                   f"| split seed={s} ===")
-            summary = runner.run_experiment(cfg, experiment_name=name)
+            summary = runner.run_experiment(cfg, experiment_name="run")
             rows.append({
                 "model": "mognn-tf", "genes": g, "mirna": n_mirna, "tf": n_tf,
                 "split_seed": s,
