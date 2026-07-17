@@ -48,10 +48,19 @@ def main():
     ap.add_argument("--model-seed", type=int, default=2025)
     ap.add_argument("--out-root", default="results/feature_collapse")
     ap.add_argument("--smoke", action="store_true", help="3 epochs, to validate the pipeline.")
+    ap.add_argument("--resume", action="store_true",
+                    help="Skip (genes, seed) pairs already in the summary CSV.")
     args = ap.parse_args()
 
     base = load_config(args.config)
     os.makedirs(args.out_root, exist_ok=True)
+
+    # The grid is ~35 long runs: keep what previous invocations already produced
+    # instead of truncating the summary on every start.
+    rows = _read_summary(args.out_root)
+    done = {(int(r["genes"]), int(r["split_seed"])) for r in rows} if args.resume else set()
+    if done:
+        print(f"[collapse-mognntf] resume: {len(done)} run(s) already done, skipping them")
 
     # load the omics once, reuse across all runs
     print("[collapse-mognntf] loading omics data once...")
@@ -59,9 +68,11 @@ def main():
     expression_data, cnv_data, mirna_data = loader.load_raw_data()
     runner = ExperimentRunner(expression_data, cnv_data, mirna_data)
 
-    rows = []
     for g in args.gene_grid:
         for s in args.seeds:
+            if (int(g), int(s)) in done:
+                print(f"[collapse-mognntf] skip genes={g} seed={s} (already done)")
+                continue
             cfg = copy.deepcopy(base)
             _set(cfg, "data.num_gene", int(g))
             _set(cfg, "project.split_seed", int(s))
@@ -84,10 +95,23 @@ def main():
     print(f"\n[collapse-mognntf] done. Summary: {args.out_root}/collapse_mognntf_summary.csv")
 
 
+SUMMARY = "collapse_mognntf_summary.csv"
+
+
+def _read_summary(out_root):
+    """Rows from a previous invocation, so --resume can skip finished runs."""
+    path = os.path.join(out_root, SUMMARY)
+    if not os.path.exists(path):
+        return []
+    with open(path, newline="") as fh:
+        return [r for r in csv.DictReader(fh) if r.get("genes") and r.get("split_seed")]
+
+
 def _write_summary(rows, out_root):
-    path = os.path.join(out_root, "collapse_mognntf_summary.csv")
+    path = os.path.join(out_root, SUMMARY)
     with open(path, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w = csv.DictWriter(fh, fieldnames=["model", "genes", "split_seed",
+                                           "test_macro_f1", "test_accuracy", "val_macro_f1"])
         w.writeheader(); w.writerows(rows)
 
 

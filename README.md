@@ -193,13 +193,40 @@ della pendenza di degrado:
 bash run_feature_collapse.sh                                   # entrambi, griglia default, 5 seed
 MODELS="mokghgnn" GENE_GRID="700 300 100 50" SEEDS="42 43 44" bash run_feature_collapse.sh
 ```
-Output in `results/feature_collapse/`: `feature_collapse_table.csv` (macro-F1
-media ± s.d. per modello×n-geni) e `feature_collapse_curve.png` (le due curve
-sovrapposte). **Cosa guardare**: la curva MOKG-HGNN più alta a 50-100-20 geni.
-Rigenerare solo tabella/curva:
+Con `bash experiments.sh collapse` girano **entrambi** i modelli (è il confronto
+delle due pendenze a essere l'esperimento; `MODELS="mokghgnn"` ne esegue uno solo).
+
+Solo la curva baseline (35 run × ~1-2h: **lanciare sul server, sotto nohup**):
+```bash
+nohup conda run --no-capture-output -n gnn python -u scripts/collapse_mognntf.py \
+    --gene-grid 700 500 300 150 100 50 20 --seeds 42 43 44 45 46 \
+    --out-root results/feature_collapse --resume > collapse_mognntf.log 2>&1 &
+```
+`--resume` salta le coppie (geni, seed) già presenti nel summary: si può interrompere
+e riprendere senza perdere le run fatte. A fine corsa rilanciare `collapse_aggregate.py`.
+La baseline usa `scripts/collapse_mognntf.py` (config `config_final.yml`, FS a
+runtime via `data.num_gene`), l'eterogeneo `scripts/kg_hgnn/collapse_mokghgnn.sh`
+(che **ricostruisce FS+template** per ogni livello di geni).
+
+Output in `results/feature_collapse/`:
+- `feature_collapse_table.csv` — macro-F1 media ± s.d. per modello × n-geni;
+- `feature_collapse_robustness.csv` — **il numero che risponde alla domanda**: calo
+  di F1 da 700 a 20 geni e pendenza per dimezzamento, per modello;
+- `feature_collapse_curve.png` — le due curve sovrapposte (asse x log, invertito).
+
+**Cosa guardare**: non l'F1 assoluto (MOGNN-TF parte più in alto) ma **la pendenza**.
+Se MOKG-HGNN cala meno, il KG compensa la scarsità di feature. MOKG-HGNN (5 seed):
+0.7243 a 700 geni → 0.6569 a 20, cioè **−0.067 dividendo i geni per 35**.
+
+Rigenerare solo tabella/curva/robustezza:
 ```bash
 conda run -n gnn python scripts/kg_hgnn/collapse_aggregate.py --results results/feature_collapse
 ```
+⚠️ L'aggregatore **si rifiuta** di sovrascrivere la tabella se i dati aggregati sono
+MENO di quelli già in tabella (tipico quando in locale hai solo una parte delle run
+trasferite dal server): stampa cosa mancherebbe e lascia il file intatto. Con
+`--force` sovrascrive comunque. La baseline supporta `--resume` per riprendere una
+griglia interrotta senza rifare le run già fatte.
 
 ### 3. Explainability (interpretabilità meccanicistica)
 

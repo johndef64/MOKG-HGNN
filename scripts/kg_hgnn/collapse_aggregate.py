@@ -17,6 +17,7 @@ import argparse
 import csv
 import glob
 import json
+import math
 import os
 import re
 import statistics as st
@@ -62,9 +63,82 @@ def _mean_sd(xs):
     return st.mean(xs), (st.stdev(xs) if len(xs) > 1 else 0.0), len(xs)
 
 
+def _shrinkage(table_path, rows):
+    """Human-readable reasons why writing `rows` would LOSE data already on disk:
+    a (model, genes) point disappearing, or its seed count going down."""
+    if not os.path.exists(table_path):
+        return []
+    try:
+        old = list(csv.DictReader(open(table_path)))
+    except Exception:
+        return []
+    new = {(r["model"], int(r["genes"])): int(r["n_seeds"]) for r in rows}
+    lost = []
+    for r in old:
+        try:
+            key, n_old = (r["model"], int(r["genes"])), int(r["n_seeds"])
+        except (KeyError, ValueError):
+            continue
+        if key not in new:
+            lost.append(f"{key[0]} genes={key[1]}: {n_old} seed(s) on disk, absent now")
+        elif new[key] < n_old:
+            lost.append(f"{key[0]} genes={key[1]}: {n_old} seed(s) on disk, only {new[key]} now")
+    return lost
+
+
+def _report_robustness(data, root):
+    """The actual question: which model degrades more slowly as genes shrink?
+
+    Reports, per model, the drop from the richest to the poorest gene count and
+    the slope of macro-F1 vs log2(genes) — a per-halving degradation rate, which
+    is comparable across models even if their absolute F1 differs.
+    """
+    curves, out = {}, []
+    for model, by_g in data.items():
+        pts = [(g, _mean_sd(v["f1"])[0]) for g, v in sorted(by_g.items())
+               if _mean_sd(v["f1"])[0] is not None]
+        if len(pts) >= 2:
+            curves[model] = pts
+
+    if not curves:
+        return
+
+    print(f"\n{'model':10} {'range':>16} {'F1 drop':>9} {'per halving':>12}")
+    for model, pts in curves.items():
+        lo_g, lo_f1 = pts[0]        # fewest genes
+        hi_g, hi_f1 = pts[-1]       # most genes
+        drop = hi_f1 - lo_f1
+        # least-squares slope of F1 vs log2(genes): F1 lost per halving of genes
+        xs = [math.log2(g) for g, _ in pts]
+        ys = [f for _, f in pts]
+        mx, my = st.mean(xs), st.mean(ys)
+        den = sum((x - mx) ** 2 for x in xs)
+        slope = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / den if den else float("nan")
+        out.append({"model": model, "genes_max": hi_g, "genes_min": lo_g,
+                    "f1_at_max": round(hi_f1, 4), "f1_at_min": round(lo_f1, 4),
+                    "f1_drop": round(drop, 4), "f1_per_halving": round(slope, 4)})
+        print(f"{model:10} {hi_g:>6}->{lo_g:<9} {drop:>+9.4f} {slope:>12.4f}")
+
+    path = os.path.join(root, "feature_collapse_robustness.csv")
+    with open(path, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(out[0].keys()))
+        w.writeheader(); w.writerows(out)
+    print(f"[saved] {path}")
+
+    if len(out) == 2:
+        a, b = out                      # smaller drop = more robust
+        winner = min(out, key=lambda r: r["f1_drop"])
+        gap = abs(a["f1_drop"] - b["f1_drop"])
+        print(f"\n=> {winner['model']} degrades LESS: {gap:.4f} macro-F1 of difference "
+              f"over the {a['genes_max']}->{a['genes_min']} gene range.")
+        print("   (a smaller drop / flatter slope = the model leans less on raw gene features)")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default="results/feature_collapse")
+    ap.add_argument("--force", action="store_true",
+                    help="Overwrite the table even if it would lose points/seeds already there.")
     args = ap.parse_args()
 
     data = {"MOKG-HGNN": _collect_mokghgnn(args.results),
@@ -86,7 +160,19 @@ def main():
         print(f"No results found under {args.results}/ — run the experiment first.")
         return
 
+    # Guard against clobbering a complete table with a partial one. The runs live
+    # on the server; a local checkout often holds only some of them, and silently
+    # overwriting a good table with fewer seeds destroys real results.
     table_path = os.path.join(args.results, "feature_collapse_table.csv")
+    lost = _shrinkage(table_path, rows)
+    if lost and not args.force:
+        print(f"\n[REFUSED] {table_path} already reports MORE than what was just aggregated:")
+        for msg in lost:
+            print(f"    {msg}")
+        print("  Left untouched — it likely came from a fuller run (e.g. on the server).")
+        print("  Aggregate where all runs live, or pass --force to overwrite anyway.")
+        return
+
     with open(table_path, "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader(); w.writerows(rows)
@@ -95,6 +181,8 @@ def main():
     for r in rows:
         print(f"{r['model']:10} {r['genes']:>6} {r['n_seeds']:>3}  "
               f"{r['macro_f1_mean']:.4f} ± {r['macro_f1_sd']:.4f}")
+
+    _report_robustness(data, args.results)
 
     # --- curve ---
     fig, ax = plt.subplots(figsize=(8, 5))

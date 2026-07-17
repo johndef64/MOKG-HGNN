@@ -154,7 +154,9 @@ case "$WHICH" in
     # config so the collapse curve matches the final model.
     MOKG_CONFIG="${MOKG_CONFIG:-configs/best_model_config.yml}"
     BACKBONE="${BACKBONE:-hetero_sage}"
-    MODELS="${MODELS:-mokghgnn}"       # add 'mognntf' to also run the baseline curve
+    # BOTH curves by default: the experiment IS the comparison of the two
+    # degradation slopes. MODELS="mokghgnn" runs only ours (e.g. to top up seeds).
+    MODELS="${MODELS:-mokghgnn mognntf}"
     echo "==> feature-collapse | models=$MODELS | backbone=$BACKBONE | config=$MOKG_CONFIG"
     echo "    (this RETRAINS one model per gene level — long; run under nohup)"
     MODELS="$MODELS" BACKBONE="$BACKBONE" MOKG_CONFIG="$MOKG_CONFIG" \
