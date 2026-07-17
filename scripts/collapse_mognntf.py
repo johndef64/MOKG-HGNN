@@ -68,23 +68,41 @@ def main():
     expression_data, cnv_data, mirna_data = loader.load_raw_data()
     runner = ExperimentRunner(expression_data, cnv_data, mirna_data)
 
+    # Fair collapse: as the genes shrink, miRNA and TF shrink by the SAME fraction,
+    # so the baseline is starved of features exactly like MOKG-HGNN (whose miRNA/TF
+    # nodes fall off the graph when their target genes are dropped). Keeping
+    # num_mirna/num_tf fixed would leave MOGNN-TF with ~86% of its features at 20
+    # genes vs our ~10%, making any slope comparison meaningless.
+    top_g = max(args.gene_grid)
+    base_mirna = int(base.get("data", {}).get("num_mirna", 100))
+    base_tf = int(base.get("data", {}).get("num_tf", 200))
+    print(f"[collapse-mognntf] scaling modalities with genes (at {top_g} genes: "
+          f"{base_mirna} miRNA, {base_tf} TF)")
+
     for g in args.gene_grid:
+        frac = g / top_g
+        n_mirna = max(1, round(base_mirna * frac))
+        n_tf = max(1, round(base_tf * frac))
         for s in args.seeds:
             if (int(g), int(s)) in done:
                 print(f"[collapse-mognntf] skip genes={g} seed={s} (already done)")
                 continue
             cfg = copy.deepcopy(base)
             _set(cfg, "data.num_gene", int(g))
+            _set(cfg, "data.num_mirna", int(n_mirna))
+            _set(cfg, "data.num_tf", int(n_tf))
             _set(cfg, "project.split_seed", int(s))
             _set(cfg, "project.seed", int(args.model_seed))
             _set(cfg, "paths.results_dir", args.out_root)
             if args.smoke:
                 _set(cfg, "train.num_epochs", 3)
             name = f"mognntf_g{g}"
-            print(f"\n[collapse-mognntf] === genes={g} | split seed={s} ===")
+            print(f"\n[collapse-mognntf] === genes={g} | miRNA={n_mirna} | TF={n_tf} "
+                  f"| split seed={s} ===")
             summary = runner.run_experiment(cfg, experiment_name=name)
             rows.append({
-                "model": "mognn-tf", "genes": g, "split_seed": s,
+                "model": "mognn-tf", "genes": g, "mirna": n_mirna, "tf": n_tf,
+                "split_seed": s,
                 "test_macro_f1": summary.get("test_f1_macro"),
                 "test_accuracy": summary.get("test_accuracy"),
                 "val_macro_f1": summary.get("val_f1_macro"),
@@ -110,7 +128,7 @@ def _read_summary(out_root):
 def _write_summary(rows, out_root):
     path = os.path.join(out_root, SUMMARY)
     with open(path, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=["model", "genes", "split_seed",
+        w = csv.DictWriter(fh, fieldnames=["model", "genes", "mirna", "tf", "split_seed",
                                            "test_macro_f1", "test_accuracy", "val_macro_f1"])
         w.writeheader(); w.writerows(rows)
 
