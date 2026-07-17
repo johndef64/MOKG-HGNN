@@ -35,10 +35,12 @@ for M in $MODELS; do
   case "$M" in
     mognntf)
       echo ""; echo "########## MOGNN-TF (homogeneous baseline) ##########"
+      # --resume: the grid is ~35 long runs; re-launching after an interruption
+      # must skip what is already in the summary instead of retraining it.
       conda run --no-capture-output -n "$ENV_NAME" python -u scripts/collapse_mognntf.py \
           --config "$MOGNNTF_CONFIG" \
           --gene-grid $GENE_GRID --seeds $SEEDS --model-seed "$MODEL_SEED" \
-          --out-root "$OUT_ROOT"
+          --out-root "$OUT_ROOT" --resume
       ;;
     mokghgnn)
       echo ""; echo "########## MOKG-HGNN (heterogeneous, backbone=$BACKBONE) ##########"
