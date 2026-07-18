@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
+import pandas as pd
 import torch
 import wandb
 import yaml
@@ -268,9 +269,35 @@ class ExperimentRunner():
         exp_train = exp_data.iloc[train_idx]
         
         # ---------------------------- feature selection and normalization
-        # ############################ FEATURE SELECTION BY VARIANCE ############################
+        # Feature-collapse alignment: if the config provides explicit gene/TF panels
+        # (data.gene_list / data.tf_list), MOGNN-TF uses EXACTLY those instead of its
+        # own variance FS, so it shares the identical molecular panel with MOKG-HGNN
+        # at this gene level. miRNA is handled separately via data.mirna_keep below.
+        override_genes = self.config['data'].get('gene_list', None)
+        override_tf = self.config['data'].get('tf_list', None)
         top_genes, top_gene_idx = None, None
-        if self.config['data'].get('feature_selection_method', None) == 'variance':
+        top_tf_list, top_tf_index = None, None
+
+        if override_genes is not None:
+            col_index = {g: i for i, g in enumerate(exp_train.columns)}
+            missing = [g for g in override_genes if g not in col_index]
+            if missing:
+                self.logger.warning(f"[collapse] {len(missing)} genes in gene_list absent from "
+                                    f"expression, e.g. {missing[:5]} — dropped")
+            top_genes = [g for g in override_genes if g in col_index]
+            top_gene_idx = [col_index[g] for g in top_genes]
+            self.logger.info(f"[collapse] using explicit gene panel: {len(top_genes)} genes")
+            if override_tf is not None and int(self.config['data']['num_tf']) > 0:
+                # map the explicit TF list to matrix indices via the TF vocab
+                tf_vocab = pd.read_csv(str(paths.tf_nodes_path))
+                tf_vocab["matrix_index"] = tf_vocab["matrix_index"].astype(int)
+                vocab_map = tf_vocab.set_index(tf_vocab["TF"].astype(str).str.strip())["matrix_index"]
+                keep_tf = [t for t in override_tf if t in vocab_map.index]
+                top_tf_list = keep_tf
+                top_tf_index = vocab_map.loc[keep_tf].to_numpy(dtype=int)
+                self.logger.info(f"[collapse] using explicit TF panel: {len(top_tf_list)} TFs")
+
+        if top_genes is None and self.config['data'].get('feature_selection_method', None) == 'variance':
             top_genes, top_gene_idx = variance_FS(exp_train, num_gene=int(self.config['data']['num_gene']))
             # check if top_gene_idx and top_genes are consistent with exp_train columns
             self.logger.info(f"Expression train columns: {exp_train.columns.tolist()[:10]} ...")
@@ -287,7 +314,7 @@ class ExperimentRunner():
                     expression_data_train=exp_train
                 )
 
-        if self.config['data'].get('feature_selection_method', None) == 'GSP':
+        if top_genes is None and self.config['data'].get('feature_selection_method', None) == 'GSP':
             # se è GSP, allora faccio prima la feature selection by variance con una soglia più alta (es. 4) per ridurre il numero di feature e poi applico GSP
             top_genes, top_gene_idx = new_FDS(exp_train, num_gene=int(self.config['data']['num_gene']), biogrid_adj=str(paths.adj_path))
             # check if top_gene_idx and top_genes are consistent with exp_train columns
@@ -304,7 +331,7 @@ class ExperimentRunner():
                     n_top_tf=int(self.config['data']['num_tf']),
                     expression_data_train=exp_train
                 )
-        if self.config['data'].get('feature_selection_method', None) == "community":
+        if top_genes is None and self.config['data'].get('feature_selection_method', None) == "community":
             top_genes, top_gene_idx = community_detection_feature_selection(exp_train, biogrid_adj=str(paths.adj_path), num_gene=int(self.config['data']['num_gene']))
             self.logger.info(f"Top genes selected by community detection: {top_genes[:10]} ...")
              # feature selection for TF
@@ -344,8 +371,7 @@ class ExperimentRunner():
 
             scaler_mirna.fit(mirna_data.iloc[train_idx]) # fit solo sui dati di train
             mirna_data_scaled = scaler_mirna.transform(mirna_data[mirna_data.columns]) # applica la trasformazione a tutto il dataset
-        
-        import pandas as pd
+
         exp_data_scaled = pd.DataFrame(
             scaler_exp.transform(exp_data),
             index=exp_data.index,
@@ -441,7 +467,10 @@ class ExperimentRunner():
             tf_mirna= tf_mirna,
             number_gene=int(self.config['data']['num_gene']),
             num_mirna=int(self.config['data']['num_mirna']),
-            num_tf=int(self.config['data']['num_tf'])
+            num_tf=int(self.config['data']['num_tf']),
+            # feature-collapse: restrict miRNA to the exact survived panel (list of
+            # names) so MOGNN-TF uses the same miRNAs as MOKG-HGNN at this gene level.
+            mirna_keep=self.config['data'].get('mirna_keep', None)
             )
         # ===========================================
         # test se serve il grafo.

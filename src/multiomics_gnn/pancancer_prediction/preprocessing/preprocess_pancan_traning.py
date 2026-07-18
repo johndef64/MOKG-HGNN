@@ -473,8 +473,9 @@ def down_unified_data_with_TF(
                                             tf_mirna=False,
                                             tf_tf=False,
                                             num_mirna=100,
-                                            num_tf=100
-                                            ):  
+                                            num_tf=100,
+                                            mirna_keep=None
+                                            ):
     # 0) Normalizza flags (config keys assenti -> None)
     # ----------------------------
     ## mode 0: mRNA
@@ -549,8 +550,26 @@ def down_unified_data_with_TF(
         print("cnv_data.shape:", cnv_data.shape)
     if omic_mode in (1,2,4):
         mirna_data.index = range(mirna_data.shape[0])
+        # Feature-collapse support: restrict the miRNA panel to an explicit list of
+        # names (mirna_keep), so MOGNN-TF uses EXACTLY the miRNAs that survive in the
+        # MOKG-HGNN graph at this gene level (fair collapse). The order of the kept
+        # columns must match the miRNA-gene adjacency truncation below, so we derive
+        # both from the same ordered `mirna_keep`. When mirna_keep is None the panel
+        # is left as-is (backward compatible with the standard experiments).
+        mirna_keep_cols = None   # positional indices into the ORIGINAL miRNA order
+        if mirna_keep is not None:
+            orig_cols = list(mirna_data.columns)
+            col_pos = {c: i for i, c in enumerate(orig_cols)}
+            keep = [m for m in mirna_keep if m in col_pos]
+            missing = [m for m in mirna_keep if m not in col_pos]
+            if missing:
+                print(f"[collapse] WARNING: {len(missing)} kept miRNA absent from data, e.g. {missing[:5]}")
+            mirna_keep_cols = [col_pos[m] for m in keep]   # same order as `keep`
+            mirna_data = mirna_data[keep]
+            num_mirna = len(keep)
+            print(f"[collapse] miRNA panel restricted to survived list: {num_mirna}")
         print("mirna_data.shape:", mirna_data.shape)
-    
+
     # Validate sample numbers
     if expression_data.shape[0] == mirna_data.shape[0] and (omic_mode in (1,2,4)):
         print("Exp and miRNA sample numbers match.")        
@@ -688,6 +707,11 @@ def down_unified_data_with_TF(
         mirna_gene_adj = _minmax_sparse(mirna_gene_adj)
         mirna_gene_adj = mirna_gene_adj.todense()
         mirna_gene_adj_selected = mirna_gene_adj[high_variance_gene_index,:]
+        # Match the miRNA-panel restriction applied to the data above: select the
+        # SAME miRNA columns, by their positional index in the original order, so the
+        # supra-adjacency block lines up with the (name-restricted) miRNA features.
+        if mirna_keep_cols is not None:
+            mirna_gene_adj_selected = mirna_gene_adj_selected[:, mirna_keep_cols]
         print("mirna_gene_adj_selected shape:", mirna_gene_adj_selected.shape)
         print("mirna_gene_adj_selected max value:", np.max(mirna_gene_adj_selected))
         print("mirna_gene_adj_selected min value:", np.min(mirna_gene_adj_selected))
