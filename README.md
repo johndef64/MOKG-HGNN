@@ -38,9 +38,11 @@ docs/                     # proposta, piani, TODO tesi, spiegazioni
 ## Requisiti
 
 - Conda, GPU CUDA (testato su CUDA 12.8 / torch 2.7 / PyG 2.7).
-- I dati grezzi/preprocessati: `data/prior_knowledge/PKT/` (il KG, fornito) e
-  `data/training/` (omiche + split). Se `data/training/` manca, va rigenerato con
-  `prepare_data.sh` (richiede i dati grezzi TCGA / connettività).
+- I dati grezzi/preprocessati: `data/prior_knowledge/PKT/` (il KG, scaricato da
+  Hugging Face) e `data/training/` (omiche + split). Se mancano, `prepare_data.sh`
+  li rigenera end-to-end: scarica il **PKT** (`scripts/download_pkt.py`, nodes.zip +
+  edges.zip, ~290MB) e le **omiche TCGA** (`scripts/download_pancan.py`), poi
+  preprocessa e crea gli split. Tutto in `data/` (gitignored).
 
 ---
 

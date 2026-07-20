@@ -48,6 +48,21 @@ from multiomics_kg_hgnn.models.hetero_gnn import HeteroMultiScaleGNN
 SCALES = ("pathway", "GO_term")
 NODE_CSV = {"pathway": ("node_pathway.csv", "reactome_id"),
             "GO_term": ("node_GO_term.csv", "go_id")}
+# id -> human-readable name tables, extracted once from the KG (PKT/nodes.zip) so
+# the CSVs carry biological names, not bare R-HSA/GO ids. See pkt-name-tables note.
+PKT_NAMES = {"pathway": "data/prior_knowledge/PKT/pathway_names.csv",
+             "GO_term": "data/prior_knowledge/PKT/go_names.csv"}
+
+
+def _load_name_map(scale):
+    """{id: label} for a scale, or {} if the name table is missing."""
+    p = PKT_NAMES.get(scale)
+    if not p or not os.path.exists(p):
+        print(f"[explain] WARN: {p} missing -> '{scale}' names left blank. "
+              f"Regenerate with: python scripts/kg_hgnn/extract_pkt_names.py")
+        return {}
+    df = pd.read_csv(p)
+    return dict(zip(df["id"].astype(str), df["label"].astype(str)))
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +250,7 @@ def explain_run(run_dir, per_class=15, only_correct=True, epochs=50, topk=15,
     out_dir = out_dir or os.path.join("results", "explanations", os.path.basename(run_dir.rstrip("/\\")))
     os.makedirs(out_dir, exist_ok=True)
     for s in accum:
+        name_map = _load_name_map(s)   # id -> biological name (empty if table absent)
         # per-class mean importance, and the across-class average (baseline)
         per_cls = {cls: accum[s][cls] / max(counts[cls], 1) for cls in accum[s]}
         overall = np.mean(np.stack(list(per_cls.values())), axis=0)
@@ -246,9 +262,11 @@ def explain_run(run_dir, per_class=15, only_correct=True, epochs=50, topk=15,
             # the generically-important ones shared by every class.
             top = np.argsort(distinctive)[::-1][:topk]
             for rank, idx in enumerate(top, 1):
+                node_id = names[s][idx] if names[s] else str(idx)
                 rows.append({
                     "subtype": _sub(cls), "rank": rank, "node_idx": int(idx),
-                    "id": names[s][idx] if names[s] else str(idx),
+                    "id": node_id,
+                    "name": name_map.get(node_id, ""),   # biological name (from PKT)
                     "distinctive_score": round(float(distinctive[idx]), 5),
                     "importance": round(float(imp[idx]), 5),
                     "overall_importance": round(float(overall[idx]), 5),
