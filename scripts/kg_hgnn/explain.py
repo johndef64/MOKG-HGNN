@@ -93,7 +93,7 @@ def load_model_and_data(run_dir, template_path, hetero_dir):
     cfg = json.load(open(os.path.join(run_dir, "config.json")))
     d, m = cfg["data"], cfg["model"]
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    train_ds, _, test_ds, ncls, _classes = make_datasets(
+    train_ds, _, test_ds, ncls, classes = make_datasets(
         split_dir=d["split_dir"], template_path=template_path, hetero_dir=hetero_dir,
         use_cnv=d.get("use_cnv", True), use_mirna=d.get("use_mirna", True),
         scaler=d.get("scaler", "standard"))
@@ -104,7 +104,10 @@ def load_model_and_data(run_dir, template_path, hetero_dir):
         dropout=float(m["dropout"]), readout_types=tuple(m["readout_types"])).to(device)
     model.load_state_dict(torch.load(os.path.join(run_dir, "model_best.pt"), map_location=device))
     model.eval()
-    return model, train_ds, test_ds, ncls, device
+    # `classes` maps each encoded index 0..C-1 back to the REAL iCluster label
+    # (C24/LAML absent -> a gap): use it so the CSVs carry the true subtype, not a
+    # renumbered C{idx+1}. See docs/explainability_report.md label note.
+    return model, train_ds, test_ds, ncls, device, classes
 
 
 class _Wrap(nn.Module):
@@ -187,7 +190,13 @@ def explain_run(run_dir, per_class=15, only_correct=True, epochs=50, topk=15,
         print(f"[explain] reusing existing template -> {template_path}")
     else:
         template_path = rebuild_template(run_dir, cfg, work_dir)
-    model, train_ds, test_ds, ncls, device = load_model_and_data(run_dir, template_path, work_dir)
+    model, train_ds, test_ds, ncls, device, classes = load_model_and_data(run_dir, template_path, work_dir)
+    # real subtype name for an encoded index (fallback to C{idx+1} if unavailable)
+    def _sub(cls):
+        try:
+            return f"C{int(classes[cls])}"
+        except Exception:
+            return f"C{cls + 1}"
     template = train_ds.template
 
     # index -> biological name, per scale
@@ -238,7 +247,7 @@ def explain_run(run_dir, per_class=15, only_correct=True, epochs=50, topk=15,
             top = np.argsort(distinctive)[::-1][:topk]
             for rank, idx in enumerate(top, 1):
                 rows.append({
-                    "subtype": f"C{cls + 1}", "rank": rank, "node_idx": int(idx),
+                    "subtype": _sub(cls), "rank": rank, "node_idx": int(idx),
                     "id": names[s][idx] if names[s] else str(idx),
                     "distinctive_score": round(float(distinctive[idx]), 5),
                     "importance": round(float(imp[idx]), 5),
@@ -250,12 +259,15 @@ def explain_run(run_dir, per_class=15, only_correct=True, epochs=50, topk=15,
         df.to_csv(fp, index=False)
         print(f"[saved] {fp}")
 
-    _plot_heatmap(accum, names, counts, template, out_dir)
+    _plot_heatmap(accum, names, counts, template, out_dir, sub=_sub)
     print(f"\n[explain] done -> {out_dir}")
     return out_dir
 
 
-def _plot_heatmap(accum, names, counts, template, out_dir, top_per_scale=10):
+def _plot_heatmap(accum, names, counts, template, out_dir, top_per_scale=10, sub=None):
+    # `sub`: encoded-index -> real subtype label. Fallback to C{c+1} if not given.
+    if sub is None:
+        sub = lambda c: f"C{c + 1}"
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -279,7 +291,7 @@ def _plot_heatmap(accum, names, counts, template, out_dir, top_per_scale=10):
         ax.set_xticklabels([names[s][i] if names[s] else str(i) for i in top_ids],
                            rotation=90, fontsize=7)
         ax.set_yticks(range(len(subs)))
-        ax.set_yticklabels([f"C{c + 1}" for c in subs], fontsize=8)
+        ax.set_yticklabels([sub(c) for c in subs], fontsize=8)
         ax.set_title(f"Distinctive {s} importance per subtype (vs mean)")
         fig.colorbar(im, ax=ax, fraction=0.02)
         fig.tight_layout()
