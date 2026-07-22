@@ -79,6 +79,7 @@ tcga-pancan/
 analysis/*
 
 # Benchmark outputs
+benchmark*
 benchmark/AMOGEL/output/
 benchmark/AMOGEL/mlruns/
 benchmark/AMOGEL/.venv/
@@ -89,6 +90,9 @@ benchmark/MPK-GNN/data/processed_data/
 
 # results
 results/*
+
+# paper
+paper/*
 
 # escusion
 !src\multiomics_kg_hgnn\models
