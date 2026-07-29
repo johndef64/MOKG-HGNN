@@ -69,7 +69,7 @@ figures/
 notes/
 datasets/data/
 datasets/refseq2gene_mappings.tsv
-benchmark/*
+
 
 # Local-only directories (thesis sources, scratch tests)
 docs/
@@ -79,13 +79,13 @@ tcga-pancan/
 analysis/*
 
 # Benchmark outputs
-benchmark*
-benchmark/AMOGEL/output/
-benchmark/AMOGEL/mlruns/
-benchmark/AMOGEL/.venv/
-benchmark/MOGONET/BRCA/
-benchmark/MOGONET/ROSMAP/
-benchmark/MPK-GNN/data/processed_data/
+benchmark_*
+# benchmark_/AMOGEL/output/
+# benchmark_/AMOGEL/mlruns/
+# benchmark_/AMOGEL/.venv/
+# benchmark_/MOGONET/BRCA/
+# benchmark_/MOGONET/ROSMAP/
+# benchmark_/MPK-GNN/data/processed_data/
 
 
 # results
