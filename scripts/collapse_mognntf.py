@@ -26,7 +26,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 SRC = REPO / "src"
-for p in (str(SRC), str(REPO)):
+BENCH = REPO / "benchmark" / "MOGNN-TF"   # MOGNN-TF now lives here as a benchmark
+for p in (str(SRC), str(BENCH), str(REPO)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
@@ -60,7 +61,7 @@ def _set(d, dotted, value):
 
 def main():
     ap = argparse.ArgumentParser(description="MOGNN-TF feature-collapse study.")
-    ap.add_argument("--config", default="configs/config_final.yml",
+    ap.add_argument("--config", default="benchmark/MOGNN-TF/configs/config_final.yml",
                     help="Best MOGNN-TF config (default: the paper final config).")
     ap.add_argument("--gene-grid", type=int, nargs="+",
                     default=[700, 500, 300, 150, 100, 50, 20])

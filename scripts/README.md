@@ -1,78 +1,50 @@
-# MOGNN-TF — pipeline scripts
+# `scripts/` — CLI entrypoints and data pipeline
 
-Ordine di esecuzione end-to-end. Tutti i comandi assumono di essere lanciati
-dalla **root** del repository.
+Guide to the scripts directory. All commands assume the **repository root** as the
+working directory. For the end-to-end MOKG-HGNN pipeline see the root
+[`README.md`](../README.md); MOGNN-TF (benchmark) entrypoints live in
+[`benchmark/MOGNN-TF/scripts/`](../benchmark/MOGNN-TF/scripts).
 
-## 1. Download dati TCGA Pan-Cancer
+## MOKG-HGNN entrypoints — `kg_hgnn/`
 
 ```bash
+conda run -n gnn python scripts/kg_hgnn/train.py    --config configs/config_kg_hgnn.yml
+conda run -n gnn python scripts/kg_hgnn/evaluate.py --config configs/config_kg_hgnn.yml --checkpoint results/<...>/model_best.pt
+conda run -n gnn python scripts/kg_hgnn/run_optuna.py --config configs/config_kg_hgnn.yml
+conda run -n gnn python scripts/kg_hgnn/explain.py  --run results/<...>/<ts> --per-class 15
+```
+Also here: `eval_per_class.py`, `plot_training.py`, `which_graph.py`,
+`collapse_mokghgnn.sh`, `survived_features.py`, `extract_pkt_names.py`,
+`build_hetero_graph.py` (under `preprocessing/priors/`).
+
+## Shared data pipeline
+
+Downloads and preprocessing that produce `data/training/` (used to build the
+graph). Normally run through `bash prepare_data.sh`; the individual steps:
+
+```bash
+# 1. download TCGA Pan-Cancer omics (Xena) and the PKT knowledge graph
 python scripts/download_pancan.py --out data/raw/tcga_pancan
-```
-Scarica da Xena: gene expression EB++, miRNA EB++, CNV GISTIC2,
-iCluster molecular subtype.
+python scripts/download_pkt.py
 
-## 2. Conversione raw → parquet (transpose, dtype)
+# 2-3. omics: raw -> parquet, per-omic cleaning, common-sample filtering
+python scripts/preprocessing/omics/prepare_pancan.py --src data/raw/tcga_pancan --out data/raw/tcga_pancan/processed
+python scripts/preprocessing/omics/process_data_pancan.py --normalization
 
-```bash
-python scripts/preprocessing/omics/prepare_pancan.py \
-    --src data/raw/tcga_pancan \
-    --out data/raw/tcga_pancan/processed
-```
-
-## 3. Pulizia per-omica, filtro per sample comuni
-
-```bash
-python scripts/preprocessing/omics/process_data_pancan.py \
-    --normalization
-```
-Output: `data/omics/{clinical,fpkm,cnv,mirna}.zip`.
-
-## 4. Costruzione *prior knowledge* (GGI, miRNA-target, TF-gene)
-
-```bash
-# 4a. Download BioGRID + miRDB + TFLink
-python scripts/preprocessing/priors/get_raw_data.py
-
-# 4b. Conversione RefSeq -> gene symbol (per miRDB)
-python scripts/preprocessing/priors/refseq2gene.py
-
-# 4c. Build adjacency matrices: GGI, miRNA-gene, miRNA-miRNA, TF-gene
-python scripts/preprocessing/priors/load_interaction.py
-```
-Output: `data/prior_knowledge/{GGI,miRNA,TF}/*.npz` + node lists.
-
-## 5. Wrapper finale: top-100 miRNA per varianza, allineamenti, output training
-
-```bash
+# 4. final wrapper: alignments, top-variance miRNAs, training-set output
 python scripts/preprocessing/omics/data_wrapper.py
 ```
-Output: `data/training/{expression_data_pancan.tsv, cnv_data_pancan.tsv,
-mirna_data_top_100.tsv, molecular_subtype.csv, adj_matrix_biogrid.npz,
-standardized_mirna_mrna_edge_filtered_at_eight_with_top_100_mirna.npz,
-tf_gene_adj_global.npz, tf_nodes_all_in_vocab.csv}`.
 
-## 6. Training MOGNN-TF (configurazione finale tesi: GCN, 700 geni, 200 TF, γ=0.98)
+## Feature collapse bridge
 
-```bash
-python scripts/train.py --config configs/config.yml
-```
+`collapse_mognntf.py` runs the MOGNN-TF benchmark on the same surviving feature
+panel as MOKG-HGNN for a fair robustness comparison (see the root README,
+"Feature collapse"). It imports the vendored MOGNN-TF package from
+`benchmark/MOGNN-TF/`.
 
-## 7. Ablation studies (riproduzione tabelle tesi)
-
-```bash
-# Tab. confronto baseline, Tab. ablation geni, sampler, TF, split ratio
-python scripts/run_sweep.py --sweep configs/sweep_config.yml
-```
-
-## 8. Hyperparameter tuning Optuna
-
-```bash
-python scripts/run_optuna.py
-```
-
-## 9. Aggregazione risultati + test statistici (Friedman, Wilcoxon-Holm)
+## Results aggregation and statistics
 
 ```bash
 python scripts/collect_results.py --results-root results/pancan
-python scripts/analysis/analize_metrics.py
+python scripts/analysis/analize_metrics.py   # Friedman + Wilcoxon-Holm
 ```

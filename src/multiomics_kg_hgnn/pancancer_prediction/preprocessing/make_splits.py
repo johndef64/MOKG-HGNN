@@ -1,9 +1,10 @@
 """Generate the stratified train/val/test split indices for one or more seeds.
 
-Standalone step (in MOGNN-TF these were produced inside the experiment runner).
-The hetero pipeline needs the splits BEFORE feature selection, so this exposes
-them as an explicit preprocessing step. Reuses MOGNN-TF's split generator so the
-indices are identical to the baseline (same stratification, same file names).
+Standalone step: the hetero pipeline needs the splits BEFORE feature selection,
+so this exposes them as an explicit preprocessing step. The split generator is
+vendored in ``multiomics_kg_hgnn.utils.split`` and is byte-for-byte equivalent
+to the baseline's, so the indices are identical (same stratification, same file
+names).
 
     conda run -n gnn python -m multiomics_kg_hgnn.pancancer_prediction.preprocessing.make_splits \
         --seeds 42 43 44 45 46 47 48 49 50 51 52
@@ -11,7 +12,7 @@ indices are identical to the baseline (same stratification, same file names).
 
 import os
 
-from multiomics_gnn.pancancer_prediction.utils.split import generate_stratified_shuffle_indices
+from multiomics_kg_hgnn.utils.split import generate_stratified_shuffle_indices
 
 LABELS = "data/training/molecular_subtype.csv"
 SPLITS_ROOT = "data/training/splits"

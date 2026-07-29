@@ -19,7 +19,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 import torch
-from multiomics_gnn.config.loader import load_config
+from multiomics_kg_hgnn.utils.config import load_config
 from multiomics_kg_hgnn.pancancer_prediction.preprocessing.make_datasets import make_datasets, build_loaders
 from multiomics_kg_hgnn.pancancer_prediction.training.trainer import HeteroTrainer
 from multiomics_kg_hgnn.models.hetero_gnn import HeteroMultiScaleGNN

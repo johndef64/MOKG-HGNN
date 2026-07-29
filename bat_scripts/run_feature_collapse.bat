@@ -18,7 +18,7 @@ if "%GENE_GRID%"=="" set "GENE_GRID=700 500 300 150 100 50 20"
 if "%SEEDS%"=="" set "SEEDS=42 43 44 45 46"
 if "%MODEL_SEED%"=="" set "MODEL_SEED=2025"
 if "%OUT_ROOT%"=="" set "OUT_ROOT=results\feature_collapse"
-if "%MOGNNTF_CONFIG%"=="" set "MOGNNTF_CONFIG=configs\config_final.yml"
+if "%MOGNNTF_CONFIG%"=="" set "MOGNNTF_CONFIG=benchmark\MOGNN-TF\configs\config_final.yml"
 if "%MOKG_CONFIG%"=="" set "MOKG_CONFIG=configs\config_kg_hgnn.yml"
 if "%BACKBONE%"=="" set "BACKBONE=hgt"
 

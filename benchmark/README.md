@@ -1,13 +1,42 @@
 # Benchmark baselines
 
-This directory vendors the third-party implementations used to produce the
-baseline columns of the model comparison reported in the manuscript and in
-Supplementary Table S1.
+This directory vendors the baseline implementations used to produce the
+comparison columns of the model comparison reported in the manuscript and in
+Supplementary Table S1: two third-party methods (Li24, MoGCN) plus **MOGNN-TF**,
+our own single-scale predecessor, kept here so the whole comparison can be re-run
+from a single checkout.
 
-Both are redistributed under their own licenses so that the comparison can be
-re-run from a single checkout. **Copyright remains with the original authors.**
+The third-party methods are redistributed under their own licenses; **copyright
+remains with the original authors.**
 
 ## Contents
+
+### `MOGNN-TF/` — "MOGNN-TF" (our reference baseline)
+
+Our single-scale molecular predecessor of MOKG-HGNN, vendored **unmodified** so
+its results are reproducible from this repository. Its `multiomics_gnn` package is
+installed together with the framework by `pip install -e .`; the MOKG-HGNN
+framework does not depend on it.
+
+| | |
+| --- | --- |
+| Archive | Zenodo — [10.5281/zenodo.21475911](https://doi.org/10.5281/zenodo.21475911) |
+| Provides | the `MOGNN-TF (GCN)` and `MOGNN-TF (GAT)` columns |
+| Layout | `multiomics_gnn/` (package), `scripts/` (entrypoints), `configs/` (paper + sweeps), `Makefile` |
+
+```bash
+# from the repo root, after `bash setup_env.sh`
+conda run -n gnn python benchmark/MOGNN-TF/scripts/train.py \
+    --config benchmark/MOGNN-TF/configs/config_final.yml
+
+# ablation / multi-seed sweeps
+conda run -n gnn python benchmark/MOGNN-TF/scripts/run_sweep.py \
+    --config benchmark/MOGNN-TF/configs/sweep_baseline.yml
+```
+
+MOGNN-TF is also driven automatically by the MOKG-HGNN feature-collapse experiment
+(`scripts/collapse_mognntf.py`), which forces it onto the same surviving feature
+panel as the heterogeneous model for a fair comparison.
 
 ### `Multimodal-GNN-for-Cancer-Subtype-Clasification/` — "Li24"
 

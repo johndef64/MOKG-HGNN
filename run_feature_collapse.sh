@@ -17,7 +17,7 @@ SEEDS="${SEEDS:-42 43 44 45 46}"                     # 5 seeds by default
 MODEL_SEED="${MODEL_SEED:-2025}"
 OUT_ROOT="${OUT_ROOT:-results/feature_collapse}"
 # configs: "best available" for each model
-MOGNNTF_CONFIG="${MOGNNTF_CONFIG:-configs/config_final.yml}"
+MOGNNTF_CONFIG="${MOGNNTF_CONFIG:-benchmark/MOGNN-TF/configs/config_final.yml}"
 MOKG_CONFIG="${MOKG_CONFIG:-configs/config_kg_hgnn.yml}"
 BACKBONE="${BACKBONE:-hgt}"
 

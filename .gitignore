@@ -77,6 +77,8 @@ docs*/
 Tests/
 tcga-pancan/
 analysis/*
+archive/*
+paper*
 
 # Benchmark outputs
 benchmark_*
@@ -94,7 +96,15 @@ results/*
 # paper
 paper/*
 
+# other
+CLUADE.md
+README_ita.md
+PULIZIA*
+
+
 # escusion
 !src\multiomics_kg_hgnn\models
 !results\pancan\tf_interpretation\tf_global_ranking.csv
 !results\pancan\tf_interpretation\tf_fscore_per_subtype.csv
+
+

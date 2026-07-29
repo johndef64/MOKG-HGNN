@@ -97,7 +97,7 @@ def run_experiment(cfg, logger=None, save_artifacts=True):
     scheduler = None
     sched_name = cfg.get("scheduler", {}).get("name")
     if sched_name and str(sched_name).lower() not in {"none", "null", ""}:
-        from multiomics_gnn.base_ml.scheduler import OmicScheduler
+        from multiomics_kg_hgnn.utils.scheduler import OmicScheduler
         scheduler = OmicScheduler(optimizer, str(sched_name),
                                   total_epochs=int(train_cfg.get("num_epochs", 100)))
         logger(f"scheduler: {sched_name}")

@@ -3,9 +3,9 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mognn-tf"
+name = "mokg-hgnn"
 version = "0.1.0"
-description = "MOGNN-TF: Multi-Omics Graph Neural Network with Transcription Factors for pan-cancer molecular subtype prediction"
+description = "MOKG-HGNN: Multi-scale heterogeneous GNN over a biomedical knowledge graph for pan-cancer molecular subtype prediction"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
@@ -44,8 +44,8 @@ dependencies = [
     "requests",
 ]
 
+# The framework lives in src/ (multiomics_kg_hgnn); the MOGNN-TF baseline is
+# vendored under benchmark/MOGNN-TF (multiomics_gnn) so it stays importable and
+# reproducible as a benchmark. Both are discovered by an editable install.
 [tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-dir]
-"" = "src"
+where = ["src", "benchmark/MOGNN-TF"]

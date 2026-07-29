@@ -24,7 +24,7 @@ if str(SRC) not in sys.path:
 import optuna
 import torch
 
-from multiomics_gnn.config.loader import load_config  # reuse the simple YAML loader
+from multiomics_kg_hgnn.utils.config import load_config
 from multiomics_kg_hgnn.pancancer_prediction.experiments.runner import run_experiment
 
 

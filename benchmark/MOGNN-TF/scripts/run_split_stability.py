@@ -45,8 +45,8 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parent
-SRC = REPO_ROOT / "src"
+REPO_ROOT = HERE.parent            # benchmark/MOGNN-TF: holds the multiomics_gnn package + configs
+SRC = REPO_ROOT
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 

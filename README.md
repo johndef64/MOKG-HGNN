@@ -1,298 +1,211 @@
-# MOKG-HGNN — Multi-scale Heterogeneous GNN per sottotipi tumorali pan-cancer
+# MOKG-HGNN — Multi-scale Heterogeneous GNN for pan-cancer molecular subtypes
 
-Evoluzione di **MOGNN-TF**: da un grafo molecolare *a singola scala*
-(gene / miRNA / TF) a un **grafo eterogeneo gerarchico** che collega lo strato
-molecolare a scale biologiche superiori — **pathway → GO → malattia** — integrando
-un Knowledge Graph biomedico (PKT / PheKnowLator). Il task resta la classificazione
-del sottotipo tumorale (27 classi iCluster), per confrontabilità diretta col
-baseline; il *reasoning* però attraversa più livelli di organizzazione biologica.
+**MOKG-HGNN** classifies pan-cancer molecular subtypes (27 iCluster classes) with
+a **multi-scale heterogeneous graph** that links the molecular layer
+(gene / miRNA / TF) to higher biological scales — **pathway → GO → disease** — by
+integrating a biomedical Knowledge Graph (PKT / PheKnowLator, OWL-NETS). The task
+is graph classification (one graph per patient); the message passing reasons
+across several levels of biological organization rather than over molecular
+features alone.
 
-Vedi `docs/proposta_B_tesi_multiscale_heterognn.md` per il posizionamento e
-`docs/modelli_e_tuning_spiegazione.md` per la spiegazione dei modelli.
+Molecular baselines (MOGNN-TF, MoGCN, Li & Nabavi) are provided under
+[`benchmark/`](benchmark/) for a like-for-like comparison on the same split.
 
 ---
 
-## Cosa contiene
+## What it contains
 
-- **Grafo eterogeneo** `HeteroData` con 6 tipi di nodo (`gene`, `miRNA`, `TF`,
-  `pathway`, `GO_term`, `disease`) e relazioni tipizzate (gene↔gene, miRNA→gene,
-  TF→gene, gene→pathway, gene→GO, GO→GO, gene→disease, + metapath opzionali).
-- **Tre backbone eterogenei** selezionabili (spettro di complessità):
-  `rgcn` (un peso per relazione) · `hetero_sage` (SAGE per relazione) ·
-  `hgt` (attention per meta-relazione).
-- **Feature selection unificata** per varianza (gene/TF/miRNA), train-only.
-- **Tuning** con Optuna (uno studio per backbone) e **valutazione multi-seed**.
+- **Heterogeneous graph** (`HeteroData`) with 6 node types (`gene`, `miRNA`,
+  `TF`, `pathway`, `GO_term`, `disease`) and typed relations (gene↔gene,
+  miRNA→gene, TF→gene, gene→pathway, gene→GO, GO→GO, gene→disease, plus optional
+  metapaths).
+- **Three heterogeneous backbones** (a complexity spectrum): `rgcn` (one weight
+  per relation) · `hetero_sage` (SAGE per relation) · `hgt` (attention per
+  meta-relation).
+- **Unified variance-based feature selection** (gene/TF/miRNA), train-only.
+- **Optuna tuning** (one study per backbone) and **multi-seed evaluation**.
 
-Struttura:
+Structure:
 ```
-src/multiomics_kg_hgnn/   # package del modello nuovo (separato da multiomics_gnn = MOGNN-TF)
-scripts/kg_hgnn/          # entrypoint: train.py, evaluate.py, run_optuna.py, eval_per_class.py, plot_training.py
-scripts/preprocessing/    # preprocessing omiche + priors + build_hetero_graph.py
-configs/config_kg_hgnn.yml
-*.sh                      # launcher senza make/sudo (vedi sotto)
-docs/                     # proposta, piani, TODO tesi, spiegazioni
+src/multiomics_kg_hgnn/   # the model package (framework)
+scripts/kg_hgnn/          # entrypoints: train.py, evaluate.py, run_optuna.py, eval_per_class.py, explain.py, ...
+scripts/preprocessing/    # omics + priors preprocessing + build_hetero_graph.py
+configs/config_kg_hgnn*.yml
+benchmark/                # molecular baselines (MOGNN-TF, MoGCN, Li & Nabavi)
+*.sh                      # launchers (no make / no sudo — see below)
 ```
 
 ---
 
-## Requisiti
+## Requirements
 
-- Conda, GPU CUDA (testato su CUDA 12.8 / torch 2.7 / PyG 2.7).
-- I dati grezzi/preprocessati: `data/prior_knowledge/PKT/` (il KG, scaricato da
-  Hugging Face) e `data/training/` (omiche + split). Se mancano, `prepare_data.sh`
-  li rigenera end-to-end: scarica il **PKT** (`scripts/download_pkt.py`, nodes.zip +
-  edges.zip, ~290MB) e le **omiche TCGA** (`scripts/download_pancan.py`), poi
-  preprocessa e crea gli split. Tutto in `data/` (gitignored).
+- Conda, CUDA GPU (tested on CUDA 12.8 / torch 2.7 / PyG 2.7).
+- Raw/preprocessed data live in `data/` (gitignored): `data/prior_knowledge/PKT/`
+  (the KG, fetched from Hugging Face) and `data/training/` (omics + splits). If
+  missing, `prepare_data.sh` regenerates everything end-to-end: it downloads the
+  **PKT** (`scripts/download_pkt.py`, nodes.zip + edges.zip, ~290 MB) and the
+  **TCGA omics** (`scripts/download_pancan.py`), then preprocesses and builds the
+  splits.
 
 ---
 
-## Esecuzione (senza `make`, senza `sudo`)
+## Running the pipeline (no `make`, no `sudo`)
 
-Tutti i passi sono lanciabili con `conda run`, quindi non serve `make` né `sudo`
-(conda installa nella home). Dalla root della repo:
+Every step runs through `conda run`, so neither `make` nor `sudo` is needed. From
+the repo root:
 
 ```bash
-bash setup_env.sh        # 1. crea l'env conda `gnn` + installa la repo
-bash prepare_data.sh     # 2. preprocessing dati (SOLO se data/training/ non c'è)
-bash make_graph.sh       # 3. feature selection + costruzione del grafo (template)
-bash train_and_eval.sh   # 4. training + valutazione
+bash setup_env.sh        # 1. create the `gnn` conda env + install the repo (pip install -e .)
+bash prepare_data.sh     # 2. data preprocessing (ONLY if data/training/ is absent)
+bash make_graph.sh       # 3. feature selection + graph (template) construction
+bash train_and_eval.sh   # 4. training + evaluation
 ```
 
-Ogni run scrive `results/<experiment>/<timestamp>/` con: `model_best.pt`
+Each run writes `results/<experiment>/<timestamp>/` with `model_best.pt`
 (checkpoint), `run.log`, `history.csv`, `metrics.json`, `per_class_metrics.csv`
-(precision/recall/F1 per classe) e `confusion_matrix.csv`.
+(per-class precision/recall/F1), `confusion_matrix.csv` and `graph_info.json`.
 
-### Scegliere il backbone
+### Choosing the backbone
 ```bash
 BACKBONE=hgt          bash train_and_eval.sh   # attention
-BACKBONE=hetero_sage  bash train_and_eval.sh   # SAGE per relazione
-BACKBONE=rgcn         bash train_and_eval.sh   # un peso per relazione
+BACKBONE=hetero_sage  bash train_and_eval.sh   # SAGE per relation (best after tuning)
+BACKBONE=rgcn         bash train_and_eval.sh   # one weight per relation
 ```
-I risultati finiscono in cartelle separate (`results/kg_hgnn_<backbone>/...`).
+Results go to separate folders (`results/kg_hgnn_<backbone>/...`).
 
-### Valutazione multi-seed (protocollo del paper)
+### Multi-seed evaluation (paper protocol)
 ```bash
-BACKBONE=rgcn bash train_and_eval.sh --runs 5
+BACKBONE=hetero_sage bash train_and_eval.sh --runs 5
 ```
-Fa 5 run su split indipendenti (seed 42..46), con feature selection + grafo
-ricostruiti per ogni seed (nessun leakage) e seed del modello fisso; alla fine
-stampa **media ± s.d.** di tutte le metriche.
+Runs 5 independent splits (seeds 42..46), with feature selection + graph rebuilt
+per seed (no leakage) and a fixed model seed; prints **mean ± s.d.** of every
+metric.
 
 ---
 
-## Provare i METAPATH (miRNA-miRNA / TF-TF)
+## Metapaths (miRNA–miRNA / TF–TF)
 
-I metapath di co-target (due miRNA / due TF che condividono un gene target) sono
-**disattivati di default**. Si decidono **al momento della costruzione del grafo**,
-quindi si attivano passando `METAPATH=--metapath` a `train_and_eval.sh` (o a
-`make_graph.sh`), che ricostruisce il template con quei layer:
+Co-target metapaths (two miRNAs / two TFs sharing a target gene) are **off by
+default**. They are decided **at graph-construction time**, so enable them by
+passing `METAPATH=--metapath` to `train_and_eval.sh` (or `make_graph.sh`), which
+rebuilds the template with those layers:
 
 ```bash
-# SENZA metapath (default)
-BACKBONE=hgt bash train_and_eval.sh
-
-# CON metapath — aggiunge (miRNA, shares_target, miRNA) e (TF, shares_target, TF)
-METAPATH=--metapath BACKBONE=hgt bash train_and_eval.sh
+BACKBONE=hgt bash train_and_eval.sh                    # WITHOUT metapaths (default)
+METAPATH=--metapath BACKBONE=hgt bash train_and_eval.sh # WITH (miRNA, shares_target, miRNA) + (TF, shares_target, TF)
 ```
 
-Effetto: con `--metapath` più nodi del pannello sopravvivono (un nodo resta se ha
-**qualsiasi** arco, gene o metapath), non solo se tocca direttamente un gene
-selezionato. È un asse di ablation: costruisci le due versioni e confrontale.
+> **Reproducibility caveat.** The template is always saved to
+> `data/prior_knowledge/hetero/hetero_graph_template.pt`: building it with and
+> without metapaths at the **same path** overwrites it, and old checkpoints no
+> longer match the new template. For clean comparisons use `--runs` (which saves
+> one template per seed) or change `OUT_DIR`.
 
-> **Attenzione (riproducibilità).** Il template si salva sempre in
-> `data/prior_knowledge/hetero/hetero_graph_template.pt`: costruirlo con e senza
-> metapath allo **stesso percorso** lo sovrascrive, e i checkpoint vecchi non
-> combaciano più col template nuovo. Per confronti puliti usa `--runs` (che salva
-> un template per seed) o cambia `OUT_DIR`.
-
-Altri knob utili (env var): `TOP_GENES` (default 700), `TOP_TF` (200),
-`TOP_MIRNA` (100), `SEED`, `GO_MIN_SUPPORT` (3), `CONFIG`.
+Other knobs (env vars): `TOP_GENES` (default 700), `TOP_TF` (200), `TOP_MIRNA`
+(100), `SEED`, `GO_MIN_SUPPORT` (3), `CONFIG`.
 
 ---
 
 ## Tuning (Optuna)
 
-Un studio per backbone (ognuno ha iperparametri ottimali diversi). Obiettivo =
-macro-F1 di **validazione** (mai il test). Il tuning usa il **template già
-costruito** (non lo ricostruisce), quindi eredita la scelta metapath fatta con
+One study per backbone (each has different optimal hyperparameters). Objective =
+**validation** macro-F1 (never test). Tuning uses the **already-built template**
+(it does not rebuild it), so it inherits the metapath choice made with
 `make_graph.sh`.
 
 ```bash
-BACKBONE=hgt bash tune.sh            # un backbone (default 35 trial, 10h)
-bash tune_all.sh                     # tutti e tre in sequenza, ~20h totali (6.5h ciascuno)
+BACKBONE=hgt bash tune.sh    # one backbone (default 35 trials)
+bash tune_all.sh             # all three in sequence
 ```
-Output: `results/optuna/kg_hgnn_optuna_<backbone>/best.json` (+ report CSV).
-Dopo il tuning: copia i params vincenti in `configs/config_kg_hgnn.yml` e lancia
-`BACKBONE=<vincente> bash train_and_eval.sh --runs 5`.
+Output: `results/optuna/kg_hgnn_optuna_<backbone>/best.json` (+ CSV report). After
+tuning, copy the winning params into `configs/config_kg_hgnn_<backbone>.yml` and
+run `BACKBONE=<winner> bash train_and_eval.sh --runs 5`.
 
 ---
 
-## Esperimenti (studi della tesi)
+## Experiments
 
-Gli esperimenti che giustificano il lavoro oltre l'accuratezza aggregata (vedi
-`docs/TODO_esperimenti_tesi.md` per la motivazione di ciascuno).
-
-### 0. Ablation (metapath + rimozione componenti del grafo)
-
-Studio di ablation "un fattore per volta" a partire dalla configurazione completa,
-via l'orchestratore `ablation.sh` (rebuild del template solo per gli assi che
-cambiano il grafo, riuso per quelli solo-config):
+### Ablation (metapath + graph-component removal)
+One-factor-at-a-time ablation from the full configuration, via `ablation.sh`
+(rebuilds the template only for axes that change the graph, reuses it for
+config-only axes):
 ```bash
-bash ablation.sh                                   # tutte le 9 varianti, 5 seed
-VARIANTS="full no_pathway no_go" bash ablation.sh  # sottoinsieme
-BACKBONE=rgcn SEEDS="42 43 44" bash ablation.sh
+bash ablation.sh                                   # all 9 variants, 5 seeds
+VARIANTS="full no_pathway no_go" bash ablation.sh  # subset
 ```
-Varianti: `full` (baseline) · `no_metapath` · `no_disease` · `no_pathway` ·
-`no_go` · `readout_mol` · `readout_pathway` · `no_cnv` · `no_mirna`.
-Output in `results/ablation/`: `ablation_table.csv` (macro-F1 media ± s.d. + Δ vs
-`full`) e `ablation_bars.png`.
+Variants: `full` · `no_metapath` · `no_disease` · `no_pathway` · `no_go` ·
+`readout_mol` · `readout_pathway` · `no_cnv` · `no_mirna`. Output in
+`results/ablation/`: `ablation_table.csv` (mean ± s.d. macro-F1 + Δ vs `full`)
+and `ablation_bars.png`.
 
-Leve sottostanti (usabili anche singolarmente): grafo → `--metapath`,
-`--no-disease`, `--no-pathway`, `--no-go` (in `build_hetero_graph.py`); config →
-`model.readout_types`, `data.use_cnv`, `data.use_mirna`.
-
-Con che grafo è stata addestrata una run (metapath/scale):
+Inspect which graph a run was trained on (metapath / scales):
 ```bash
 conda run -n gnn python scripts/kg_hgnn/which_graph.py
 ```
 
-### 1. Performance per-classe (27 classi)
-
-Ogni run salva **già** `per_class_metrics.csv/.json` + `confusion_matrix.csv`:
-l'esperimento vero è l'**aggregazione multi-seed** + il confronto con MOGNN-TF.
-
+### Per-class performance (27 classes)
+Every run already saves `per_class_metrics.csv/.json` + `confusion_matrix.csv`;
+the experiment is the **multi-seed aggregation** + comparison against MOGNN-TF.
 ```bash
-bash experiments.sh per_class                    # su results/best_model_full_hetero_sage
-MODEL=optimized bash experiments.sh per_class    # su un'altra cartella best-model
+bash experiments.sh per_class
 ```
-Legge i `per_class_metrics.csv` di **tutte** le run della cartella e scrive lì:
-- `per_class_aggregate.csv` — P/R/F1 media ± s.d. per classe;
-- `per_class_vs_mognntf.csv` — affiancamento con la tabella del paper + delta;
-- `per_class_vs_mognntf.png` — F1 per classe, ordinato per delta.
+Writes `per_class_aggregate.csv` (P/R/F1 mean ± s.d. per class),
+`per_class_vs_mognntf.csv` (side-by-side + delta) and `per_class_vs_mognntf.png`.
+Sanity check: the mean of the per-class F1 must equal the reported macro-F1.
 
-Il riferimento è `paper/table_per_class_mognn-tf.csv`, generato una tantum dalla
-tabella LaTeX (`scripts/kg_hgnn/tex_per_class_to_csv.py`, invocato in automatico
-se manca). Baseline di default: `MOGNN-TF (GCN)`; con `--baseline "MoGCN"` (o gli
-altri) si confrontano gli altri modelli della tabella.
-
-Sanity check: la media delle F1 per-classe deve tornare uguale al macro-F1
-riportato (0.7308 per il best model) — se non torna, l'aggregazione è sbagliata.
-
-Per run **vecchie** senza i file per-classe, ricalcolarli dal checkpoint (non
-riaddestra):
+Recompute per-class files for **old** runs from the checkpoint (no retraining):
 ```bash
-conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --run results/kg_hgnn_hgt/<...>
 conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --all
 ```
-⚠️ Esce con codice ≠ 0 se il template corrente non combacia col checkpoint
-(template sovrascritto): si **rifiuta** di produrre numeri su un grafo diverso.
 
-### 2. Crollo delle feature ("il grafo salva le performance")
-
-Entrambi i modelli su una griglia decrescente di geni (700→20), con confronto
-della pendenza di degrado:
+### Feature collapse ("the graph saves the performance")
+Both models over a decreasing gene grid (700→20), comparing the degradation
+slope:
 ```bash
-bash run_feature_collapse.sh                                   # entrambi, griglia default, 5 seed
-MODELS="mokghgnn" GENE_GRID="700 300 100 50" SEEDS="42 43 44" bash run_feature_collapse.sh
+bash run_feature_collapse.sh   # both models, default grid, 5 seeds
 ```
-Con `bash experiments.sh collapse` girano **entrambi** i modelli (è il confronto
-delle due pendenze a essere l'esperimento; `MODELS="mokghgnn"` ne esegue uno solo).
+The heterogeneous model rebuilds FS+template at each gene level; the MOGNN-TF
+baseline runs via `scripts/collapse_mognntf.py` (a bridge that forces MOGNN-TF
+onto the **same** surviving feature panel for a fair comparison, using
+`benchmark/MOGNN-TF/configs/config_final.yml`). Output in
+`results/feature_collapse/`: `feature_collapse_table.csv`,
+`feature_collapse_robustness.csv` (the slope per model — the answer to the
+question) and `feature_collapse_curve.png`. What matters is the **slope**, not the
+absolute F1.
 
-Solo la curva baseline (35 run × ~1-2h: **lanciare sul server, sotto nohup**):
+### Explainability (mechanistic interpretability)
+Mechanism-level attribution: which `pathway`/`GO_term` drive the prediction for
+each subtype (GNNExplainer on a trained checkpoint).
 ```bash
-nohup conda run --no-capture-output -n gnn python -u scripts/collapse_mognntf.py \
-    --gene-grid 700 500 300 150 100 50 20 --seeds 42 43 44 45 46 \
-    --out-root results/feature_collapse --resume > collapse_mognntf.log 2>&1 &
-```
-`--resume` salta le coppie (geni, seed) già presenti nel summary: si può interrompere
-e riprendere senza perdere le run fatte. A fine corsa rilanciare `collapse_aggregate.py`.
-La baseline usa `scripts/collapse_mognntf.py` (config `config_final.yml`, FS a
-runtime via `data.num_gene`), l'eterogeneo `scripts/kg_hgnn/collapse_mokghgnn.sh`
-(che **ricostruisce FS+template** per ogni livello di geni).
-
-Output in `results/feature_collapse/`:
-- `feature_collapse_table.csv` — macro-F1 media ± s.d. per modello × n-geni;
-- `feature_collapse_robustness.csv` — **il numero che risponde alla domanda**: calo
-  di F1 da 700 a 20 geni e pendenza per dimezzamento, per modello;
-- `feature_collapse_curve.png` — le due curve sovrapposte (asse x log, invertito).
-
-**Cosa guardare**: non l'F1 assoluto (MOGNN-TF parte più in alto) ma **la pendenza**.
-Se MOKG-HGNN cala meno, il KG compensa la scarsità di feature. MOKG-HGNN (5 seed):
-0.7243 a 700 geni → 0.6569 a 20, cioè **−0.067 dividendo i geni per 35**.
-
-Rigenerare solo tabella/curva/robustezza:
-```bash
-conda run -n gnn python scripts/kg_hgnn/collapse_aggregate.py --results results/feature_collapse
-```
-⚠️ L'aggregatore **si rifiuta** di sovrascrivere la tabella se i dati aggregati sono
-MENO di quelli già in tabella (tipico quando in locale hai solo una parte delle run
-trasferite dal server): stampa cosa mancherebbe e lascia il file intatto. Con
-`--force` sovrascrive comunque. La baseline supporta `--resume` per riprendere una
-griglia interrotta senza rifare le run già fatte.
-
-### 3. Explainability (interpretabilità meccanicistica)
-
-Attribuzione a livello di meccanismo: quali `pathway`/`GO_term` guidano la
-predizione per ogni sottotipo (GNNExplainer su un checkpoint addestrato).
-```bash
-conda run -n gnn python scripts/kg_hgnn/explain.py --run results/<...>/<ts> \
-    --per-class 15 --epochs 50
-conda run -n gnn python scripts/kg_hgnn/explain.py --run <dir> --reuse-template  # salta il rebuild
+conda run -n gnn python scripts/kg_hgnn/explain.py --run results/<...>/<ts> --per-class 15 --epochs 50
 ```
 Output in `results/explanations/<run>/`: `top_pathway_by_subtype.csv`,
-`top_GO_term_by_subtype.csv` (id reali Reactome/GO, con `distinctive_score` =
-quanto un meccanismo è specifico di quel sottotipo vs la media) e le heatmap
-sottotipo×meccanismo. Ricostruisce il template dalla run e legge gli iperparametri
-dal suo `config.json`. **La validazione biologica** (i pathway trovati sono sensati
-per quel tumore?) resta manuale — è il selling point della tesi, ciò che un modello
-gene-only non può dare.
+`top_GO_term_by_subtype.csv` (real Reactome/GO ids, with `distinctive_score`) and
+subtype×mechanism heatmaps. Biological validation (are the mechanisms sensible for
+that tumour?) stays manual — the selling point a gene-only model cannot offer.
 
 ---
 
-## Analisi dei risultati
+## Configuration
 
-```bash
-# curve di training (una figura per run; --aggregate per media±banda su piu run)
-conda run -n gnn python scripts/kg_hgnn/plot_training.py --aggregate
-
-# metriche per-classe da un checkpoint gia salvato (senza riaddestrare)
-conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --run results/kg_hgnn_hgt/<...>
-conda run -n gnn python scripts/kg_hgnn/eval_per_class.py --all
-
-# con che grafo e stata addestrata una run (metapath / scale)
-conda run -n gnn python scripts/kg_hgnn/which_graph.py
-
-# explainability meccanicistica (pathway/GO per sottotipo) — vedi esperimento 3
-conda run -n gnn python scripts/kg_hgnn/explain.py --run results/<...>/<ts> --per-class 15
-```
+`configs/config_kg_hgnn.yml` drives a run: `data.split_dir`,
+`data.template_path`, ablation switches (`use_cnv`, `use_mirna`),
+`model.backbone` / `hidden` / `num_layers` / `heads` / `dropout` /
+`readout_types` (multi-scale pooling), `scheduler`, early stopping and
+class-imbalance handling (`class_weighted_loss`, `sampler_strategy`).
 
 ---
 
-## Configurazione
+## Benchmarks
 
-`configs/config_kg_hgnn.yml` guida un run: `data.split_dir`, `data.template_path`,
-ablation (`use_cnv`, `use_mirna`), `model.backbone` / `hidden` / `num_layers` /
-`heads` / `dropout` / `readout_types` (pooling multi-scala), `scheduler`,
-early stopping e gestione dello sbilanciamento (`class_weighted_loss`,
-`sampler_strategy`).
+Molecular baselines live under [`benchmark/`](benchmark/) and are runnable for
+reproduction on the same 27-class split; see [`benchmark/README.md`](benchmark/README.md).
 
----
+**MOGNN-TF** is our previous single-scale molecular model, used here only as the
+reference baseline. It is archived on Zenodo as software with a permanent DOI:
 
-## Documentazione (`docs/`)
+> De Filippis, G. M., Rinaldi, A. M., Tommasino, C. *MOGNN-TF: code and
+> supplementary material*. Zenodo. https://doi.org/10.5281/zenodo.21475911
 
-- `proposta_B_tesi_multiscale_heterognn.md` — proposta e posizionamento della tesi.
-- `modelli_e_tuning_spiegazione.md` — i tre modelli, da dove vengono, come si usano.
-- `piano-mapping-PKT-heterodata.md` — schema del KG e mapping verso `HeteroData`.
-- `identificatori_MOGNN-TF.md` — identificatori (Entrez/HGNC/…) usati dai dati.
-- `TODO_esperimenti_tesi.md` — esperimenti che giustificano il lavoro (per-classe,
-  crollo sotto scarsità di feature, interpretabilità, connettività, …).
-- `runtime_on_server.md` — stima dei tempi di training sul server.
-
----
-
-## Rapporto con MOGNN-TF
-
-Questo repo contiene **entrambi** i progetti, in package separati:
-`src/multiomics_gnn/` (MOGNN-TF, baseline omogeneo) e `src/multiomics_kg_hgnn/`
-(questo modello eterogeneo). Non condividono codice se non il caricamento del
-config; gli entrypoint (`scripts/` vs `scripts/kg_hgnn/`) e i config sono distinti.
+Its code is vendored (unmodified) under `benchmark/MOGNN-TF/` so its results can
+be reproduced from this repository; the MOKG-HGNN framework does not depend on it.
