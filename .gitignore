@@ -79,6 +79,7 @@ tcga-pancan/
 analysis/*
 archive/*
 paper*
+bat_scripts*
 
 # Benchmark outputs
 benchmark_*
