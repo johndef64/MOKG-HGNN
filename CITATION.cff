@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+title: "MOKG-HGNN: code and supplementary material"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/johndef64/MOKG-HGNN"
+abstract: >-
+  MOKG-HGNN is a multi-scale heterogeneous graph neural network for pan-cancer
+  molecular subtyping. Each tumour is represented as a heterogeneous graph in
+  which gene, miRNA and transcription-factor nodes carrying the TCGA Pan-Cancer
+  omics are linked upward to pathway, Gene Ontology and disease nodes taken from
+  the PheKnowLator biomedical knowledge graph, so that message passing traverses
+  several levels of biological organisation rather than the molecular layer
+  alone. Subtyping is cast as graph classification over the 27-class integrated
+  iCluster taxonomy.
+authors:
+  - family-names: "De Filippis"
+    given-names: "Giovanni Maria"
+    affiliation: "Department of Electrical Engineering and Information Technology, University of Naples Federico II"
+    orcid: "https://orcid.org/0009-0002-8395-0724"
+  - family-names: "Rinaldi"
+    given-names: "Antonio Maria"
+    affiliation: "Department of Electrical Engineering and Information Technology, University of Naples Federico II"
+    orcid: "https://orcid.org/0000-0001-7003-4781"
+  - family-names: "Tommasino"
+    given-names: "Cristian"
+    affiliation: "Department of Electrical Engineering and Information Technology, University of Naples Federico II"
+    orcid: "https://orcid.org/0000-0001-9763-8745"
+keywords:
+  - biomedical knowledge graph
+  - heterogeneous graph neural network
+  - graph classification
+  - multi-omics integration
+  - pan-cancer subtyping
+  - explainable artificial intelligence
+  - neuro-symbolic learning
+  - PheKnowLator
+  - TCGA
