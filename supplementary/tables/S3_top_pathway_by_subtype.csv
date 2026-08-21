@@ -1,0 +1,406 @@
+subtype,rank,node_idx,id,distinctive_score,importance,overall_importance,n_patients,name,subtype_real,tumor
+C1,1,619,R-HSA-83936,0.09326,0.49311,0.39984,4,Transport of nucleosides and free purine and pyrimidine bases across the plasma membrane,C1,STAD
+C1,2,222,R-HSA-2032785,0.08774,0.49207,0.40433,4,YAP1- and WWTR1 (TAZ)-stimulated gene expression,C1,STAD
+C1,3,385,R-HSA-400511,0.08305,0.48712,0.40407,4,"Synthesis, secretion, and inactivation of Glucose-dependent Insulinotropic Polypeptide (GIP)",C1,STAD
+C1,4,492,R-HSA-5578768,0.08285,0.48788,0.40503,4,Physiological factors,C1,STAD
+C1,5,523,R-HSA-5678895,0.07616,0.46718,0.39102,4,Defective CFTR causes cystic fibrosis,C1,STAD
+C1,6,505,R-HSA-5627083,0.07522,0.46584,0.39062,4,RHO GTPases regulate CFTR trafficking,C1,STAD
+C1,7,432,R-HSA-437239,0.07411,0.47062,0.3965,4,Recycling pathway of L1,C1,STAD
+C1,8,384,R-HSA-400508,0.07292,0.46764,0.39472,4,"Incretin synthesis, secretion, and inactivation",C1,STAD
+C1,9,402,R-HSA-419408,0.07251,0.47726,0.40475,4,Lysosphingolipid and LPA receptors,C1,STAD
+C1,10,291,R-HSA-2892245,0.07109,0.47009,0.39901,4,"POU5F1 (OCT4), SOX2, NANOG repress genes related to differentiation",C1,STAD
+C1,11,225,R-HSA-209905,0.06856,0.46701,0.39845,4,Catecholamine biosynthesis,C1,STAD
+C1,12,241,R-HSA-211976,0.0663,0.46162,0.39533,4,Endogenous sterols,C1,STAD
+C1,13,447,R-HSA-445355,0.06586,0.46448,0.39862,4,Smooth Muscle Contraction,C1,STAD
+C1,14,343,R-HSA-3769402,0.06478,0.46371,0.39893,4,Deactivation of the beta-catenin transactivating complex,C1,STAD
+C1,15,226,R-HSA-209931,0.06406,0.46118,0.39712,4,Serotonin and melatonin biosynthesis,C1,STAD
+C2,1,234,R-HSA-210993,0.14399,0.53544,0.39145,15,Tie2 Signaling,C2,BRCA
+C2,2,47,R-HSA-1306955,0.14342,0.53495,0.39152,15,GRB7 events in ERBB2 signaling,C2,BRCA
+C2,3,155,R-HSA-180024,0.10729,0.50494,0.39765,15,DARPP-32 events,C2,BRCA
+C2,4,27,R-HSA-1227986,0.06384,0.45373,0.38989,15,Signaling by ERBB2,C2,BRCA
+C2,5,646,R-HSA-8875513,0.0446,0.43751,0.39291,15,MET interacts with TNS proteins,C2,BRCA
+C2,6,180,R-HSA-190872,0.03552,0.42863,0.39311,15,Transport of connexons to the plasma membrane,C2,BRCA
+C2,7,232,R-HSA-210747,0.03459,0.43191,0.39731,15,Regulation of gene expression in early pancreatic precursor cells,C2,BRCA
+C2,8,230,R-HSA-210744,0.03311,0.43101,0.3979,15,Regulation of gene expression in late stage (branching morphogenesis) pancreatic bud precursor cells,C2,BRCA
+C2,9,5,R-HSA-111885,0.02232,0.40835,0.38604,15,Opioid Signalling,C2,BRCA
+C2,10,647,R-HSA-8875878,0.02206,0.40894,0.38688,15,MET promotes cell motility,C2,BRCA
+C2,11,221,R-HSA-202733,0.02049,0.40345,0.38297,15,Cell surface interactions at the vascular wall,C2,BRCA
+C2,12,587,R-HSA-70635,0.02048,0.41832,0.39784,15,Urea cycle,C2,BRCA
+C2,13,120,R-HSA-1660661,0.01877,0.41199,0.39322,15,Sphingolipid de novo biosynthesis,C2,BRCA
+C2,14,571,R-HSA-6806834,0.01858,0.40367,0.38508,15,Signaling by MET,C2,BRCA
+C2,15,385,R-HSA-400511,0.01789,0.42197,0.40407,15,"Synthesis, secretion, and inactivation of Glucose-dependent Insulinotropic Polypeptide (GIP)",C2,BRCA
+C3,1,83,R-HSA-1566977,0.04493,0.43854,0.39361,15,Fibronectin matrix formation,C3,SARC
+C3,2,217,R-HSA-2022857,0.02537,0.42722,0.40185,15,Keratan sulfate degradation,C3,SARC
+C3,3,329,R-HSA-3656243,0.02433,0.42756,0.40323,15,Defective ST3GAL3 causes MCT12 and EIEE15,C3,SARC
+C3,4,644,R-HSA-8873719,0.02309,0.41205,0.38896,15,RAB geranylgeranylation,C3,SARC
+C3,5,328,R-HSA-3656225,0.023,0.42748,0.40448,15,Defective CHST6 causes MCDC1,C3,SARC
+C3,6,424,R-HSA-429593,0.02293,0.42579,0.40286,15,Inositol transporters,C3,SARC
+C3,7,330,R-HSA-3656244,0.02195,0.42548,0.40353,15,Defective B4GALT1 causes B4GALT1-CDG (CDG-2d),C3,SARC
+C3,8,596,R-HSA-72200,0.0204,0.42507,0.40467,15,mRNA Editing: C to U Conversion,C3,SARC
+C3,9,606,R-HSA-75094,0.01972,0.42479,0.40507,15,Formation of the Editosome,C3,SARC
+C3,10,605,R-HSA-75072,0.01852,0.42307,0.40455,15,mRNA Editing,C3,SARC
+C3,11,566,R-HSA-6803529,0.0181,0.40738,0.38928,15,FGFR2 alternative splicing,C3,SARC
+C3,12,141,R-HSA-168928,0.01774,0.40587,0.38813,15,DDX58/IFIH1-mediated induction of interferon-alpha/beta,C3,SARC
+C3,13,32,R-HSA-1250342,0.01715,0.41192,0.39477,15,PI3K events in ERBB4 signaling,C3,SARC
+C3,14,548,R-HSA-6788467,0.01714,0.4079,0.39076,15,IL-6-type cytokine receptor ligand interactions,C3,SARC
+C3,15,288,R-HSA-2730905,0.01657,0.4115,0.39493,15,Role of LAT2/NTAL/LAB on calcium mobilization,C3,SARC
+C4,1,311,R-HSA-3299685,0.06651,0.4614,0.39488,15,Detoxification of Reactive Oxygen Species,C4,COAD
+C4,2,437,R-HSA-442380,0.06546,0.45578,0.39032,15,Zinc influx into cells by the SLC39 gene family,C4,COAD
+C4,3,431,R-HSA-435354,0.06522,0.45509,0.38986,15,Zinc transporters,C4,COAD
+C4,4,596,R-HSA-72200,0.06384,0.46851,0.40467,15,mRNA Editing: C to U Conversion,C4,COAD
+C4,5,255,R-HSA-2142770,0.06296,0.45899,0.39603,15,Synthesis of 15-eicosatetraenoic acid derivatives,C4,COAD
+C4,6,253,R-HSA-2142712,0.062,0.4569,0.3949,15,Synthesis of 12-eicosatetraenoic acid derivatives,C4,COAD
+C4,7,606,R-HSA-75094,0.06005,0.46512,0.40507,15,Formation of the Editosome,C4,COAD
+C4,8,353,R-HSA-381771,0.05895,0.45765,0.3987,15,"Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)",C4,COAD
+C4,9,605,R-HSA-75072,0.0588,0.46335,0.40455,15,mRNA Editing,C4,COAD
+C4,10,484,R-HSA-5387390,0.05701,0.45692,0.39991,15,Hh mutants abrogate ligand secretion,C4,COAD
+C4,11,404,R-HSA-420092,0.05293,0.44689,0.39396,15,Glucagon-type ligand receptors,C4,COAD
+C4,12,352,R-HSA-381676,0.05205,0.44581,0.39375,15,Glucagon-like Peptide-1 (GLP1) regulates insulin secretion,C4,COAD
+C4,13,213,R-HSA-202040,0.05169,0.44453,0.39284,15,G-protein activation,C4,COAD
+C4,14,386,R-HSA-4085001,0.05138,0.4459,0.39452,15,Sialic acid metabolism,C4,COAD
+C4,15,397,R-HSA-418592,0.05112,0.44508,0.39395,15,ADP signalling through P2Y purinoceptor 1,C4,COAD
+C5,1,46,R-HSA-1296072,0.04957,0.43822,0.38865,15,Voltage gated Potassium channels,C5,nan
+C5,2,420,R-HSA-427975,0.04068,0.44044,0.39976,15,Proton/oligopeptide cotransporters,C5,nan
+C5,3,147,R-HSA-174403,0.03979,0.43394,0.39415,15,Glutathione synthesis and recycling,C5,nan
+C5,4,315,R-HSA-3371571,0.02862,0.42113,0.39251,15,HSF1-dependent transactivation,C5,nan
+C5,5,314,R-HSA-3371556,0.02803,0.41993,0.3919,15,Cellular response to heat stress,C5,nan
+C5,6,404,R-HSA-420092,0.0266,0.42056,0.39396,15,Glucagon-type ligand receptors,C5,nan
+C5,7,387,R-HSA-4086398,0.02618,0.4202,0.39402,15,Ca2+ pathway,C5,nan
+C5,8,423,R-HSA-428930,0.02605,0.42038,0.39433,15,Thromboxane signalling through TP receptor,C5,nan
+C5,9,373,R-HSA-392851,0.0256,0.42046,0.39486,15,Prostacyclin signalling through prostacyclin receptor,C5,nan
+C5,10,382,R-HSA-400042,0.02314,0.41667,0.39353,15,"Adrenaline,noradrenaline inhibits insulin secretion",C5,nan
+C5,11,370,R-HSA-392451,0.02289,0.41637,0.39347,15,G beta:gamma signalling through PI3Kgamma,C5,nan
+C5,12,357,R-HSA-3858494,0.02257,0.41655,0.39397,15,Beta-catenin independent WNT signaling,C5,nan
+C5,13,377,R-HSA-397795,0.022,0.41583,0.39383,15,G-protein beta:gamma signalling,C5,nan
+C5,14,369,R-HSA-392170,0.02131,0.41532,0.39401,15,ADP signalling through P2Y purinoceptor 12,C5,nan
+C5,15,626,R-HSA-8849932,0.02014,0.41185,0.39171,15,Synaptic adhesion-like molecules,C5,nan
+C6,1,166,R-HSA-187024,0.04311,0.4419,0.39879,15,NGF-independant TRKA activation,C6,OV
+C6,2,165,R-HSA-187015,0.04184,0.44124,0.3994,15,Activation of TRKA receptors,C6,OV
+C6,3,267,R-HSA-2219528,0.03106,0.42615,0.39509,15,PI3K/AKT Signaling in Cancer,C6,OV
+C6,4,156,R-HSA-180292,0.02945,0.42325,0.39379,15,GAB1 signalosome,C6,OV
+C6,5,625,R-HSA-8848021,0.0293,0.42384,0.39454,15,Signaling by PTK6,C6,OV
+C6,6,676,R-HSA-983705,0.02894,0.4237,0.39476,15,Signaling by the B Cell Receptor (BCR),C6,OV
+C6,7,36,R-HSA-1257604,0.02881,0.42345,0.39463,15,PIP3 activates AKT signaling,C6,OV
+C6,8,546,R-HSA-6785631,0.02865,0.42336,0.39472,15,ERBB2 Regulates Cell Motility,C6,OV
+C6,9,33,R-HSA-1250347,0.02821,0.42252,0.39431,15,SHC1 events in ERBB4 signaling,C6,OV
+C6,10,23,R-HSA-1168372,0.02816,0.4231,0.39494,15,Downstream signaling events of B Cell Receptor (BCR),C6,OV
+C6,11,578,R-HSA-6811558,0.0276,0.42243,0.39483,15,"PI5P, PP2A and IER3 Regulate PI3K/AKT Signaling",C6,OV
+C6,12,203,R-HSA-198203,0.02695,0.42248,0.39553,15,PI3K/AKT activation,C6,OV
+C6,13,31,R-HSA-1250196,0.02681,0.42164,0.39484,15,SHC1 events in ERBB2 signaling,C6,OV
+C6,14,288,R-HSA-2730905,0.02674,0.42167,0.39493,15,Role of LAT2/NTAL/LAB on calcium mobilization,C6,OV
+C6,15,634,R-HSA-8863795,0.0266,0.42107,0.39447,15,Downregulation of ERBB2 signaling,C6,OV
+C7,1,255,R-HSA-2142770,0.03028,0.42631,0.39603,11,Synthesis of 15-eicosatetraenoic acid derivatives,C7,SARC
+C7,2,217,R-HSA-2022857,0.02982,0.43168,0.40185,11,Keratan sulfate degradation,C7,SARC
+C7,3,329,R-HSA-3656243,0.02859,0.43181,0.40323,11,Defective ST3GAL3 causes MCT12 and EIEE15,C7,SARC
+C7,4,311,R-HSA-3299685,0.02831,0.42319,0.39488,11,Detoxification of Reactive Oxygen Species,C7,SARC
+C7,5,330,R-HSA-3656244,0.02788,0.43141,0.40353,11,Defective B4GALT1 causes B4GALT1-CDG (CDG-2d),C7,SARC
+C7,6,253,R-HSA-2142712,0.02555,0.42045,0.3949,11,Synthesis of 12-eicosatetraenoic acid derivatives,C7,SARC
+C7,7,328,R-HSA-3656225,0.02552,0.43,0.40448,11,Defective CHST6 causes MCDC1,C7,SARC
+C7,8,644,R-HSA-8873719,0.0238,0.41276,0.38896,11,RAB geranylgeranylation,C7,SARC
+C7,9,166,R-HSA-187024,0.01925,0.41804,0.39879,11,NGF-independant TRKA activation,C7,SARC
+C7,10,466,R-HSA-4839726,0.01908,0.41071,0.39163,11,Chromatin organization,C7,SARC
+C7,11,307,R-HSA-3247509,0.01792,0.41043,0.39251,11,Chromatin modifying enzymes,C7,SARC
+C7,12,165,R-HSA-187015,0.01723,0.41663,0.3994,11,Activation of TRKA receptors,C7,SARC
+C7,13,69,R-HSA-1483115,0.01719,0.40827,0.39107,11,Hydrolysis of LPC,C7,SARC
+C7,14,120,R-HSA-1660661,0.01324,0.40646,0.39322,11,Sphingolipid de novo biosynthesis,C7,SARC
+C7,15,430,R-HSA-433137,0.01284,0.4014,0.38855,11,"Sodium-coupled sulphate, di- and tri-carboxylate transporters",C7,SARC
+C8,1,183,R-HSA-193144,0.03851,0.43387,0.39536,15,Estrogen biosynthesis,C8,UCEC
+C8,2,25,R-HSA-1222449,0.03375,0.43275,0.399,15,Mtb iron assimilation by chelation,C8,UCEC
+C8,3,192,R-HSA-196071,0.03329,0.42909,0.3958,15,Metabolism of steroid hormones,C8,UCEC
+C8,4,26,R-HSA-1222499,0.0323,0.43183,0.39954,15,Latent infection - Other responses of Mtb to phagocytosis,C8,UCEC
+C8,5,291,R-HSA-2892245,0.029,0.42801,0.39901,15,"POU5F1 (OCT4), SOX2, NANOG repress genes related to differentiation",C8,UCEC
+C8,6,349,R-HSA-381119,0.02898,0.41954,0.39056,15,Unfolded Protein Response (UPR),C8,UCEC
+C8,7,85,R-HSA-157118,0.0277,0.41373,0.38602,15,Signaling by NOTCH,C8,UCEC
+C8,8,343,R-HSA-3769402,0.02737,0.4263,0.39893,15,Deactivation of the beta-catenin transactivating complex,C8,UCEC
+C8,9,347,R-HSA-380994,0.02682,0.41791,0.3911,15,ATF4 activates genes in response to endoplasmic reticulum stress,C8,UCEC
+C8,10,201,R-HSA-1980143,0.02599,0.41211,0.38612,15,Signaling by NOTCH1,C8,UCEC
+C8,11,245,R-HSA-2122948,0.02585,0.41236,0.38651,15,Activated NOTCH1 Transmits Signal to the Nucleus,C8,UCEC
+C8,12,348,R-HSA-381042,0.02228,0.41265,0.39036,15,PERK regulates gene expression,C8,UCEC
+C8,13,406,R-HSA-420597,0.02045,0.41498,0.39453,15,Nectin/Necl trans heterodimerization,C8,UCEC
+C8,14,642,R-HSA-8866911,0.02037,0.40942,0.38905,15,TFAP2 (AP-2) family regulates transcription of cell cycle factors,C8,UCEC
+C8,15,507,R-HSA-5632681,0.01994,0.41951,0.39957,15,Ligand-receptor interactions,C8,UCEC
+C9,1,644,R-HSA-8873719,0.02097,0.40993,0.38896,15,RAB geranylgeranylation,C9,ACC
+C9,2,237,R-HSA-211916,0.0207,0.41371,0.39301,15,Vitamins,C9,ACC
+C9,3,427,R-HSA-432142,0.01441,0.39964,0.38523,15,Platelet sensitization by LDL,C9,ACC
+C9,4,534,R-HSA-5688031,0.01245,0.39927,0.38682,15,Defective pro-SFTPB causes SMDP1 and RDS,C9,ACC
+C9,5,302,R-HSA-3000497,0.0124,0.39776,0.38536,15,Scavenging by Class H Receptors,C9,ACC
+C9,6,636,R-HSA-8866423,0.01199,0.39674,0.38474,15,VLDL assembly,C9,ACC
+C9,7,266,R-HSA-2214320,0.01179,0.39985,0.38806,15,Anchoring fibril formation,C9,ACC
+C9,8,512,R-HSA-5652084,0.01164,0.40196,0.39032,15,Fructose metabolism,C9,ACC
+C9,9,516,R-HSA-5660526,0.01112,0.40175,0.39063,15,Response to metal ions,C9,ACC
+C9,10,296,R-HSA-3000157,0.01071,0.39994,0.38923,15,Laminin interactions,C9,ACC
+C9,11,352,R-HSA-381676,0.01059,0.40434,0.39375,15,Glucagon-like Peptide-1 (GLP1) regulates insulin secretion,C9,ACC
+C9,12,78,R-HSA-156584,0.01036,0.3949,0.38453,15,Cytosolic sulfonation of small molecules,C9,ACC
+C9,13,627,R-HSA-8851680,0.00996,0.40028,0.39032,15,Butyrophilin (BTN) family interactions,C9,ACC
+C9,14,586,R-HSA-70350,0.00974,0.40087,0.39113,15,Fructose catabolism,C9,ACC
+C9,15,301,R-HSA-3000484,0.00947,0.3951,0.38563,15,Scavenging by Class F Receptors,C9,ACC
+C10,1,343,R-HSA-3769402,0.08914,0.48807,0.39893,15,Deactivation of the beta-catenin transactivating complex,C10,LUSC
+C10,2,291,R-HSA-2892245,0.08608,0.48508,0.39901,15,"POU5F1 (OCT4), SOX2, NANOG repress genes related to differentiation",C10,LUSC
+C10,3,568,R-HSA-6804759,0.068,0.46151,0.39351,15,Regulation of TP53 Activity through Association with Co-factors,C10,LUSC
+C10,4,49,R-HSA-139915,0.06694,0.45954,0.39261,15,Activation of PUMA and translocation to mitochondria,C10,LUSC
+C10,5,562,R-HSA-6803204,0.0666,0.4591,0.3925,15,TP53 Regulates Transcription of Genes Involved in Cytochrome C Release,C10,LUSC
+C10,6,563,R-HSA-6803205,0.06582,0.45917,0.39335,15,TP53 regulates transcription of several additional cell death genes whose specific roles in p53-dependent apoptosis remain uncertain,C10,LUSC
+C10,7,510,R-HSA-5633008,0.06562,0.45953,0.39391,15,TP53 Regulates Transcription of Cell Death Genes,C10,LUSC
+C10,8,564,R-HSA-6803207,0.06487,0.45901,0.39414,15,TP53 Regulates Transcription of Caspase Activators and Caspases,C10,LUSC
+C10,9,509,R-HSA-5633007,0.06453,0.45837,0.39384,15,Regulation of TP53 Activity,C10,LUSC
+C10,10,565,R-HSA-6803211,0.0645,0.45808,0.39358,15,TP53 Regulates Transcription of Death Receptors and Ligands,C10,LUSC
+C10,11,182,R-HSA-192456,0.04351,0.43524,0.39174,15,Digestion of dietary lipid,C10,LUSC
+C10,12,580,R-HSA-69473,0.03952,0.43067,0.39115,15,G2/M DNA damage checkpoint,C10,LUSC
+C10,13,604,R-HSA-75035,0.0387,0.43094,0.39224,15,Chk1/Chk2(Cds1) mediated inactivation of Cyclin B:Cdk1 complex,C10,LUSC
+C10,14,581,R-HSA-69481,0.03821,0.42966,0.39145,15,G2/M Checkpoints,C10,LUSC
+C10,15,165,R-HSA-187015,0.03753,0.43693,0.3994,15,Activation of TRKA receptors,C10,LUSC
+C11,1,282,R-HSA-2559586,0.05804,0.46192,0.40388,15,DNA Damage/Telomere Stress Induced Senescence,C11,LGG
+C11,2,280,R-HSA-2559583,0.05719,0.46078,0.40359,15,Cellular Senescence,C11,LGG
+C11,3,281,R-HSA-2559584,0.05597,0.46012,0.40416,15,Formation of Senescence-Associated Heterochromatin Foci (SAHF),C11,LGG
+C11,4,643,R-HSA-8869496,0.03337,0.42401,0.39063,15,TFAP2A acts as a transcriptional repressor during retinoic acid induced cell differentiation,C11,LGG
+C11,5,540,R-HSA-5689896,0.03206,0.42241,0.39035,15,Ovarian tumor domain proteases,C11,LGG
+C11,6,402,R-HSA-419408,0.02335,0.4281,0.40475,15,Lysosphingolipid and LPA receptors,C11,LGG
+C11,7,464,R-HSA-4641263,0.02257,0.42406,0.4015,15,Regulation of FZD by ubiquitination,C11,LGG
+C11,8,639,R-HSA-8866906,0.02226,0.41171,0.38945,15,TFAP2 (AP-2) family regulates transcription of other transcription factors,C11,LGG
+C11,9,635,R-HSA-8864260,0.01763,0.40274,0.38511,15,Transcriptional regulation by the AP-2 (TFAP2) family of transcription factors,C11,LGG
+C11,10,336,R-HSA-373752,0.01716,0.40828,0.39112,15,Netrin-1 signaling,C11,LGG
+C11,11,642,R-HSA-8866911,0.0171,0.40615,0.38905,15,TFAP2 (AP-2) family regulates transcription of cell cycle factors,C11,LGG
+C11,12,641,R-HSA-8866910,0.01567,0.40014,0.38447,15,TFAP2 (AP-2) family regulates transcription of growth factors and their receptors,C11,LGG
+C11,13,494,R-HSA-5610787,0.01422,0.40433,0.39012,15,Hedgehog 'off' state,C11,LGG
+C11,14,220,R-HSA-2024101,0.01359,0.39849,0.38491,15,CS/DS degradation,C11,LGG
+C11,15,543,R-HSA-6783589,0.01315,0.40386,0.39071,15,Interleukin-6 family signaling,C11,LGG
+C12,1,24,R-HSA-1170546,0.08673,0.48452,0.39779,15,Prolactin receptor signaling,C12,THCA
+C12,2,673,R-HSA-982772,0.08156,0.48017,0.39861,15,Growth hormone receptor signaling,C12,THCA
+C12,3,126,R-HSA-166663,0.06711,0.47092,0.40381,15,Initial triggering of complement,C12,THCA
+C12,4,128,R-HSA-166786,0.06516,0.46887,0.40371,15,Creation of C4 and C2 activators,C12,THCA
+C12,5,125,R-HSA-166662,0.06451,0.46819,0.40368,15,Lectin pathway of complement activation,C12,THCA
+C12,6,289,R-HSA-2855086,0.0635,0.46676,0.40326,15,Ficolins bind to repetitive carbohydrate structures on the target cell surface,C12,THCA
+C12,7,458,R-HSA-451306,0.06338,0.47062,0.40724,15,Ionotropic activity of kainate receptors,C12,THCA
+C12,8,459,R-HSA-451308,0.06041,0.46641,0.40599,15,Activation of Ca-permeable Kainate Receptor,C12,THCA
+C12,9,596,R-HSA-72200,0.05125,0.45591,0.40467,15,mRNA Editing: C to U Conversion,C12,THCA
+C12,10,605,R-HSA-75072,0.0453,0.44985,0.40455,15,mRNA Editing,C12,THCA
+C12,11,606,R-HSA-75094,0.04432,0.44939,0.40507,15,Formation of the Editosome,C12,THCA
+C12,12,455,R-HSA-447041,0.04261,0.43466,0.39205,15,CHL1 interactions,C12,THCA
+C12,13,353,R-HSA-381771,0.04183,0.44053,0.3987,15,"Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)",C12,THCA
+C12,14,359,R-HSA-389661,0.03624,0.43958,0.40334,15,Glyoxylate metabolism and glycine degradation,C12,THCA
+C12,15,545,R-HSA-6783984,0.0357,0.43831,0.40261,15,Glycine degradation,C12,THCA
+C13,1,424,R-HSA-429593,0.03494,0.4378,0.40286,15,Inositol transporters,C13,nan
+C13,2,175,R-HSA-190377,0.03464,0.42405,0.38941,15,FGFR2b ligand binding and activation,C13,nan
+C13,3,174,R-HSA-190241,0.03306,0.42261,0.38955,15,FGFR2 ligand binding and activation,C13,nan
+C13,4,405,R-HSA-420499,0.02588,0.41912,0.39323,15,Class C/3 (Metabotropic glutamate/pheromone receptors),C13,nan
+C13,5,136,R-HSA-168181,0.02465,0.41392,0.38926,15,Toll Like Receptor 7/8 (TLR7/8) Cascade,C13,nan
+C13,6,141,R-HSA-168928,0.02465,0.41278,0.38813,15,DDX58/IFIH1-mediated induction of interferon-alpha/beta,C13,nan
+C13,7,658,R-HSA-933542,0.02374,0.41207,0.38833,15,TRAF6 mediated NF-kB activation,C13,nan
+C13,8,575,R-HSA-6809583,0.02339,0.42529,0.4019,15,Retinoid metabolism disease events,C13,nan
+C13,9,132,R-HSA-168142,0.02329,0.41122,0.38793,15,Toll Like Receptor 10 (TLR10) Cascade,C13,nan
+C13,10,133,R-HSA-168164,0.02291,0.41089,0.38798,15,Toll Like Receptor 3 (TLR3) Cascade,C13,nan
+C13,11,158,R-HSA-1810476,0.02288,0.41133,0.38845,15,RIP-mediated NFkB activation via ZBP1,C13,nan
+C13,12,131,R-HSA-168138,0.02275,0.41069,0.38794,15,Toll Like Receptor 9 (TLR9) Cascade,C13,nan
+C13,13,667,R-HSA-975871,0.02252,0.41127,0.38875,15,MyD88 cascade initiated on plasma membrane,C13,nan
+C13,14,449,R-HSA-445989,0.02225,0.41095,0.3887,15,TAK1 activates NFkB by phosphorylation and activation of IKKs complex,C13,nan
+C13,15,418,R-HSA-427589,0.02201,0.41241,0.39039,15,Type II Na+/Pi cotransporters,C13,nan
+C14,1,533,R-HSA-5687868,0.02991,0.41987,0.38996,15,Defective SFTPA2 causes IPF,C14,LUAD
+C14,2,534,R-HSA-5688031,0.01778,0.4046,0.38682,15,Defective pro-SFTPB causes SMDP1 and RDS,C14,LUAD
+C14,3,665,R-HSA-975578,0.01687,0.41324,0.39638,15,Reactions specific to the complex N-glycan synthesis pathway,C14,LUAD
+C14,4,664,R-HSA-975576,0.01513,0.4109,0.39577,15,N-glycan antennae elongation in the medial/trans-Golgi,C14,LUAD
+C14,5,528,R-HSA-5683826,0.01452,0.39831,0.38379,15,Surfactant metabolism,C14,LUAD
+C14,6,532,R-HSA-5687613,0.01211,0.39493,0.38282,15,Diseases associated with surfactant metabolism,C14,LUAD
+C14,7,281,R-HSA-2559584,0.01206,0.41622,0.40416,15,Formation of Senescence-Associated Heterochromatin Foci (SAHF),C14,LUAD
+C14,8,537,R-HSA-5688849,0.012,0.39472,0.38273,15,Defective CSF2RB causes SMDP5,C14,LUAD
+C14,9,527,R-HSA-5683678,0.01159,0.39427,0.38268,15,Defective ABCA3 causes SMDP3,C14,LUAD
+C14,10,535,R-HSA-5688354,0.0113,0.39404,0.38274,15,Defective pro-SFTPC causes SMDP2 and RDS,C14,LUAD
+C14,11,280,R-HSA-2559583,0.01126,0.41485,0.40359,15,Cellular Senescence,C14,LUAD
+C14,12,538,R-HSA-5688890,0.01113,0.39383,0.3827,15,Defective CSF2RA causes SMDP4,C14,LUAD
+C14,13,637,R-HSA-8866427,0.00978,0.40167,0.3919,15,VLDLR internalisation and degradation,C14,LUAD
+C14,14,282,R-HSA-2559586,0.00976,0.41364,0.40388,15,DNA Damage/Telomere Stress Induced Senescence,C14,LUAD
+C14,15,520,R-HSA-5668914,0.00688,0.38948,0.3826,15,Diseases of metabolism,C14,LUAD
+C15,1,77,R-HSA-156581,0.0448,0.43365,0.38884,15,Methylation,C15,SKCM
+C15,2,381,R-HSA-399956,0.04404,0.44793,0.40389,15,CRMPs in Sema3A signaling,C15,SKCM
+C15,3,630,R-HSA-8854691,0.04329,0.4356,0.39231,15,Interleukin-20 family signaling,C15,SKCM
+C15,4,272,R-HSA-2408522,0.0368,0.42562,0.38882,15,Selenoamino acid metabolism,C15,SKCM
+C15,5,271,R-HSA-2408508,0.03568,0.42389,0.3882,15,"Metabolism of ingested SeMet, Sec, MeSec into H2Se",C15,SKCM
+C15,6,533,R-HSA-5687868,0.03193,0.42189,0.38996,15,Defective SFTPA2 causes IPF,C15,SKCM
+C15,7,229,R-HSA-210500,0.03066,0.42908,0.39842,15,Glutamate Neurotransmitter Release Cycle,C15,SKCM
+C15,8,566,R-HSA-6803529,0.02619,0.41547,0.38928,15,FGFR2 alternative splicing,C15,SKCM
+C15,9,228,R-HSA-210455,0.02597,0.42355,0.39759,15,Astrocytic Glutamate-Glutamine Uptake And Metabolism,C15,SKCM
+C15,10,253,R-HSA-2142712,0.0256,0.4205,0.3949,15,Synthesis of 12-eicosatetraenoic acid derivatives,C15,SKCM
+C15,11,206,R-HSA-199220,0.02481,0.4205,0.39569,15,Vitamin B5 (pantothenate) metabolism,C15,SKCM
+C15,12,309,R-HSA-3296469,0.02378,0.41678,0.393,15,Defects in cobalamin (B12) metabolism,C15,SKCM
+C15,13,15,R-HSA-112313,0.02366,0.42127,0.39761,15,Neurotransmitter uptake and metabolism In glial cells,C15,SKCM
+C15,14,313,R-HSA-3359463,0.02322,0.41601,0.39279,15,Defective CUBN causes MGA1,C15,SKCM
+C15,15,311,R-HSA-3299685,0.02231,0.4172,0.39488,15,Detoxification of Reactive Oxygen Species,C15,SKCM
+C16,1,503,R-HSA-5625886,0.0876,0.47608,0.38848,15,Activated PKN1 stimulates transcription of AR (androgen receptor) regulated genes KLK2 and KLK3,C16,PRAD
+C16,2,515,R-HSA-5658034,0.07294,0.47256,0.39962,15,HHAT G278V doesn't palmitoylate Hh-Np,C16,PRAD
+C16,3,511,R-HSA-5635838,0.07181,0.47101,0.3992,15,Activation of SMO,C16,PRAD
+C16,4,507,R-HSA-5632681,0.07166,0.47123,0.39957,15,Ligand-receptor interactions,C16,PRAD
+C16,5,484,R-HSA-5387390,0.07061,0.47052,0.39991,15,Hh mutants abrogate ligand secretion,C16,PRAD
+C16,6,508,R-HSA-5632684,0.07028,0.4705,0.40022,15,Hedgehog 'on' state,C16,PRAD
+C16,7,308,R-HSA-3295583,0.06905,0.45667,0.38762,15,TRP channels,C16,PRAD
+C16,8,70,R-HSA-1483166,0.06722,0.45633,0.38912,15,Synthesis of PA,C16,PRAD
+C16,9,155,R-HSA-180024,0.06522,0.46287,0.39765,15,DARPP-32 events,C16,PRAD
+C16,10,341,R-HSA-375280,0.06109,0.45495,0.39386,15,Amine ligand-binding receptors,C16,PRAD
+C16,11,417,R-HSA-425986,0.06077,0.46047,0.3997,15,Sodium/Proton exchangers,C16,PRAD
+C16,12,366,R-HSA-390648,0.06064,0.45436,0.39371,15,Muscarinic acetylcholine receptors,C16,PRAD
+C16,13,533,R-HSA-5687868,0.05959,0.44955,0.38996,15,Defective SFTPA2 causes IPF,C16,PRAD
+C16,14,10,R-HSA-112040,0.0566,0.44694,0.39034,15,G-protein mediated events,C16,PRAD
+C16,15,143,R-HSA-170660,0.05622,0.44605,0.38983,15,Adenylate cyclase activating pathway,C16,PRAD
+C17,1,26,R-HSA-1222499,0.08408,0.48361,0.39954,15,Latent infection - Other responses of Mtb to phagocytosis,C17,nan
+C17,2,375,R-HSA-3928665,0.0835,0.48741,0.40391,15,EPH-ephrin mediated repulsion of cells,C17,nan
+C17,3,25,R-HSA-1222449,0.08124,0.48025,0.399,15,Mtb iron assimilation by chelation,C17,nan
+C17,4,287,R-HSA-2682334,0.07969,0.48363,0.40394,15,EPH-Ephrin signaling,C17,nan
+C17,5,374,R-HSA-3928663,0.07783,0.48139,0.40357,15,EPHA-mediated growth cone collapse,C17,nan
+C17,6,456,R-HSA-447043,0.04567,0.44359,0.39792,15,Neurofascin interactions,C17,nan
+C17,7,202,R-HSA-1980145,0.04496,0.44266,0.3977,15,Signaling by NOTCH2,C17,nan
+C17,8,293,R-HSA-2979096,0.04272,0.44107,0.39836,15,NOTCH2 Activation and Transmission of Signal to the Nucleus,C17,nan
+C17,9,642,R-HSA-8866911,0.03954,0.42859,0.38905,15,TFAP2 (AP-2) family regulates transcription of cell cycle factors,C17,nan
+C17,10,657,R-HSA-917977,0.03852,0.42724,0.38871,15,Transferrin endocytosis and recycling,C17,nan
+C17,11,341,R-HSA-375280,0.03793,0.43179,0.39386,15,Amine ligand-binding receptors,C17,nan
+C17,12,366,R-HSA-390648,0.03731,0.43102,0.39371,15,Muscarinic acetylcholine receptors,C17,nan
+C17,13,306,R-HSA-3238698,0.03097,0.42153,0.39056,15,WNT ligand biogenesis and trafficking,C17,nan
+C17,14,504,R-HSA-5626467,0.02932,0.41588,0.38655,15,RHO GTPases activate IQGAPs,C17,nan
+C17,15,612,R-HSA-77111,0.0289,0.41831,0.38941,15,Synthesis of Ketone Bodies,C17,nan
+C18,1,619,R-HSA-83936,0.09972,0.49957,0.39984,15,Transport of nucleosides and free purine and pyrimidine bases across the plasma membrane,C18,nan
+C18,2,12,R-HSA-112308,0.05202,0.44616,0.39413,15,Presynaptic depolarization and calcium channel opening,C18,nan
+C18,3,491,R-HSA-5576893,0.05101,0.4464,0.39539,15,Phase 2 - plateau phase,C18,nan
+C18,4,588,R-HSA-70895,0.05089,0.45016,0.39927,15,Branched-chain amino acid catabolism,C18,nan
+C18,5,591,R-HSA-71262,0.05012,0.44971,0.3996,15,Carnitine synthesis,C18,nan
+C18,6,422,R-HSA-428359,0.04978,0.45517,0.40539,15,Insulin-like Growth Factor-2 mRNA Binding Proteins (IGF2BPs/IMPs/VICKZs) bind RNA,C18,nan
+C18,7,402,R-HSA-419408,0.04912,0.45386,0.40475,15,Lysosphingolipid and LPA receptors,C18,nan
+C18,8,15,R-HSA-112313,0.04745,0.44506,0.39761,15,Neurotransmitter uptake and metabolism In glial cells,C18,nan
+C18,9,241,R-HSA-211976,0.04729,0.44261,0.39533,15,Endogenous sterols,C18,nan
+C18,10,664,R-HSA-975576,0.04489,0.44066,0.39577,15,N-glycan antennae elongation in the medial/trans-Golgi,C18,nan
+C18,11,665,R-HSA-975578,0.04451,0.44089,0.39638,15,Reactions specific to the complex N-glycan synthesis pathway,C18,nan
+C18,12,228,R-HSA-210455,0.04199,0.43958,0.39759,15,Astrocytic Glutamate-Glutamine Uptake And Metabolism,C18,nan
+C18,13,353,R-HSA-381771,0.04195,0.44065,0.3987,15,"Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)",C18,nan
+C18,14,575,R-HSA-6809583,0.04191,0.44381,0.4019,15,Retinoid metabolism disease events,C18,nan
+C18,15,229,R-HSA-210500,0.04185,0.44027,0.39842,15,Glutamate Neurotransmitter Release Cycle,C18,nan
+C19,1,673,R-HSA-982772,0.07414,0.47275,0.39861,15,Growth hormone receptor signaling,C19,BRCA
+C19,2,24,R-HSA-1170546,0.0725,0.47028,0.39779,15,Prolactin receptor signaling,C19,BRCA
+C19,3,375,R-HSA-3928665,0.06374,0.46765,0.40391,15,EPH-ephrin mediated repulsion of cells,C19,BRCA
+C19,4,374,R-HSA-3928663,0.06356,0.46712,0.40357,15,EPHA-mediated growth cone collapse,C19,BRCA
+C19,5,526,R-HSA-5683177,0.06153,0.4522,0.39066,15,Defective ABCC8 can cause hypo- and hyper-glycemias,C19,BRCA
+C19,6,40,R-HSA-1296025,0.06096,0.45065,0.38969,15,ATP sensitive Potassium channels,C19,BRCA
+C19,7,287,R-HSA-2682334,0.05886,0.46279,0.40394,15,EPH-Ephrin signaling,C19,BRCA
+C19,8,284,R-HSA-264870,0.05268,0.44845,0.39577,15,Caspase-mediated cleavage of cytoskeletal proteins,C19,BRCA
+C19,9,12,R-HSA-112308,0.0504,0.44453,0.39413,15,Presynaptic depolarization and calcium channel opening,C19,BRCA
+C19,10,491,R-HSA-5576893,0.04655,0.44194,0.39539,15,Phase 2 - plateau phase,C19,BRCA
+C19,11,120,R-HSA-1660661,0.0463,0.43953,0.39322,15,Sphingolipid de novo biosynthesis,C19,BRCA
+C19,12,366,R-HSA-390648,0.04571,0.43943,0.39371,15,Muscarinic acetylcholine receptors,C19,BRCA
+C19,13,475,R-HSA-5223345,0.04365,0.43614,0.39249,15,Miscellaneous transport and binding events,C19,BRCA
+C19,14,459,R-HSA-451308,0.0412,0.44719,0.40599,15,Activation of Ca-permeable Kainate Receptor,C19,BRCA
+C19,15,341,R-HSA-375280,0.04067,0.43453,0.39386,15,Amine ligand-binding receptors,C19,BRCA
+C20,1,307,R-HSA-3247509,0.04402,0.43653,0.39251,15,Chromatin modifying enzymes,C20,nan
+C20,2,466,R-HSA-4839726,0.04337,0.43501,0.39163,15,Chromatin organization,C20,nan
+C20,3,447,R-HSA-445355,0.03038,0.429,0.39862,15,Smooth Muscle Contraction,C20,nan
+C20,4,408,R-HSA-422085,0.0263,0.42038,0.39408,15,"Synthesis, secretion, and deacylation of Ghrelin",C20,nan
+C20,5,417,R-HSA-425986,0.02578,0.42548,0.3997,15,Sodium/Proton exchangers,C20,nan
+C20,6,264,R-HSA-2179392,0.02188,0.41371,0.39182,15,EGFR Transactivation by Gastrin,C20,nan
+C20,7,183,R-HSA-193144,0.02058,0.41594,0.39536,15,Estrogen biosynthesis,C20,nan
+C20,8,109,R-HSA-163841,0.01675,0.40537,0.38861,15,"Gamma carboxylation, hypusine formation and arylsulfatase activation",C20,nan
+C20,9,94,R-HSA-159854,0.0165,0.40449,0.38799,15,"Gamma-carboxylation, transport, and amino-terminal cleavage of proteins",C20,nan
+C20,10,637,R-HSA-8866427,0.01643,0.40833,0.3919,15,VLDLR internalisation and degradation,C20,nan
+C20,11,507,R-HSA-5632681,0.01629,0.41586,0.39957,15,Ligand-receptor interactions,C20,nan
+C20,12,192,R-HSA-196071,0.01629,0.41209,0.3958,15,Metabolism of steroid hormones,C20,nan
+C20,13,492,R-HSA-5578768,0.01624,0.42127,0.40503,15,Physiological factors,C20,nan
+C20,14,180,R-HSA-190872,0.01621,0.40932,0.39311,15,Transport of connexons to the plasma membrane,C20,nan
+C20,15,93,R-HSA-159782,0.01502,0.40351,0.38848,15,Removal of aminoterminal propeptides from gamma-carboxylated proteins,C20,nan
+C21,1,285,R-HSA-264876,0.0934,0.49842,0.40502,6,Insulin processing,C21,DLBC
+C21,2,575,R-HSA-6809583,0.06385,0.46575,0.4019,6,Retinoid metabolism disease events,C21,DLBC
+C21,3,550,R-HSA-6794361,0.05761,0.44834,0.39074,6,Neurexins and neuroligins,C21,DLBC
+C21,4,422,R-HSA-428359,0.05714,0.46253,0.40539,6,Insulin-like Growth Factor-2 mRNA Binding Proteins (IGF2BPs/IMPs/VICKZs) bind RNA,C21,DLBC
+C21,5,459,R-HSA-451308,0.04307,0.44907,0.40599,6,Activation of Ca-permeable Kainate Receptor,C21,DLBC
+C21,6,458,R-HSA-451306,0.04065,0.44789,0.40724,6,Ionotropic activity of kainate receptors,C21,DLBC
+C21,7,277,R-HSA-2453902,0.03857,0.42589,0.38732,6,The canonical retinoid cycle in rods (twilight vision),C21,DLBC
+C21,8,588,R-HSA-70895,0.03824,0.4375,0.39927,6,Branched-chain amino acid catabolism,C21,DLBC
+C21,9,276,R-HSA-2453864,0.03414,0.42199,0.38785,6,Retinoid cycle disease events,C21,DLBC
+C21,10,279,R-HSA-2474795,0.03305,0.42076,0.3877,6,Diseases associated with visual transduction,C21,DLBC
+C21,11,591,R-HSA-71262,0.03153,0.43113,0.3996,6,Carnitine synthesis,C21,DLBC
+C21,12,551,R-HSA-6794362,0.02973,0.41715,0.38742,6,Protein-protein interactions at synapses,C21,DLBC
+C21,13,476,R-HSA-525793,0.02304,0.4115,0.38846,6,Myogenesis,C21,DLBC
+C21,14,50,R-HSA-140837,0.02197,0.40605,0.38409,6,Intrinsic Pathway of Fibrin Clot Formation,C21,DLBC
+C21,15,420,R-HSA-427975,0.02194,0.4217,0.39976,6,Proton/oligopeptide cotransporters,C21,DLBC
+C22,1,280,R-HSA-2559583,0.05981,0.4634,0.40359,15,Cellular Senescence,C22,SARC
+C22,2,381,R-HSA-399956,0.05633,0.46022,0.40389,15,CRMPs in Sema3A signaling,C22,SARC
+C22,3,281,R-HSA-2559584,0.05618,0.46033,0.40416,15,Formation of Senescence-Associated Heterochromatin Foci (SAHF),C22,SARC
+C22,4,282,R-HSA-2559586,0.0552,0.45908,0.40388,15,DNA Damage/Telomere Stress Induced Senescence,C22,SARC
+C22,5,222,R-HSA-2032785,0.04005,0.44438,0.40433,15,YAP1- and WWTR1 (TAZ)-stimulated gene expression,C22,SARC
+C22,6,385,R-HSA-400511,0.03933,0.4434,0.40407,15,"Synthesis, secretion, and inactivation of Glucose-dependent Insulinotropic Polypeptide (GIP)",C22,SARC
+C22,7,422,R-HSA-428359,0.03784,0.44323,0.40539,15,Insulin-like Growth Factor-2 mRNA Binding Proteins (IGF2BPs/IMPs/VICKZs) bind RNA,C22,SARC
+C22,8,492,R-HSA-5578768,0.03429,0.43932,0.40503,15,Physiological factors,C22,SARC
+C22,9,166,R-HSA-187024,0.02922,0.428,0.39879,15,NGF-independant TRKA activation,C22,SARC
+C22,10,165,R-HSA-187015,0.0278,0.4272,0.3994,15,Activation of TRKA receptors,C22,SARC
+C22,11,408,R-HSA-422085,0.02639,0.42047,0.39408,15,"Synthesis, secretion, and deacylation of Ghrelin",C22,SARC
+C22,12,587,R-HSA-70635,0.02432,0.42216,0.39784,15,Urea cycle,C22,SARC
+C22,13,83,R-HSA-1566977,0.02416,0.41777,0.39361,15,Fibronectin matrix formation,C22,SARC
+C22,14,353,R-HSA-381771,0.02255,0.42125,0.3987,15,"Synthesis, secretion, and inactivation of Glucagon-like Peptide-1 (GLP-1)",C22,SARC
+C22,15,337,R-HSA-373755,0.02097,0.41411,0.39314,15,Semaphorin interactions,C22,SARC
+C23,1,285,R-HSA-264876,0.07854,0.48356,0.40502,9,Insulin processing,C23,GBM
+C23,2,458,R-HSA-451306,0.07345,0.48069,0.40724,9,Ionotropic activity of kainate receptors,C23,GBM
+C23,3,459,R-HSA-451308,0.06964,0.47563,0.40599,9,Activation of Ca-permeable Kainate Receptor,C23,GBM
+C23,4,464,R-HSA-4641263,0.06957,0.47106,0.4015,9,Regulation of FZD by ubiquitination,C23,GBM
+C23,5,402,R-HSA-419408,0.06849,0.47323,0.40475,9,Lysosphingolipid and LPA receptors,C23,GBM
+C23,6,590,R-HSA-71240,0.0645,0.46946,0.40495,9,Tryptophan catabolism,C23,GBM
+C23,7,211,R-HSA-201451,0.0616,0.45921,0.39761,9,Signaling by BMP,C23,GBM
+C23,8,412,R-HSA-425381,0.0592,0.45536,0.39616,9,Bicarbonate transporters,C23,GBM
+C23,9,517,R-HSA-5661231,0.05739,0.44846,0.39107,9,Metallothioneins bind metals,C23,GBM
+C23,10,516,R-HSA-5660526,0.05587,0.4465,0.39063,9,Response to metal ions,C23,GBM
+C23,11,643,R-HSA-8869496,0.05512,0.44575,0.39063,9,TFAP2A acts as a transcriptional repressor during retinoic acid induced cell differentiation,C23,GBM
+C23,12,165,R-HSA-187015,0.0461,0.4455,0.3994,9,Activation of TRKA receptors,C23,GBM
+C23,13,639,R-HSA-8866906,0.04593,0.43539,0.38945,9,TFAP2 (AP-2) family regulates transcription of other transcription factors,C23,GBM
+C23,14,512,R-HSA-5652084,0.04577,0.43609,0.39032,9,Fructose metabolism,C23,GBM
+C23,15,586,R-HSA-70350,0.04525,0.43638,0.39113,9,Fructose catabolism,C23,GBM
+C24,1,260,R-HSA-2161541,0.09218,0.48424,0.39206,15,Abacavir metabolism,C25,nan
+C24,2,509,R-HSA-5633007,0.0738,0.46764,0.39384,15,Regulation of TP53 Activity,C25,nan
+C24,3,562,R-HSA-6803204,0.07122,0.46372,0.3925,15,TP53 Regulates Transcription of Genes Involved in Cytochrome C Release,C25,nan
+C24,4,564,R-HSA-6803207,0.07116,0.4653,0.39414,15,TP53 Regulates Transcription of Caspase Activators and Caspases,C25,nan
+C24,5,563,R-HSA-6803205,0.07092,0.46427,0.39335,15,TP53 regulates transcription of several additional cell death genes whose specific roles in p53-dependent apoptosis remain uncertain,C25,nan
+C24,6,568,R-HSA-6804759,0.06913,0.46264,0.39351,15,Regulation of TP53 Activity through Association with Co-factors,C25,nan
+C24,7,565,R-HSA-6803211,0.06879,0.46237,0.39358,15,TP53 Regulates Transcription of Death Receptors and Ligands,C25,nan
+C24,8,510,R-HSA-5633008,0.06857,0.46248,0.39391,15,TP53 Regulates Transcription of Cell Death Genes,C25,nan
+C24,9,3,R-HSA-111447,0.06773,0.45857,0.39084,15,Activation of BAD and translocation to mitochondria,C25,nan
+C24,10,49,R-HSA-139915,0.06664,0.45925,0.39261,15,Activation of PUMA and translocation to mitochondria,C25,nan
+C24,11,567,R-HSA-6804114,0.06518,0.45664,0.39146,15,TP53 Regulates Transcription of Genes Involved in G2 Cell Cycle Arrest,C25,nan
+C24,12,549,R-HSA-6791312,0.06505,0.4565,0.39145,15,TP53 Regulates Transcription of Cell Cycle Genes,C25,nan
+C24,13,581,R-HSA-69481,0.06357,0.45501,0.39145,15,G2/M Checkpoints,C25,nan
+C24,14,2,R-HSA-109606,0.06313,0.45205,0.38892,15,Intrinsic Pathway for Apoptosis,C25,nan
+C24,15,582,R-HSA-69620,0.06312,0.45394,0.39081,15,Cell Cycle Checkpoints,C25,nan
+C25,1,127,R-HSA-166665,0.00306,0.3864,0.38334,15,Terminal pathway of complement,C26,LIHC
+C25,2,393,R-HSA-418346,0.00231,0.38555,0.38324,15,Platelet homeostasis,C26,LIHC
+C25,3,157,R-HSA-180336,0.00141,0.3835,0.38209,15,SHC1 events in EGFR signaling,C26,LIHC
+C25,4,109,R-HSA-163841,0.00109,0.3897,0.38861,15,"Gamma carboxylation, hypusine formation and arylsulfatase activation",C26,LIHC
+C25,5,169,R-HSA-187706,0.00101,0.38273,0.38172,15,Signalling to p38 via RIT and RIN,C26,LIHC
+C25,6,22,R-HSA-114608,0.00089,0.38208,0.38119,15,Platelet degranulation,C26,LIHC
+C25,7,254,R-HSA-2142753,0.00089,0.3826,0.38171,15,Arachidonic acid metabolism,C26,LIHC
+C25,8,299,R-HSA-3000471,0.0008,0.38257,0.38177,15,Scavenging by Class B Receptors,C26,LIHC
+C25,9,145,R-HSA-170968,0.00071,0.38271,0.382,15,Frs2-mediated activation,C26,LIHC
+C25,10,547,R-HSA-6785807,0.00058,0.3823,0.38172,15,Interleukin-4 and Interleukin-13 signaling,C26,LIHC
+C25,11,678,R-HSA-991365,0.00057,0.38301,0.38244,15,Activation of GABAB receptors,C26,LIHC
+C25,12,398,R-HSA-418594,0.00046,0.38212,0.38166,15,G alpha (i) signalling events,C26,LIHC
+C25,13,227,R-HSA-209968,0.0004,0.38373,0.38333,15,Thyroxine biosynthesis,C26,LIHC
+C25,14,283,R-HSA-2586552,0.00039,0.38237,0.38199,15,Signaling by Leptin,C26,LIHC
+C25,15,535,R-HSA-5688354,0.00038,0.38312,0.38274,15,Defective pro-SFTPC causes SMDP2 and RDS,C26,LIHC
+C26,1,3,R-HSA-111447,0.07285,0.46369,0.39084,15,Activation of BAD and translocation to mitochondria,C27,CESC
+C26,2,582,R-HSA-69620,0.06632,0.45713,0.39081,15,Cell Cycle Checkpoints,C27,CESC
+C26,3,110,R-HSA-1640170,0.06588,0.45713,0.39125,15,Cell Cycle,C27,CESC
+C26,4,580,R-HSA-69473,0.06571,0.45685,0.39115,15,G2/M DNA damage checkpoint,C27,CESC
+C26,5,2,R-HSA-109606,0.06486,0.45378,0.38892,15,Intrinsic Pathway for Apoptosis,C27,CESC
+C26,6,549,R-HSA-6791312,0.06443,0.45588,0.39145,15,TP53 Regulates Transcription of Cell Cycle Genes,C27,CESC
+C26,7,21,R-HSA-114452,0.06391,0.45329,0.38938,15,Activation of BH3-only proteins,C27,CESC
+C26,8,563,R-HSA-6803205,0.06333,0.45668,0.39335,15,TP53 regulates transcription of several additional cell death genes whose specific roles in p53-dependent apoptosis remain uncertain,C27,CESC
+C26,9,604,R-HSA-75035,0.06297,0.45521,0.39224,15,Chk1/Chk2(Cds1) mediated inactivation of Cyclin B:Cdk1 complex,C27,CESC
+C26,10,564,R-HSA-6803207,0.06249,0.45663,0.39414,15,TP53 Regulates Transcription of Caspase Activators and Caspases,C27,CESC
+C26,11,125,R-HSA-166662,0.06185,0.46553,0.40368,15,Lectin pathway of complement activation,C27,CESC
+C26,12,568,R-HSA-6804759,0.06185,0.45536,0.39351,15,Regulation of TP53 Activity through Association with Co-factors,C27,CESC
+C26,13,567,R-HSA-6804114,0.06144,0.4529,0.39146,15,TP53 Regulates Transcription of Genes Involved in G2 Cell Cycle Arrest,C27,CESC
+C26,14,509,R-HSA-5633007,0.06115,0.45499,0.39384,15,Regulation of TP53 Activity,C27,CESC
+C26,15,510,R-HSA-5633008,0.06099,0.4549,0.39391,15,TP53 Regulates Transcription of Cell Death Genes,C27,CESC
+C27,1,151,R-HSA-177162,0.11459,0.50176,0.38718,15,Conjugation of phenylacetate with glutamine,C28,KIRC
+C27,2,258,R-HSA-2161517,0.09786,0.48769,0.38984,15,Abacavir transmembrane transport,C28,KIRC
+C27,3,651,R-HSA-888593,0.09766,0.48496,0.38731,15,Reuptake of GABA,C28,KIRC
+C27,4,486,R-HSA-549127,0.09664,0.4855,0.38886,15,Organic cation transport,C28,KIRC
+C27,5,159,R-HSA-181430,0.09516,0.48492,0.38977,15,Norepinephrine Neurotransmitter Release Cycle,C28,KIRC
+C27,6,650,R-HSA-888590,0.09488,0.48236,0.38748,15,"GABA synthesis, release, reuptake and degradation",C28,KIRC
+C27,7,487,R-HSA-549132,0.09304,0.4821,0.38906,15,Organic cation/anion/zwitterion transport,C28,KIRC
+C27,8,44,R-HSA-1296067,0.08297,0.47255,0.38958,15,Potassium transport channels,C28,KIRC
+C27,9,619,R-HSA-83936,0.08269,0.48253,0.39984,15,Transport of nucleosides and free purine and pyrimidine bases across the plasma membrane,C28,KIRC
+C27,10,598,R-HSA-73621,0.08225,0.47442,0.39217,15,Pyrimidine catabolism,C28,KIRC
+C27,11,313,R-HSA-3359463,0.0817,0.47449,0.39279,15,Defective CUBN causes MGA1,C28,KIRC
+C27,12,310,R-HSA-3296482,0.08129,0.47491,0.39362,15,Defects in vitamin and cofactor metabolism,C28,KIRC
+C27,13,359,R-HSA-389661,0.08101,0.48434,0.40334,15,Glyoxylate metabolism and glycine degradation,C28,KIRC
+C27,14,309,R-HSA-3296469,0.08051,0.47351,0.393,15,Defects in cobalamin (B12) metabolism,C28,KIRC
+C27,15,312,R-HSA-3359462,0.08051,0.47393,0.39342,15,Defective AMN causes MGA1,C28,KIRC

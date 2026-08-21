@@ -1,0 +1,406 @@
+subtype,rank,node_idx,id,distinctive_score,importance,overall_importance,n_patients,name,subtype_real,tumor
+C1,1,235,GO_0006936,0.03383,0.4189,0.38507,4,muscle contraction,C1,STAD
+C1,2,861,GO_0071222,0.02739,0.41004,0.38266,4,cellular response to lipopolysaccharide,C1,STAD
+C1,3,846,GO_0065003,0.0243,0.40726,0.38296,4,protein-containing complex assembly,C1,STAD
+C1,4,579,GO_0034622,0.02336,0.40625,0.38289,4,cellular protein-containing complex assembly,C1,STAD
+C1,5,36,GO_0001786,0.02026,0.4027,0.38243,4,phosphatidylserine binding,C1,STAD
+C1,6,697,GO_0045214,0.01971,0.40319,0.38348,4,sarcomere organization,C1,STAD
+C1,7,117,GO_0005319,0.0182,0.40073,0.38253,4,lipid transporter activity,C1,STAD
+C1,8,794,GO_0051258,0.01781,0.39999,0.38217,4,protein polymerization,C1,STAD
+C1,9,724,GO_0045907,0.01635,0.40016,0.3838,4,positive regulation of vasoconstriction,C1,STAD
+C1,10,943,GO_1902476,0.01602,0.39797,0.38195,4,chloride transmembrane transport,C1,STAD
+C1,11,152,GO_0005771,0.01583,0.39967,0.38384,4,multivesicular body,C1,STAD
+C1,12,42,GO_0001889,0.01578,0.39943,0.38365,4,liver development,C1,STAD
+C1,13,648,GO_0043152,0.01561,0.39813,0.38252,4,induction of bacterial agglutination,C1,STAD
+C1,14,81,GO_0004190,0.01503,0.39848,0.38346,4,aspartic-type endopeptidase activity,C1,STAD
+C1,15,234,GO_0006935,0.01482,0.3969,0.38207,4,chemotaxis,C1,STAD
+C2,1,732,GO_0046914,0.01174,0.39536,0.38362,15,transition metal ion binding,C2,BRCA
+C2,2,182,GO_0005925,0.00938,0.39142,0.38204,15,focal adhesion,C2,BRCA
+C2,3,638,GO_0042995,0.00929,0.39076,0.38146,15,cell projection,C2,BRCA
+C2,4,440,GO_0019835,0.00906,0.39272,0.38365,15,cytolysis,C2,BRCA
+C2,5,724,GO_0045907,0.00901,0.39281,0.3838,15,positive regulation of vasoconstriction,C2,BRCA
+C2,6,256,GO_0007173,0.00897,0.39125,0.38228,15,epidermal growth factor receptor signaling pathway,C2,BRCA
+C2,7,694,GO_0045178,0.00836,0.39094,0.38258,15,basal part of cell,C2,BRCA
+C2,8,683,GO_0044598,0.00825,0.39207,0.38383,15,doxorubicin metabolic process,C2,BRCA
+C2,9,910,GO_0097150,0.00822,0.39171,0.38348,15,neuronal stem cell population maintenance,C2,BRCA
+C2,10,966,GO_2000378,0.00798,0.39141,0.38343,15,negative regulation of reactive oxygen species metabolic process,C2,BRCA
+C2,11,682,GO_0044597,0.00795,0.39163,0.38368,15,daunorubicin metabolic process,C2,BRCA
+C2,12,763,GO_0050714,0.00793,0.39167,0.38374,15,positive regulation of protein secretion,C2,BRCA
+C2,13,221,GO_0006833,0.00773,0.39214,0.38441,15,water transport,C2,BRCA
+C2,14,883,GO_0071732,0.00767,0.39083,0.38316,15,cellular response to nitric oxide,C2,BRCA
+C2,15,353,GO_0010467,0.00765,0.39053,0.38288,15,gene expression,C2,BRCA
+C3,1,890,GO_0072289,0.01411,0.39853,0.38442,15,metanephric nephron tubule formation,C3,SARC
+C3,2,40,GO_0001823,0.01328,0.39636,0.38308,15,mesonephros development,C3,SARC
+C3,3,512,GO_0030878,0.0118,0.3953,0.38349,15,thyroid gland development,C3,SARC
+C3,4,873,GO_0071364,0.01109,0.39419,0.38311,15,cellular response to epidermal growth factor stimulus,C3,SARC
+C3,5,735,GO_0047718,0.01058,0.39298,0.3824,15,indanol dehydrogenase activity,C3,SARC
+C3,6,901,GO_0090103,0.0102,0.39396,0.38376,15,cochlea morphogenesis,C3,SARC
+C3,7,900,GO_0090102,0.01006,0.39327,0.38321,15,cochlea development,C3,SARC
+C3,8,893,GO_0072582,0.00987,0.3926,0.38273,15,17-beta-hydroxysteroid dehydrogenase (NADP+) activity,C3,SARC
+C3,9,671,GO_0043616,0.0097,0.39245,0.38274,15,keratinocyte proliferation,C3,SARC
+C3,10,736,GO_0047834,0.00963,0.39182,0.38218,15,D-threo-aldose 1-dehydrogenase activity,C3,SARC
+C3,11,79,GO_0004032,0.00962,0.39188,0.38226,15,alditol:NADP+ 1-oxidoreductase activity,C3,SARC
+C3,12,535,GO_0031647,0.00955,0.39226,0.38272,15,regulation of protein stability,C3,SARC
+C3,13,169,GO_0005883,0.00913,0.39388,0.38475,15,neurofilament,C3,SARC
+C3,14,718,GO_0045840,0.0091,0.39219,0.3831,15,positive regulation of mitotic nuclear division,C3,SARC
+C3,15,681,GO_0044594,0.00876,0.39168,0.38292,15,17-beta-hydroxysteroid dehydrogenase (NAD+) activity,C3,SARC
+C4,1,316,GO_0008327,0.00389,0.38617,0.38228,15,methyl-CpG binding,C4,COAD
+C4,2,549,GO_0032532,0.00385,0.38594,0.38209,15,regulation of microvillus length,C4,COAD
+C4,3,877,GO_0071466,0.00262,0.38512,0.3825,15,cellular response to xenobiotic stimulus,C4,COAD
+C4,4,642,GO_0043027,0.00213,0.38392,0.38179,15,cysteine-type endopeptidase inhibitor activity involved in apoptotic process,C4,COAD
+C4,5,953,GO_1904970,0.00212,0.38487,0.38275,15,brush border assembly,C4,COAD
+C4,6,736,GO_0047834,0.00191,0.38409,0.38218,15,D-threo-aldose 1-dehydrogenase activity,C4,COAD
+C4,7,914,GO_0097421,0.00167,0.38457,0.3829,15,liver regeneration,C4,COAD
+C4,8,345,GO_0009953,0.00157,0.38328,0.38171,15,dorsal/ventral pattern formation,C4,COAD
+C4,9,26,GO_0001618,0.00151,0.3829,0.38139,15,virus receptor activity,C4,COAD
+C4,10,688,GO_0045109,0.00151,0.38342,0.38191,15,intermediate filament organization,C4,COAD
+C4,11,118,GO_0005436,0.00142,0.3833,0.38188,15,sodium:phosphate symporter activity,C4,COAD
+C4,12,300,GO_0008146,0.00134,0.38349,0.38215,15,sulfotransferase activity,C4,COAD
+C4,13,179,GO_0005921,0.00134,0.38315,0.38181,15,gap junction,C4,COAD
+C4,14,37,GO_0001817,0.00124,0.38274,0.3815,15,regulation of cytokine production,C4,COAD
+C4,15,565,GO_0033700,0.00123,0.38248,0.38125,15,phospholipid efflux,C4,COAD
+C5,1,307,GO_0008217,0.00531,0.38947,0.38416,15,regulation of blood pressure,C5,nan
+C5,2,348,GO_0010001,0.003,0.38673,0.38373,15,glial cell differentiation,C5,nan
+C5,3,793,GO_0051219,0.00276,0.38491,0.38214,15,phosphoprotein binding,C5,nan
+C5,4,59,GO_0003073,0.00222,0.3869,0.38468,15,regulation of systemic arterial blood pressure,C5,nan
+C5,5,863,GO_0071277,0.00219,0.38525,0.38305,15,cellular response to calcium ion,C5,nan
+C5,6,285,GO_0007595,0.00207,0.38385,0.38179,15,lactation,C5,nan
+C5,7,129,GO_0005539,0.00161,0.38555,0.38394,15,glycosaminoglycan binding,C5,nan
+C5,8,800,GO_0051591,0.00152,0.38331,0.38179,15,response to cAMP,C5,nan
+C5,9,432,GO_0019221,0.00146,0.38388,0.38243,15,cytokine-mediated signaling pathway,C5,nan
+C5,10,619,GO_0042476,0.00141,0.38339,0.38198,15,odontogenesis,C5,nan
+C5,11,552,GO_0032689,0.00131,0.38292,0.38161,15,negative regulation of interferon-gamma production,C5,nan
+C5,12,424,GO_0016918,0.00114,0.38295,0.38181,15,retinal binding,C5,nan
+C5,13,17,GO_0001503,0.0011,0.3828,0.38169,15,ossification,C5,nan
+C5,14,862,GO_0071260,0.00108,0.38333,0.38225,15,cellular response to mechanical stimulus,C5,nan
+C5,15,886,GO_0071902,0.00101,0.38287,0.38185,15,positive regulation of protein serine/threonine kinase activity,C5,nan
+C6,1,889,GO_0072207,0.01671,0.39977,0.38307,15,metanephric epithelium development,C6,OV
+C6,2,890,GO_0072289,0.01368,0.3981,0.38442,15,metanephric nephron tubule formation,C6,OV
+C6,3,826,GO_0060231,0.01299,0.39604,0.38305,15,mesenchymal to epithelial transition,C6,OV
+C6,4,901,GO_0090103,0.01288,0.39664,0.38376,15,cochlea morphogenesis,C6,OV
+C6,5,30,GO_0001658,0.01128,0.39359,0.38231,15,branching involved in ureteric bud morphogenesis,C6,OV
+C6,6,900,GO_0090102,0.01128,0.39449,0.38321,15,cochlea development,C6,OV
+C6,7,41,GO_0001843,0.00978,0.39254,0.38277,15,neural tube closure,C6,OV
+C6,8,752,GO_0048793,0.00942,0.39178,0.38236,15,pronephros development,C6,OV
+C6,9,486,GO_0030325,0.00908,0.39232,0.38324,15,adrenal gland development,C6,OV
+C6,10,756,GO_0048854,0.00824,0.3907,0.38246,15,brain morphogenesis,C6,OV
+C6,11,966,GO_2000378,0.00822,0.39164,0.38343,15,negative regulation of reactive oxygen species metabolic process,C6,OV
+C6,12,873,GO_0071364,0.00801,0.39112,0.38311,15,cellular response to epidermal growth factor stimulus,C6,OV
+C6,13,640,GO_0043010,0.00782,0.39032,0.38249,15,camera-type eye development,C6,OV
+C6,14,348,GO_0010001,0.00782,0.39156,0.38373,15,glial cell differentiation,C6,OV
+C6,15,11,GO_0000987,0.0072,0.38946,0.38226,15,cis-regulatory region sequence-specific DNA binding,C6,OV
+C7,1,380,GO_0014824,0.00458,0.38727,0.38269,11,artery smooth muscle contraction,C7,SARC
+C7,2,742,GO_0048286,0.00305,0.38507,0.38202,11,lung alveolus development,C7,SARC
+C7,3,708,GO_0045595,0.00291,0.38477,0.38186,11,regulation of cell differentiation,C7,SARC
+C7,4,20,GO_0001530,0.00289,0.38515,0.38226,11,lipopolysaccharide binding,C7,SARC
+C7,5,116,GO_0005262,0.00285,0.38534,0.38249,11,calcium channel activity,C7,SARC
+C7,6,70,GO_0003714,0.00256,0.3846,0.38204,11,transcription corepressor activity,C7,SARC
+C7,7,315,GO_0008289,0.00249,0.38449,0.38201,11,lipid binding,C7,SARC
+C7,8,774,GO_0050804,0.0023,0.38534,0.38304,11,modulation of chemical synaptic transmission,C7,SARC
+C7,9,900,GO_0090102,0.00215,0.38536,0.38321,11,cochlea development,C7,SARC
+C7,10,212,GO_0006695,0.00214,0.38373,0.38159,11,cholesterol biosynthetic process,C7,SARC
+C7,11,345,GO_0009953,0.00186,0.38358,0.38171,11,dorsal/ventral pattern formation,C7,SARC
+C7,12,478,GO_0030234,0.00173,0.38386,0.38213,11,enzyme regulator activity,C7,SARC
+C7,13,40,GO_0001823,0.00169,0.38477,0.38308,11,mesonephros development,C7,SARC
+C7,14,132,GO_0005546,0.00165,0.38389,0.38224,11,"phosphatidylinositol-4,5-bisphosphate binding",C7,SARC
+C7,15,254,GO_0007166,0.00161,0.38321,0.3816,11,cell surface receptor signaling pathway,C7,SARC
+C8,1,277,GO_0007548,0.00769,0.39034,0.38265,15,sex differentiation,C8,UCEC
+C8,2,817,GO_0055091,0.00544,0.38813,0.38269,15,phospholipid homeostasis,C8,UCEC
+C8,3,851,GO_0070328,0.00473,0.38624,0.38152,15,triglyceride homeostasis,C8,UCEC
+C8,4,775,GO_0050807,0.00352,0.38529,0.38176,15,regulation of synapse organization,C8,UCEC
+C8,5,193,GO_0006351,0.00266,0.38585,0.3832,15,"transcription, DNA-templated",C8,UCEC
+C8,6,184,GO_0005938,0.0026,0.38483,0.38222,15,cell cortex,C8,UCEC
+C8,7,560,GO_0033116,0.00244,0.38402,0.38158,15,endoplasmic reticulum-Golgi intermediate compartment membrane,C8,UCEC
+C8,8,213,GO_0006730,0.0024,0.38508,0.38267,15,one-carbon metabolic process,C8,UCEC
+C8,9,319,GO_0008391,0.00238,0.38361,0.38123,15,arachidonic acid monooxygenase activity,C8,UCEC
+C8,10,344,GO_0009952,0.00234,0.38451,0.38217,15,anterior/posterior pattern specification,C8,UCEC
+C8,11,137,GO_0005604,0.00232,0.38392,0.3816,15,basement membrane,C8,UCEC
+C8,12,421,GO_0016746,0.00231,0.38405,0.38174,15,acyltransferase activity,C8,UCEC
+C8,13,842,GO_0061629,0.00227,0.38386,0.38159,15,RNA polymerase II-specific DNA-binding transcription factor binding,C8,UCEC
+C8,14,69,GO_0003713,0.00223,0.3842,0.38197,15,transcription coactivator activity,C8,UCEC
+C8,15,281,GO_0007584,0.0022,0.38404,0.38184,15,response to nutrient,C8,UCEC
+C9,1,348,GO_0010001,0.01628,0.40001,0.38373,15,glial cell differentiation,C9,ACC
+C9,2,362,GO_0010820,0.01116,0.39391,0.38274,15,positive regulation of T cell chemotaxis,C9,ACC
+C9,3,767,GO_0050731,0.01096,0.39335,0.38239,15,positive regulation of peptidyl-tyrosine phosphorylation,C9,ACC
+C9,4,202,GO_0006559,0.01042,0.39409,0.38368,15,L-phenylalanine catabolic process,C9,ACC
+C9,5,524,GO_0031295,0.01034,0.39283,0.38249,15,T cell costimulation,C9,ACC
+C9,6,683,GO_0044598,0.01012,0.39395,0.38383,15,doxorubicin metabolic process,C9,ACC
+C9,7,971,GO_2000811,0.00992,0.39253,0.38261,15,negative regulation of anoikis,C9,ACC
+C9,8,947,GO_1903598,0.00986,0.3932,0.38335,15,positive regulation of gap junction assembly,C9,ACC
+C9,9,500,GO_0030534,0.00985,0.39297,0.38312,15,adult behavior,C9,ACC
+C9,10,315,GO_0008289,0.00974,0.39175,0.38201,15,lipid binding,C9,ACC
+C9,11,298,GO_0008104,0.0096,0.39194,0.38235,15,protein localization,C9,ACC
+C9,12,301,GO_0008150,0.0094,0.39264,0.38323,15,biological_process,C9,ACC
+C9,13,658,GO_0043281,0.00939,0.39118,0.38179,15,regulation of cysteine-type endopeptidase activity involved in apoptotic process,C9,ACC
+C9,14,624,GO_0042592,0.00902,0.39137,0.38235,15,homeostatic process,C9,ACC
+C9,15,958,GO_1990349,0.00895,0.39291,0.38396,15,gap junction-mediated intercellular transport,C9,ACC
+C10,1,732,GO_0046914,0.01731,0.40094,0.38362,15,transition metal ion binding,C10,LUSC
+C10,2,133,GO_0005575,0.0122,0.39555,0.38336,15,cellular_component,C10,LUSC
+C10,3,624,GO_0042592,0.00986,0.39221,0.38235,15,homeostatic process,C10,LUSC
+C10,4,703,GO_0045334,0.00816,0.39223,0.38407,15,clathrin-coated endocytic vesicle,C10,LUSC
+C10,5,341,GO_0009898,0.00761,0.39143,0.38382,15,cytoplasmic side of plasma membrane,C10,LUSC
+C10,6,122,GO_0005507,0.00685,0.38972,0.38287,15,copper ion binding,C10,LUSC
+C10,7,337,GO_0009880,0.00655,0.3896,0.38305,15,embryonic pattern specification,C10,LUSC
+C10,8,576,GO_0034451,0.00615,0.38974,0.38358,15,centriolar satellite,C10,LUSC
+C10,9,694,GO_0045178,0.00594,0.38852,0.38258,15,basal part of cell,C10,LUSC
+C10,10,456,GO_0030018,0.00528,0.38821,0.38294,15,Z disc,C10,LUSC
+C10,11,183,GO_0005929,0.00513,0.38739,0.38225,15,cilium,C10,LUSC
+C10,12,654,GO_0043204,0.00513,0.38701,0.38188,15,perikaryon,C10,LUSC
+C10,13,870,GO_0071354,0.0049,0.38757,0.38267,15,cellular response to interleukin-6,C10,LUSC
+C10,14,235,GO_0006936,0.00487,0.38994,0.38507,15,muscle contraction,C10,LUSC
+C10,15,914,GO_0097421,0.00462,0.38753,0.3829,15,liver regeneration,C10,LUSC
+C11,1,99,GO_0004970,0.01884,0.40104,0.3822,15,ionotropic glutamate receptor activity,C11,LGG
+C11,2,588,GO_0035235,0.01718,0.39952,0.38234,15,ionotropic glutamate receptor signaling pathway,C11,LGG
+C11,3,375,GO_0014003,0.01471,0.39967,0.38496,15,oligodendrocyte development,C11,LGG
+C11,4,915,GO_0097450,0.01353,0.39558,0.38205,15,astrocyte end-foot,C11,LGG
+C11,5,828,GO_0060291,0.01135,0.39554,0.38419,15,long-term synaptic potentiation,C11,LGG
+C11,6,275,GO_0007422,0.01091,0.39372,0.38281,15,peripheral nervous system development,C11,LGG
+C11,7,500,GO_0030534,0.01063,0.39376,0.38312,15,adult behavior,C11,LGG
+C11,8,372,GO_0010977,0.0103,0.39272,0.38242,15,negative regulation of neuron projection development,C11,LGG
+C11,9,323,GO_0008542,0.00956,0.39213,0.38257,15,visual learning,C11,LGG
+C11,10,925,GO_0098839,0.00914,0.3915,0.38236,15,postsynaptic density membrane,C11,LGG
+C11,11,508,GO_0030673,0.00845,0.39096,0.38251,15,axolemma,C11,LGG
+C11,12,173,GO_0005890,0.00813,0.3907,0.38256,15,sodium:potassium-exchanging ATPase complex,C11,LGG
+C11,13,251,GO_0007158,0.00791,0.39037,0.38246,15,neuron cell-cell adhesion,C11,LGG
+C11,14,114,GO_0005246,0.00738,0.39028,0.3829,15,calcium channel regulator activity,C11,LGG
+C11,15,957,GO_1990239,0.0072,0.3891,0.38191,15,steroid hormone binding,C11,LGG
+C12,1,210,GO_0006691,0.00359,0.38529,0.3817,15,leukotriene metabolic process,C12,THCA
+C12,2,931,GO_0099060,0.00343,0.38591,0.38248,15,integral component of postsynaptic specialization membrane,C12,THCA
+C12,3,259,GO_0007189,0.0029,0.38529,0.38239,15,adenylate cyclase-activating G protein-coupled receptor signaling pathway,C12,THCA
+C12,4,565,GO_0033700,0.00282,0.38407,0.38125,15,phospholipid efflux,C12,THCA
+C12,5,310,GO_0008237,0.00282,0.38409,0.38127,15,metallopeptidase activity,C12,THCA
+C12,6,522,GO_0031232,0.00278,0.38497,0.38219,15,extrinsic component of external side of plasma membrane,C12,THCA
+C12,7,776,GO_0050808,0.00277,0.38418,0.38141,15,synapse organization,C12,THCA
+C12,8,774,GO_0050804,0.00265,0.38569,0.38304,15,modulation of chemical synaptic transmission,C12,THCA
+C12,9,397,GO_0016042,0.00263,0.38415,0.38152,15,lipid catabolic process,C12,THCA
+C12,10,854,GO_0070371,0.00263,0.38433,0.3817,15,ERK1 and ERK2 cascade,C12,THCA
+C12,11,841,GO_0061564,0.00254,0.38445,0.38191,15,axon development,C12,THCA
+C12,12,551,GO_0032588,0.00252,0.38521,0.38269,15,trans-Golgi network membrane,C12,THCA
+C12,13,509,GO_0030674,0.00244,0.38409,0.38165,15,protein-macromolecule adaptor activity,C12,THCA
+C12,14,701,GO_0045295,0.00242,0.38365,0.38124,15,gamma-catenin binding,C12,THCA
+C12,15,304,GO_0008202,0.00236,0.38373,0.38137,15,steroid metabolic process,C12,THCA
+C13,1,914,GO_0097421,0.00795,0.39085,0.3829,15,liver regeneration,C13,nan
+C13,2,454,GO_0022857,0.00669,0.38841,0.38172,15,transmembrane transporter activity,C13,nan
+C13,3,955,GO_1905867,0.00469,0.38704,0.38235,15,epididymis development,C13,nan
+C13,4,889,GO_0072207,0.00412,0.38718,0.38307,15,metanephric epithelium development,C13,nan
+C13,5,483,GO_0030301,0.00404,0.38577,0.38174,15,cholesterol transport,C13,nan
+C13,6,637,GO_0042981,0.00397,0.38564,0.38167,15,regulation of apoptotic process,C13,nan
+C13,7,503,GO_0030594,0.00392,0.38559,0.38167,15,neurotransmitter receptor activity,C13,nan
+C13,8,838,GO_0060749,0.00386,0.38578,0.38192,15,mammary gland alveolus development,C13,nan
+C13,9,401,GO_0016264,0.00356,0.38577,0.38221,15,gap junction assembly,C13,nan
+C13,10,820,GO_0060054,0.00337,0.38574,0.38236,15,positive regulation of epithelial cell proliferation involved in wound healing,C13,nan
+C13,11,440,GO_0019835,0.00335,0.387,0.38365,15,cytolysis,C13,nan
+C13,12,478,GO_0030234,0.0033,0.38543,0.38213,15,enzyme regulator activity,C13,nan
+C13,13,774,GO_0050804,0.00328,0.38632,0.38304,15,modulation of chemical synaptic transmission,C13,nan
+C13,14,957,GO_1990239,0.00315,0.38505,0.38191,15,steroid hormone binding,C13,nan
+C13,15,42,GO_0001889,0.00303,0.38668,0.38365,15,liver development,C13,nan
+C14,1,916,GO_0097486,0.0864,0.47181,0.38541,15,multivesicular body lumen,C14,LUAD
+C14,2,627,GO_0042599,0.05118,0.43526,0.38408,15,lamellar body,C14,LUAD
+C14,3,703,GO_0045334,0.04973,0.4338,0.38407,15,clathrin-coated endocytic vesicle,C14,LUAD
+C14,4,152,GO_0005771,0.03941,0.42325,0.38384,15,multivesicular body,C14,LUAD
+C14,5,912,GO_0097208,0.03534,0.41837,0.38303,15,alveolar lamellar body,C14,LUAD
+C14,6,282,GO_0007585,0.0243,0.40836,0.38406,15,respiratory gaseous exchange by respiratory system,C14,LUAD
+C14,7,724,GO_0045907,0.01983,0.40364,0.3838,15,positive regulation of vasoconstriction,C14,LUAD
+C14,8,466,GO_0030139,0.01513,0.39798,0.38284,15,endocytic vesicle,C14,LUAD
+C14,9,539,GO_0031904,0.01496,0.39756,0.3826,15,endosome lumen,C14,LUAD
+C14,10,647,GO_0043129,0.01376,0.39649,0.38273,15,surfactant homeostasis,C14,LUAD
+C14,11,81,GO_0004190,0.01341,0.39687,0.38346,15,aspartic-type endopeptidase activity,C14,LUAD
+C14,12,913,GO_0097209,0.01136,0.39387,0.38251,15,epidermal lamellar body,C14,LUAD
+C14,13,136,GO_0005581,0.01122,0.39388,0.38266,15,collagen trimer,C14,LUAD
+C14,14,465,GO_0030136,0.01083,0.39293,0.3821,15,clathrin-coated vesicle,C14,LUAD
+C14,15,279,GO_0007566,0.01061,0.39403,0.38342,15,embryo implantation,C14,LUAD
+C15,1,610,GO_0042311,0.00602,0.38923,0.3832,15,vasodilation,C15,SKCM
+C15,2,877,GO_0071466,0.00571,0.3882,0.3825,15,cellular response to xenobiotic stimulus,C15,SKCM
+C15,3,874,GO_0071377,0.00377,0.38686,0.38309,15,cellular response to glucagon stimulus,C15,SKCM
+C15,4,824,GO_0060076,0.00375,0.38672,0.38298,15,excitatory synapse,C15,SKCM
+C15,5,807,GO_0051968,0.00361,0.38724,0.38363,15,"positive regulation of synaptic transmission, glutamatergic",C15,SKCM
+C15,6,626,GO_0042594,0.0033,0.38649,0.38319,15,response to starvation,C15,SKCM
+C15,7,774,GO_0050804,0.00308,0.38612,0.38304,15,modulation of chemical synaptic transmission,C15,SKCM
+C15,8,652,GO_0043200,0.00289,0.38655,0.38366,15,response to amino acid,C15,SKCM
+C15,9,62,GO_0003333,0.00283,0.38437,0.38155,15,amino acid transmembrane transport,C15,SKCM
+C15,10,169,GO_0005883,0.00277,0.38752,0.38475,15,neurofilament,C15,SKCM
+C15,11,251,GO_0007158,0.00266,0.38512,0.38246,15,neuron cell-cell adhesion,C15,SKCM
+C15,12,145,GO_0005743,0.00228,0.38463,0.38234,15,mitochondrial inner membrane,C15,SKCM
+C15,13,864,GO_0071285,0.00215,0.38446,0.38231,15,cellular response to lithium ion,C15,SKCM
+C15,14,126,GO_0005518,0.00193,0.38347,0.38154,15,collagen binding,C15,SKCM
+C15,15,75,GO_0003924,0.00191,0.38359,0.38168,15,GTPase activity,C15,SKCM
+C16,1,59,GO_0003073,0.02732,0.412,0.38468,15,regulation of systemic arterial blood pressure,C16,PRAD
+C16,2,307,GO_0008217,0.0231,0.40725,0.38416,15,regulation of blood pressure,C16,PRAD
+C16,3,464,GO_0030134,0.0204,0.40311,0.3827,15,COPII-coated ER to Golgi transport vesicle,C16,PRAD
+C16,4,129,GO_0005539,0.01967,0.4036,0.38394,15,glycosaminoglycan binding,C16,PRAD
+C16,5,567,GO_0034185,0.01904,0.40146,0.38242,15,apolipoprotein binding,C16,PRAD
+C16,6,373,GO_0010989,0.01817,0.4018,0.38363,15,negative regulation of low-density lipoprotein particle clearance,C16,PRAD
+C16,7,769,GO_0050750,0.01742,0.40038,0.38296,15,low-density lipoprotein particle receptor binding,C16,PRAD
+C16,8,533,GO_0031638,0.01645,0.39883,0.38237,15,zymogen activation,C16,PRAD
+C16,9,42,GO_0001889,0.01562,0.39927,0.38365,15,liver development,C16,PRAD
+C16,10,520,GO_0031210,0.01553,0.39755,0.38201,15,phosphatidylcholine binding,C16,PRAD
+C16,11,534,GO_0031639,0.01472,0.39728,0.38256,15,plasminogen activation,C16,PRAD
+C16,12,522,GO_0031232,0.01459,0.39678,0.38219,15,extrinsic component of external side of plasma membrane,C16,PRAD
+C16,13,568,GO_0034190,0.01422,0.39684,0.38262,15,apolipoprotein receptor binding,C16,PRAD
+C16,14,516,GO_0031091,0.01384,0.39628,0.38243,15,platelet alpha granule,C16,PRAD
+C16,15,208,GO_0006641,0.01278,0.39508,0.38231,15,triglyceride metabolic process,C16,PRAD
+C17,1,834,GO_0060527,0.01495,0.39883,0.38388,15,prostate epithelial cord arborization involved in prostate glandular acinus morphogenesis,C17,nan
+C17,2,103,GO_0005109,0.01389,0.3981,0.38421,15,frizzled binding,C17,nan
+C17,3,428,GO_0017147,0.01207,0.39487,0.3828,15,Wnt-protein binding,C17,nan
+C17,4,837,GO_0060687,0.01072,0.3949,0.38418,15,regulation of branching involved in prostate gland morphogenesis,C17,nan
+C17,5,748,GO_0048546,0.01019,0.39371,0.38352,15,digestive tract morphogenesis,C17,nan
+C17,6,823,GO_0060070,0.0101,0.39267,0.38257,15,canonical Wnt signaling pathway,C17,nan
+C17,7,714,GO_0045668,0.01,0.39408,0.38408,15,negative regulation of osteoblast differentiation,C17,nan
+C17,8,46,GO_0001954,0.00977,0.39433,0.38456,15,positive regulation of cell-matrix adhesion,C17,nan
+C17,9,878,GO_0071481,0.00953,0.39413,0.38461,15,cellular response to X-ray,C17,nan
+C17,10,768,GO_0050732,0.0092,0.39346,0.38427,15,negative regulation of peptidyl-tyrosine phosphorylation,C17,nan
+C17,11,663,GO_0043508,0.00901,0.39178,0.38277,15,negative regulation of JUN kinase activity,C17,nan
+C17,12,785,GO_0050909,0.00875,0.39107,0.38231,15,sensory perception of taste,C17,nan
+C17,13,585,GO_0035019,0.00847,0.39212,0.38364,15,somatic stem cell population maintenance,C17,nan
+C17,14,426,GO_0017080,0.00819,0.39098,0.38279,15,sodium channel regulator activity,C17,nan
+C17,15,697,GO_0045214,0.00808,0.39155,0.38348,15,sarcomere organization,C17,nan
+C18,1,455,GO_0022900,0.00777,0.39149,0.38371,15,electron transport chain,C18,nan
+C18,2,584,GO_0034976,0.00749,0.39161,0.38412,15,response to endoplasmic reticulum stress,C18,nan
+C18,3,514,GO_0031016,0.00744,0.39045,0.38301,15,pancreas development,C18,nan
+C18,4,327,GO_0009312,0.00615,0.38934,0.38319,15,oligosaccharide biosynthetic process,C18,nan
+C18,5,87,GO_0004602,0.00505,0.38761,0.38256,15,glutathione peroxidase activity,C18,nan
+C18,6,953,GO_1904970,0.00443,0.38718,0.38275,15,brush border assembly,C18,nan
+C18,7,199,GO_0006486,0.00413,0.38667,0.38254,15,protein glycosylation,C18,nan
+C18,8,835,GO_0060548,0.00405,0.38686,0.38281,15,negative regulation of cell death,C18,nan
+C18,9,242,GO_0006979,0.00373,0.3861,0.38237,15,response to oxidative stress,C18,nan
+C18,10,521,GO_0031225,0.00314,0.38481,0.38167,15,anchored component of membrane,C18,nan
+C18,11,479,GO_0030246,0.00301,0.38474,0.38173,15,carbohydrate binding,C18,nan
+C18,12,42,GO_0001889,0.00274,0.38639,0.38365,15,liver development,C18,nan
+C18,13,551,GO_0032588,0.00263,0.38532,0.38269,15,trans-Golgi network membrane,C18,nan
+C18,14,926,GO_0098869,0.00256,0.3852,0.38264,15,cellular oxidant detoxification,C18,nan
+C18,15,661,GO_0043434,0.00245,0.3845,0.38205,15,response to peptide hormone,C18,nan
+C19,1,891,GO_0072378,0.01017,0.39375,0.38358,15,"blood coagulation, fibrin clot formation",C19,BRCA
+C19,2,57,GO_0002682,0.01,0.39236,0.38236,15,regulation of immune system process,C19,BRCA
+C19,3,910,GO_0097150,0.00853,0.39201,0.38348,15,neuronal stem cell population maintenance,C19,BRCA
+C19,4,948,GO_1903779,0.00838,0.39164,0.38326,15,regulation of cardiac conduction,C19,BRCA
+C19,5,905,GO_0090277,0.00816,0.39177,0.38361,15,positive regulation of peptide hormone secretion,C19,BRCA
+C19,6,366,GO_0010875,0.00801,0.39056,0.38255,15,positive regulation of cholesterol efflux,C19,BRCA
+C19,7,318,GO_0008360,0.00794,0.39094,0.383,15,regulation of cell shape,C19,BRCA
+C19,8,945,GO_1903078,0.00793,0.3926,0.38467,15,positive regulation of protein localization to plasma membrane,C19,BRCA
+C19,9,301,GO_0008150,0.00779,0.39103,0.38323,15,biological_process,C19,BRCA
+C19,10,805,GO_0051923,0.0076,0.39085,0.38325,15,sulfation,C19,BRCA
+C19,11,353,GO_0010467,0.00759,0.39047,0.38288,15,gene expression,C19,BRCA
+C19,12,711,GO_0045617,0.00732,0.39118,0.38387,15,negative regulation of keratinocyte differentiation,C19,BRCA
+C19,13,196,GO_0006397,0.00724,0.39108,0.38383,15,mRNA processing,C19,BRCA
+C19,14,284,GO_0007588,0.0071,0.39008,0.38298,15,excretion,C19,BRCA
+C19,15,359,GO_0010667,0.00706,0.39065,0.38358,15,negative regulation of cardiac muscle cell apoptotic process,C19,BRCA
+C20,1,836,GO_0060575,0.00711,0.39085,0.38374,15,intestinal epithelial cell differentiation,C20,nan
+C20,2,12,GO_0001216,0.00436,0.38734,0.38298,15,DNA-binding transcription activator activity,C20,nan
+C20,3,588,GO_0035235,0.00402,0.38636,0.38234,15,ionotropic glutamate receptor signaling pathway,C20,nan
+C20,4,893,GO_0072582,0.00338,0.3861,0.38273,15,17-beta-hydroxysteroid dehydrogenase (NADP+) activity,C20,nan
+C20,5,864,GO_0071285,0.00317,0.38549,0.38231,15,cellular response to lithium ion,C20,nan
+C20,6,259,GO_0007189,0.00302,0.38541,0.38239,15,adenylate cyclase-activating G protein-coupled receptor signaling pathway,C20,nan
+C20,7,851,GO_0070328,0.00291,0.38443,0.38152,15,triglyceride homeostasis,C20,nan
+C20,8,387,GO_0015293,0.0028,0.38463,0.38183,15,symporter activity,C20,nan
+C20,9,540,GO_0031965,0.00271,0.38445,0.38174,15,nuclear membrane,C20,nan
+C20,10,900,GO_0090102,0.00261,0.38582,0.38321,15,cochlea development,C20,nan
+C20,11,41,GO_0001843,0.00243,0.3852,0.38277,15,neural tube closure,C20,nan
+C20,12,814,GO_0055074,0.0024,0.38416,0.38175,15,calcium ion homeostasis,C20,nan
+C20,13,937,GO_0140297,0.00239,0.38378,0.38139,15,DNA-binding transcription factor binding,C20,nan
+C20,14,399,GO_0016192,0.00232,0.38437,0.38205,15,vesicle-mediated transport,C20,nan
+C20,15,795,GO_0051289,0.00231,0.38448,0.38217,15,protein homotetramerization,C20,nan
+C21,1,291,GO_0007623,0.01687,0.40003,0.38316,6,circadian rhythm,C21,DLBC
+C21,2,692,GO_0045171,0.01083,0.39483,0.384,6,intercellular bridge,C21,DLBC
+C21,3,279,GO_0007566,0.0107,0.39412,0.38342,6,embryo implantation,C21,DLBC
+C21,4,895,GO_0072686,0.01068,0.39272,0.38204,6,mitotic spindle,C21,DLBC
+C21,5,849,GO_0070160,0.0105,0.39218,0.38168,6,tight junction,C21,DLBC
+C21,6,455,GO_0022900,0.00939,0.39311,0.38371,6,electron transport chain,C21,DLBC
+C21,7,103,GO_0005109,0.00887,0.39308,0.38421,6,frizzled binding,C21,DLBC
+C21,8,59,GO_0003073,0.00824,0.39292,0.38468,6,regulation of systemic arterial blood pressure,C21,DLBC
+C21,9,870,GO_0071354,0.00789,0.39056,0.38267,6,cellular response to interleukin-6,C21,DLBC
+C21,10,496,GO_0030506,0.00683,0.38948,0.38265,6,ankyrin binding,C21,DLBC
+C21,11,220,GO_0006826,0.00679,0.38941,0.38262,6,iron ion transport,C21,DLBC
+C21,12,209,GO_0006656,0.0062,0.38868,0.38248,6,phosphatidylcholine biosynthetic process,C21,DLBC
+C21,13,538,GO_0031902,0.00533,0.38762,0.38229,6,late endosome membrane,C21,DLBC
+C21,14,533,GO_0031638,0.00517,0.38755,0.38237,6,zymogen activation,C21,DLBC
+C21,15,587,GO_0035116,0.00433,0.38646,0.38213,6,embryonic hindlimb morphogenesis,C21,DLBC
+C22,1,964,GO_2000311,0.03298,0.41749,0.38451,15,regulation of AMPA receptor activity,C22,SARC
+C22,2,828,GO_0060291,0.03196,0.41615,0.38419,15,long-term synaptic potentiation,C22,SARC
+C22,3,585,GO_0035019,0.02445,0.4081,0.38364,15,somatic stem cell population maintenance,C22,SARC
+C22,4,837,GO_0060687,0.02075,0.40493,0.38418,15,regulation of branching involved in prostate gland morphogenesis,C22,SARC
+C22,5,680,GO_0044344,0.01667,0.39944,0.38277,15,cellular response to fibroblast growth factor stimulus,C22,SARC
+C22,6,610,GO_0042311,0.0163,0.39951,0.3832,15,vasodilation,C22,SARC
+C22,7,797,GO_0051491,0.01574,0.40041,0.38467,15,positive regulation of filopodium assembly,C22,SARC
+C22,8,807,GO_0051968,0.01561,0.39925,0.38363,15,"positive regulation of synaptic transmission, glutamatergic",C22,SARC
+C22,9,103,GO_0005109,0.01534,0.39956,0.38421,15,frizzled binding,C22,SARC
+C22,10,863,GO_0071277,0.01408,0.39713,0.38305,15,cellular response to calcium ion,C22,SARC
+C22,11,931,GO_0099060,0.01394,0.39642,0.38248,15,integral component of postsynaptic specialization membrane,C22,SARC
+C22,12,824,GO_0060076,0.01382,0.3968,0.38298,15,excitatory synapse,C22,SARC
+C22,13,251,GO_0007158,0.0133,0.39576,0.38246,15,neuron cell-cell adhesion,C22,SARC
+C22,14,774,GO_0050804,0.01293,0.39597,0.38304,15,modulation of chemical synaptic transmission,C22,SARC
+C22,15,834,GO_0060527,0.01272,0.3966,0.38388,15,prostate epithelial cord arborization involved in prostate glandular acinus morphogenesis,C22,SARC
+C23,1,706,GO_0045494,0.02042,0.40428,0.38386,9,photoreceptor cell maintenance,C23,GBM
+C23,2,710,GO_0045600,0.01756,0.3997,0.38214,9,positive regulation of fat cell differentiation,C23,GBM
+C23,3,169,GO_0005883,0.01526,0.40001,0.38475,9,neurofilament,C23,GBM
+C23,4,614,GO_0042391,0.01521,0.39758,0.38236,9,regulation of membrane potential,C23,GBM
+C23,5,692,GO_0045171,0.01516,0.39917,0.384,9,intercellular bridge,C23,GBM
+C23,6,904,GO_0090263,0.01419,0.3973,0.38311,9,positive regulation of canonical Wnt signaling pathway,C23,GBM
+C23,7,952,GO_1904813,0.01337,0.3965,0.38313,9,ficolin-1-rich granule lumen,C23,GBM
+C23,8,133,GO_0005575,0.01331,0.39666,0.38336,9,cellular_component,C23,GBM
+C23,9,578,GO_0034613,0.01316,0.39598,0.38282,9,cellular protein localization,C23,GBM
+C23,10,949,GO_1904115,0.01303,0.39572,0.38269,9,axon cytoplasm,C23,GBM
+C23,11,341,GO_0009898,0.0123,0.39612,0.38382,9,cytoplasmic side of plasma membrane,C23,GBM
+C23,12,792,GO_0051216,0.01213,0.39623,0.3841,9,cartilage development,C23,GBM
+C23,13,307,GO_0008217,0.0121,0.39626,0.38416,9,regulation of blood pressure,C23,GBM
+C23,14,413,GO_0016485,0.01129,0.3933,0.38202,9,protein processing,C23,GBM
+C23,15,754,GO_0048839,0.01067,0.39291,0.38224,9,inner ear development,C23,GBM
+C24,1,526,GO_0031406,0.03076,0.41462,0.38386,15,carboxylic acid binding,C25,nan
+C24,2,186,GO_0006006,0.03057,0.41427,0.3837,15,glucose metabolic process,C25,nan
+C24,3,865,GO_0071300,0.02047,0.40382,0.38335,15,cellular response to retinoic acid,C25,nan
+C24,4,874,GO_0071377,0.01761,0.4007,0.38309,15,cellular response to glucagon stimulus,C25,nan
+C24,5,626,GO_0042594,0.01717,0.40037,0.38319,15,response to starvation,C25,nan
+C24,6,746,GO_0048485,0.0165,0.39901,0.38251,15,sympathetic nervous system development,C25,nan
+C24,7,558,GO_0032869,0.01565,0.39853,0.38288,15,cellular response to insulin stimulus,C25,nan
+C24,8,867,GO_0071333,0.01558,0.39865,0.38306,15,cellular response to glucose stimulus,C25,nan
+C24,9,853,GO_0070365,0.01533,0.39821,0.38288,15,hepatocyte differentiation,C25,nan
+C24,10,866,GO_0071320,0.01527,0.39832,0.38305,15,cellular response to cAMP,C25,nan
+C24,11,732,GO_0046914,0.0135,0.39712,0.38362,15,transition metal ion binding,C25,nan
+C24,12,375,GO_0014003,0.01177,0.39673,0.38496,15,oligodendrocyte development,C25,nan
+C24,13,4,GO_0000287,0.01078,0.39298,0.3822,15,magnesium ion binding,C25,nan
+C24,14,860,GO_0070888,0.01044,0.3927,0.38226,15,E-box binding,C25,nan
+C24,15,129,GO_0005539,0.00918,0.39312,0.38394,15,glycosaminoglycan binding,C25,nan
+C25,1,565,GO_0033700,0.00221,0.38346,0.38125,15,phospholipid efflux,C26,LIHC
+C25,2,795,GO_0051289,0.00195,0.38411,0.38217,15,protein homotetramerization,C26,LIHC
+C25,3,153,GO_0005782,0.00169,0.38388,0.38219,15,peroxisomal matrix,C26,LIHC
+C25,4,935,GO_0120020,0.00164,0.38342,0.38178,15,cholesterol transfer activity,C26,LIHC
+C25,5,387,GO_0015293,0.0016,0.38343,0.38183,15,symporter activity,C26,LIHC
+C25,6,300,GO_0008146,0.00131,0.38346,0.38215,15,sulfotransferase activity,C26,LIHC
+C25,7,621,GO_0042572,0.00123,0.38265,0.38143,15,retinol metabolic process,C26,LIHC
+C25,8,116,GO_0005262,0.00122,0.38371,0.38249,15,calcium channel activity,C26,LIHC
+C25,9,162,GO_0005811,0.0012,0.38292,0.38172,15,lipid droplet,C26,LIHC
+C25,10,490,GO_0030336,0.00115,0.38245,0.38131,15,negative regulation of cell migration,C26,LIHC
+C25,11,310,GO_0008237,0.001,0.38227,0.38127,15,metallopeptidase activity,C26,LIHC
+C25,12,730,GO_0046777,0.00096,0.38267,0.38171,15,protein autophosphorylation,C26,LIHC
+C25,13,149,GO_0005768,0.00088,0.38238,0.3815,15,endosome,C26,LIHC
+C25,14,919,GO_0098655,0.00088,0.38221,0.38134,15,cation transmembrane transport,C26,LIHC
+C25,15,115,GO_0005254,0.00086,0.3824,0.38154,15,chloride channel activity,C26,LIHC
+C26,1,799,GO_0051552,0.01575,0.39945,0.3837,15,flavone metabolic process,C27,CESC
+C26,2,55,GO_0002544,0.01498,0.39753,0.38256,15,chronic inflammatory response,C27,CESC
+C26,3,342,GO_0009913,0.01354,0.39714,0.3836,15,epidermal cell differentiation,C27,CESC
+C26,4,153,GO_0005782,0.0129,0.39509,0.38219,15,peroxisomal matrix,C27,CESC
+C26,5,772,GO_0050786,0.01186,0.39509,0.38323,15,RAGE receptor binding,C27,CESC
+C26,6,952,GO_1904813,0.01087,0.394,0.38313,15,ficolin-1-rich granule lumen,C27,CESC
+C26,7,455,GO_0022900,0.01049,0.39421,0.38371,15,electron transport chain,C27,CESC
+C26,8,590,GO_0035425,0.01048,0.39259,0.38211,15,autocrine signaling,C27,CESC
+C26,9,438,GO_0019825,0.01025,0.39259,0.38234,15,oxygen binding,C27,CESC
+C26,10,482,GO_0030280,0.01011,0.39272,0.38261,15,structural constituent of skin epidermis,C27,CESC
+C26,11,798,GO_0051493,0.00973,0.39408,0.38436,15,regulation of cytoskeleton organization,C27,CESC
+C26,12,833,GO_0060487,0.00931,0.39283,0.38351,15,lung epithelial cell differentiation,C27,CESC
+C26,13,810,GO_0052696,0.00837,0.39044,0.38207,15,flavonoid glucuronidation,C27,CESC
+C26,14,514,GO_0031016,0.00798,0.39099,0.38301,15,pancreas development,C27,CESC
+C26,15,478,GO_0030234,0.00742,0.38955,0.38213,15,enzyme regulator activity,C27,CESC
+C27,1,206,GO_0006633,0.0068,0.38836,0.38156,15,fatty acid biosynthetic process,C28,KIRC
+C27,2,813,GO_0055072,0.00268,0.38423,0.38155,15,iron ion homeostasis,C28,KIRC
+C27,3,827,GO_0060271,0.00241,0.38417,0.38176,15,cilium assembly,C28,KIRC
+C27,4,23,GO_0001569,0.00239,0.38469,0.38231,15,branching involved in blood vessel morphogenesis,C28,KIRC
+C27,5,226,GO_0006879,0.00235,0.3843,0.38195,15,cellular iron ion homeostasis,C28,KIRC
+C27,6,268,GO_0007389,0.00231,0.3844,0.38209,15,pattern specification process,C28,KIRC
+C27,7,411,GO_0016410,0.00204,0.38493,0.38289,15,N-acyltransferase activity,C28,KIRC
+C27,8,742,GO_0048286,0.002,0.38402,0.38202,15,lung alveolus development,C28,KIRC
+C27,9,64,GO_0003382,0.0019,0.38368,0.38178,15,epithelial cell morphogenesis,C28,KIRC
+C27,10,207,GO_0006637,0.00182,0.385,0.38318,15,acyl-CoA metabolic process,C28,KIRC
+C27,11,91,GO_0004745,0.00175,0.38321,0.38146,15,NAD-retinol dehydrogenase activity,C28,KIRC
+C27,12,599,GO_0036101,0.00163,0.38286,0.38123,15,leukotriene B4 catabolic process,C28,KIRC
+C27,13,322,GO_0008514,0.00163,0.38334,0.38171,15,organic anion transmembrane transporter activity,C28,KIRC
+C27,14,752,GO_0048793,0.00162,0.38398,0.38236,15,pronephros development,C28,KIRC
+C27,15,851,GO_0070328,0.00158,0.3831,0.38152,15,triglyceride homeostasis,C28,KIRC

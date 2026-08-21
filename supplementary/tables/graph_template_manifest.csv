@@ -1,0 +1,14 @@
+kind,name,count
+node,gene,700
+node,miRNA,63
+node,TF,98
+node,pathway,680
+node,GO_term,973
+node,disease,499
+edge,interacts,1287
+edge,targets,208
+edge,regulates,419
+edge,member_of,3385
+edge,annotated_with,9190
+edge,is_a,1298
+edge,associated_with,862

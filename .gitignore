@@ -64,7 +64,15 @@ results/pancan/p*
 results/pancan/s*
 results/pancan/T3*
 logs/
+# Generated plots are ignored, but the curated README/release assets are kept
 figures/
+!figures/
+!figures/*.png
+
+# Supplementary material shipped with the release (source, PDF, tables, figure)
+!supplementary/
+!supplementary/*.pdf
+!supplementary/images/*.png
 # models/
 notes/
 datasets/data/
@@ -98,10 +106,7 @@ results/*
 paper/*
 
 # other
-CLUADE.md
-README_ita.md
-PULIZIA*
-
+Makefile*
 
 # escusion
 !src\multiomics_kg_hgnn\models

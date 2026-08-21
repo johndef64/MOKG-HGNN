@@ -1,0 +1,3 @@
+model,genes_max,genes_min,f1_at_max,f1_at_min,f1_drop,f1_per_halving
+MOKG-HGNN,700,20,0.7243,0.6569,0.0674,0.0144
+MOGNN-TF,700,20,0.7963,0.6386,0.1578,0.0293
