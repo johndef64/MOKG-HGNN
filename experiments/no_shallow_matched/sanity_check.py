@@ -1,8 +1,9 @@
 """Sanity checks BEFORE the 35 no-shallow runs (ticket §4). Writes results/sanity_check.json.
 
 Part A (static, no training):
-  A1 splits    : the frozen split files are byte-identical to a fresh regeneration with
-                 the vendored generator, have 60/20/20 sizes, and predate the existing runs.
+  A1 splits    : the frozen split files hold the same ordered index sequences as a fresh
+                 regeneration with the vendored generator (bytes may differ only by the
+                 platform line ending), have 60/20/20 sizes, and predate the existing runs.
   A2 panels    : for every (level, split) the regenerated panel (genes, TF, miRNA, in
                  order) is identical to the one recorded in the existing with-shallow run
                  (used_config.yaml), its counts match the original summary CSV and the
@@ -57,9 +58,16 @@ def check_splits():
         d = tmp / f"seed{s}"
         generate_stratified_shuffle_indices(out_dir=str(d), labels_csv=str(labels),
                                             test_size=0.2, val_size=0.25, random_state=s)
+        regen = {p: d / f"{C.SPLIT_PREFIX}_{p}.tsv" for p in files}
+        # the split is the ordered index sequence: compare that, not the bytes. np.savetxt
+        # writes the platform line ending (CRLF on Windows, LF on Linux), so a byte check
+        # fails on identical splits produced or copied across operating systems.
         rec["identical_to_regeneration"] = all(
-            Path(files[p]).read_bytes() == (d / f"{C.SPLIT_PREFIX}_{p}.tsv").read_bytes()
+            np.array_equal(np.loadtxt(files[p], dtype=int), np.loadtxt(regen[p], dtype=int))
             for p in files)
+        rec["info_bytes_identical_to_regeneration"] = all(
+            Path(files[p]).read_bytes() == regen[p].read_bytes() for p in files)
+        rec["info_crlf_line_endings"] = any(b"\r\n" in Path(files[p]).read_bytes() for p in files)
         sizes = {p: int(len(np.loadtxt(files[p], dtype=int))) for p in files}
         rec["sizes"] = sizes
         idx = np.concatenate([np.loadtxt(files[p], dtype=int) for p in files])
