@@ -114,3 +114,23 @@ Makefile*
 !results\pancan\tf_interpretation\tf_fscore_per_subtype.csv
 
 
+
+# ============================================
+# No-shallow matched experiment (experiments/no_shallow_matched + scripts/slurm)
+# ============================================
+# outputs are produced on the cluster: version only the preliminary check
+experiments/no_shallow_matched/results/*
+!experiments/no_shallow_matched/results/preliminary_check.md
+experiments/no_shallow_matched/slurm_logs/
+# cluster guide: internal addresses and procedures, keep it local
+scripts/slurm/server-guide.md
+# HGNC symbol <-> Entrez table: required to build the graph (was excluded by *.zip)
+!scripts/preprocessing/priors/hgcn_mart_conversion_table.zip
+
+# Local notes and working files (not part of the release)
+/CLAUDE.md
+/PULIZIA-Github.md
+/README_ita.md
+/ticket_*.md
+scripts/kg_hgnn/fix_per_class_names.py
+scripts/kg_hgnn/render_semantic_graph_v0.py
