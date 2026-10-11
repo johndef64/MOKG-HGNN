@@ -64,39 +64,49 @@ e sbatch falliscono (`$'\r': command not found`). Controllo sul cluster:
 `grep -c $'\r' scripts/slurm/*.sh scripts/slurm/*.sbatch` deve dare 0 per ogni file
 (altrimenti `sed -i 's/\r$//' scripts/slurm/*`).
 
-## 2. L'ambiente: `gnn` ufficiale
+## 2. L'ambiente: `gnn` più il venv `gnn-ns`
 
-Tutti i passi usano l'ambiente ufficiale del cluster `gnn` (Python 3.10, torch 2.7.0 con CUDA
-12.8, PyTorch Geometric 2.7.0: le stesse versioni dell'ambiente con cui sono state prodotte le
-serie esistenti sul server precedente; il preflight lo verifica), attivato con
-`iknos_activate gnn` come `deeplearning` o gli altri ambienti ufficiali. Nessun venv, nessuna
-installazione.
-
-Prima di lanciare, verificare ambiente e input dal nodo di login (terminale del portale,
-Clusters → Iknos Cluster Shell Access, o SSH):
+L'ambiente di base è quello ufficiale `gnn` (Python 3.10, torch 2.7.0 con CUDA 12.8, PyTorch
+Geometric 2.7.0: le stesse versioni con cui sono state prodotte le serie esistenti sul server
+precedente; il preflight lo verifica). Il runner di MOGNN-TF importa all'avvio anche `optuna` e
+`statsmodels`, che `gnn` non ha. Negli ambienti ufficiali non si installa (guida §4), quindi si
+crea una volta un venv sopra `gnn` che aggiunge solo quei due pacchetti, con le versioni di
+`gnn` bloccate (numpy, scipy, pandas, torch non devono cambiare):
 
 ```bash
-cd ~/private/MOKG-HGNN
-source /home/apps/iknos-env.sh && iknos_activate gnn
+source /home/apps/iknos-env.sh
+iknos_activate gnn
+pip list --format=freeze > ~/gnn-pins.txt
+iknos_venv_create gnn-ns gnn
+iknos_activate $USER/gnn-ns
+python -m pip install -c ~/gnn-pins.txt optuna statsmodels
+```
+
+Gli script scelgono l'ambiente da soli: `$USER/gnn-ns` se esiste, altrimenti `gnn`. Per forzarne
+un altro: `export NS_ENV=<ambiente>` prima di sottomettere.
+
+Prima di lanciare, verificare ambiente e input dal nodo di login (terminale del portale,
+Clusters → Iknos Cluster Shell Access, o SSH), dalla radice del repo:
+
+```bash
+source /home/apps/iknos-env.sh && iknos_activate $USER/gnn-ns
 python scripts/slurm/no_shallow_preflight.py
 ```
 
-Il runner di MOGNN-TF importa all'avvio anche `optuna`, `yaml` e `statsmodels`, che la guida non
-elenca per `gnn`. Se il preflight li segnala mancanti, chiedere all'amministratore di
-aggiungerli a `gnn` (negli ambienti ufficiali non si installa, guida §4). `no_shallow_submit.sh`
-ripete comunque il preflight e non accoda nulla se fallisce.
+`no_shallow_submit.sh` ripete comunque il preflight e non accoda nulla se fallisce.
 
 ## 3. Lanciare
 
 ```bash
-cd ~/private/MOKG-HGNN
+cd <radice del repo>
 bash scripts/slurm/no_shallow_submit.sh
 ```
 
 Sottomette i tre passi con le dipendenze: i run partono solo se il sanity finisce bene,
 l'analisi solo se tutti i 7 task dei run finiscono bene. I log vanno in
 `experiments/no_shallow_matched/slurm_logs/`. Gli sbatch vanno sottomessi **dalla radice del
-repo**: i percorsi `#SBATCH --output` sono relativi alla cartella da cui si lancia.
+repo**: i percorsi `#SBATCH --output` sono relativi alla cartella da cui si lancia, e i job
+usano quella cartella come repo (per forzarne un'altra: `export NS_REPO=<percorso>`).
 Lanciare un passo da solo: `mkdir -p experiments/no_shallow_matched/slurm_logs` e poi
 `sbatch scripts/slurm/no_shallow_<passo>.sbatch`.
 

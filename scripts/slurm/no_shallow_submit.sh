@@ -1,7 +1,7 @@
 #!/bin/bash
 # Submit the whole no-shallow chain with dependencies, from the iknos LOGIN node:
 #
-#   cd ~/private/MOKG-HGNN
+#   cd <repository root>
 #   bash scripts/slurm/no_shallow_submit.sh            # sanity -> 35 runs -> analysis
 #   bash scripts/slurm/no_shallow_submit.sh --skip-sanity   # sanity already passed HERE
 #
@@ -20,8 +20,15 @@ SKIP_SANITY=0
 [ "${1:-}" = "--skip-sanity" ] && SKIP_SANITY=1
 
 # fail fast on the login node (environment + inputs), before queueing anything
+# same environment choice as no_shallow_env.sh: the venv gnn-ns if it exists, else gnn
+if [ -z "${NS_ENV:-}" ]; then
+    NS_ENV=gnn
+    [ -x "/home/apps/venvs/$USER/gnn-ns/bin/python" ] && NS_ENV="$USER/gnn-ns"
+fi
+export NS_ENV                       # the jobs inherit it (sbatch exports the environment)
+echo "[submit] environment: $NS_ENV"
 source /home/apps/iknos-env.sh
-iknos_activate "${NS_ENV:-gnn}"
+iknos_activate "$NS_ENV"
 python scripts/slurm/no_shallow_preflight.py
 
 if [ "$SKIP_SANITY" = "1" ]; then

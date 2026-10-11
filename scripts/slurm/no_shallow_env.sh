@@ -1,12 +1,18 @@
 # Sourced by every no-shallow sbatch script (do not execute it directly).
 # Activates the Python environment on the iknos cluster and moves to the repository.
 #
-#   NS_REPO : repository root on the cluster   (default: $HOME/private/MOKG-HGNN)
-#   NS_ENV  : environment for iknos_activate    (default: the official "gnn" environment:
-#             Python 3.10, torch 2.7.0 + CUDA 12.8, PyTorch Geometric 2.7.0)
+#   NS_REPO : repository root on the cluster   (default: the folder sbatch was called from,
+#             i.e. the repository root, as no_shallow_submit.sh does)
+#   NS_ENV  : environment for iknos_activate    (default: the user venv "$USER/gnn-ns" if it
+#             exists, otherwise the official "gnn" environment: Python 3.10, torch 2.7.0 +
+#             CUDA 12.8, PyTorch Geometric 2.7.0). gnn-ns = venv on gnn that only adds
+#             optuna and statsmodels (imported by the MOGNN-TF runner, missing in gnn).
 
-NS_REPO="${NS_REPO:-$HOME/private/MOKG-HGNN}"
-NS_ENV="${NS_ENV:-gnn}"
+NS_REPO="${NS_REPO:-${SLURM_SUBMIT_DIR:-$PWD}}"
+if [ -z "${NS_ENV:-}" ]; then
+    NS_ENV=gnn
+    [ -x "/home/apps/venvs/${USER:-$(id -un)}/gnn-ns/bin/python" ] && NS_ENV="${USER:-$(id -un)}/gnn-ns"
+fi
 
 source /home/apps/iknos-env.sh
 iknos_activate "$NS_ENV"
