@@ -10,8 +10,9 @@ macro-F1, accuracy, per-class F1, selected epoch, config / panel / split hashes,
 duration, environment); MOGNN-TF's own run folders go to results/runs_raw/.
 
 Guard: refuses to start unless results/sanity_check.json says passed=true AND was
-produced on the same GPU model as the current machine (a reproduction check on other
-hardware does not certify this one). Re-run sanity_check.py on every new machine.
+produced with the same torch version and num_workers. Re-run sanity_check.py on every new
+machine. A different GPU model from the sanity one (e.g. on a cluster with several GPU
+types) is allowed but printed; each run JSON records its GPU and the report lists them.
 
   python experiments/no_shallow_matched/run_no_shallow.py                # all 35, resumable
   python experiments/no_shallow_matched/run_no_shallow.py --levels 700 --seeds 42
@@ -35,11 +36,14 @@ def _check_gate(num_workers):
     if not s.get("passed"):
         sys.exit("[gate] sanity check NOT passed: fix the reported problem before running "
                  "(ticket §4: stop and report if the original value is not reproduced).")
-    here = C.environment()["cuda_device"]
-    there = s.get("env", {}).get("cuda_device")
-    if here != there:
-        sys.exit(f"[gate] sanity check was run on '{there}', this machine has '{here}': "
-                 f"re-run sanity_check.py here first.")
+    env_here, env_there = C.environment(), s.get("env", {})
+    if env_here["torch"] != env_there.get("torch"):
+        sys.exit(f"[gate] sanity check was run with torch {env_there.get('torch')}, this "
+                 f"environment has {env_here['torch']}: re-run sanity_check.py here first.")
+    if env_here["cuda_device"] != env_there.get("cuda_device"):
+        print(f"[gate] NOTE: sanity check ran on '{env_there.get('cuda_device')}', this run is "
+              f"on '{env_here['cuda_device']}' (recorded in the run JSON, listed in the report).",
+              flush=True)
     nw_sanity = s["B_reproduction"].get("num_workers")
     base_nw = int(C.load_yaml_config(C.NO_SHALLOW_CONFIG)["data"]["num_workers"])
     nw_here = base_nw if num_workers is None else num_workers

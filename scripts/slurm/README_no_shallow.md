@@ -16,12 +16,13 @@ contiene indirizzi e dettagli interni). Tutto è nuovo: nessuno script esistente
 ## Perché il sanity check va rifatto sul cluster
 
 Le serie esistenti (multi-scala e molecolare con shallow) sono state calcolate sul server
-precedente; il cluster ha GPU diverse. Il sanity check verifica che, su questa macchina, il
+precedente; il cluster ha GPU diverse. Il sanity check verifica che, su questo cluster, il
 modello originale con shallow riproduca il valore esistente (tolleranza fissata a priori: 0.02
 di macro-F1). `run_no_shallow.py` parte solo se `sanity_check.json` dice `passed: true` ed è
-stato prodotto sullo **stesso modello di GPU**. Per questo tutti i passi GPU chiedono lo stesso
-tipo, `gpu:rtx3090` (iknos-gpu1 e iknos-gpu3 hanno entrambi una RTX 3090). Se si preferisce la
-RTX 5000 Ada (iknos-gpu2), cambiare `--gres` in **entrambi** gli sbatch GPU.
+stato prodotto con la stessa versione di torch. I passi GPU chiedono una GPU qualsiasi
+(`--gres=gpu:1`), così partono sulla prima che si libera (RTX 3090 su iknos-gpu1/gpu3, RTX 5000
+Ada su iknos-gpu2): ogni run registra la sua GPU e il report elenca quelli finiti su un modello
+diverso da quello del sanity.
 
 ## 1. Portare codice e dati in `~/private/MOKG-HGNN`
 

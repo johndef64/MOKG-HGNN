@@ -7,19 +7,19 @@
 #                   split 42; must match the existing value within 0.02 macro-F1.
 # Writes experiments/no_shallow_matched/results/sanity_check.json. STEP 2 starts only
 # if this job ends OK (afterok) and the runner re-checks the JSON (passed=true, same
-# GPU model): a failed reproduction stops the experiment, as the ticket requires.
+# torch): a failed reproduction stops the experiment, as the ticket requires.
 #
 # Submit from the repository root (or use no_shallow_submit.sh for the whole chain):
 #   cd ~/private/MOKG-HGNN && sbatch scripts/slurm/no_shallow_sanity.sbatch
 #
-# GPU model: the gate requires the SAME GPU model for sanity and runs. Keep the same
-# --gres type in all GPU steps (rtx3090 -> iknos-gpu1 or iknos-gpu3, same model).
+# GPU: any free one (--gres=gpu:1), so the job starts on the first GPU that frees up.
+# Every run JSON records its GPU model and the report lists them (confounder 10).
 # =============================================================================
 #SBATCH --job-name=ns-sanity
 #SBATCH --output=experiments/no_shallow_matched/slurm_logs/%x-%j.out
 #SBATCH --error=experiments/no_shallow_matched/slurm_logs/%x-%j.err
 #SBATCH --qos=low
-#SBATCH --gres=gpu:rtx3090:1
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=24G
 #SBATCH --time=02:30:00

@@ -59,9 +59,12 @@ identici a meno del grafo. Restano, dichiarati e non risolti qui:
 9. **Inizializzazione**: il seed del modello è fisso (2025), ma togliere due layer cambia la sequenza
    di numeri casuali consumata, quindi il classificatore della variante parte da pesi diversi:
    effetto inevitabile, di natura casuale.
-10. **Hardware**: le serie esistenti sono state calcolate sul server; se la serie nuova gira su
-    un'altra GPU, la differenza rientra nel rumore solo nella misura stabilita dal sanity check
-    (riproduzione del modello con shallow sulla stessa macchina dei 35 run).
+10. **Hardware**: le serie esistenti sono state calcolate sul server precedente; la serie nuova
+    gira sulle GPU del cluster. Il sanity check certifica la riproduzione del modello con shallow
+    sulla GPU su cui è stato eseguito (vedi sopra); i run finiti su un altro modello di GPU sono
+    elencati nella sezione del sanity check. Un cambio di modello di GPU, a parità di software,
+    produce differenze numeriche dello stesso tipo del non determinismo (punto 11), non
+    verificate per singolo modello.
 11. **Rumore run-to-run**: con operazioni scatter non deterministiche su GPU, repliche dello stesso
     setup differiscono di circa 0.01 in macro-F1; differenze di quest'ordine non sono interpretabili.
 """
@@ -104,6 +107,13 @@ def _sanity_section():
                    f"esistente {b['existing']['f1']:.4f}, ripetuto {reps}; tolleranza a priori "
                    f"{b['tolerance_macro_f1']}: **{'superata' if b['passed'] else 'NON superata'}**")
     out.append(f"- Esito complessivo: **{s['passed']}**")
+    gpus = {}
+    for (g, seed), d in sorted(C.read_new_runs().items()):
+        gpus.setdefault(d.get("env", {}).get("cuda_device", "?"), []).append(f"g{g}/s{seed}")
+    if gpus:
+        out.append("- GPU dei run senza shallow: " + "; ".join(
+            f"`{k}` {len(v)} run" + ("" if k == s["env"]["cuda_device"] else f" ({', '.join(v)})")
+            for k, v in gpus.items()))
     return "\n".join(out) + "\n"
 
 

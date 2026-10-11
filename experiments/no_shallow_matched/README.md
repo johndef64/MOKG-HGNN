@@ -66,8 +66,9 @@ Sul cluster iknos (Slurm) si usa la catena in `scripts/slurm/` (`no_shallow_subm
 `scripts/slurm/README_no_shallow.md`.
 
 `run_no_shallow.py` parte solo se `results/sanity_check.json` riporta `passed: true` ed è stato
-prodotto sulla stessa GPU della macchina corrente: su una macchina nuova va rieseguito
-`sanity_check.py`. Il comando è ripartibile: salta i run il cui JSON esiste già.
+prodotto con la stessa versione di torch: su una macchina nuova va rieseguito
+`sanity_check.py`. Un modello di GPU diverso da quello del sanity è ammesso ma segnalato: ogni
+JSON registra la sua GPU e il report le elenca. Il comando è ripartibile: salta i run il cui JSON esiste già.
 `--smoke` esegue 3 epoche in `results/smoke/` solo per collaudare la pipeline; quei run non
 entrano mai nel confronto.
 
