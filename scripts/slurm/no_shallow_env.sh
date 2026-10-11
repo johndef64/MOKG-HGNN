@@ -28,6 +28,6 @@ export PYTHONUNBUFFERED=1
 echo "=== Job ${SLURM_JOB_ID:-local}${SLURM_ARRAY_TASK_ID:+ (array task $SLURM_ARRAY_TASK_ID)} | ${SLURM_JOB_NAME:-}"
 echo "    node:   $(hostname) | start: $(date '+%F %T')"
 echo "    GPU:    ${CUDA_VISIBLE_DEVICES:-none} | cores: ${SLURM_CPUS_PER_TASK:-?} | mem: ${SLURM_MEM_PER_NODE:-?} MB"
-echo "    env:    $NS_ENV | repo: $NS_REPO | python: $(python --version 2>&1)"
+echo "    env:    $NS_ENV | repo: $NS_REPO | python: $(python --version 2>&1) ($(type python 2>&1 | head -1))"
 [ "${SLURM_RESTART_COUNT:-0}" -gt 0 ] && echo "    NB: restart number $SLURM_RESTART_COUNT (job was requeued)"
 true

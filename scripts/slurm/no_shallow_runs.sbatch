@@ -34,6 +34,6 @@ LEVEL="${LEVELS[$SLURM_ARRAY_TASK_ID]}"
 echo "    level:  $LEVEL genes (splits 42-46)"
 
 python -u scripts/slurm/no_shallow_preflight.py --gpu
-srun python -u experiments/no_shallow_matched/run_no_shallow.py --levels "$LEVEL"
+python -u experiments/no_shallow_matched/run_no_shallow.py --levels "$LEVEL"
 
 echo "=== end: $(date '+%F %T')"

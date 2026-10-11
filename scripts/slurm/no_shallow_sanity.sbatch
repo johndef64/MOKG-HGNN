@@ -34,6 +34,6 @@ python -u scripts/slurm/no_shallow_preflight.py --gpu
 # if a panels/ cache was copied from elsewhere; the runs then reuse these audited panels.
 # num_workers keeps the config value (1): on Linux the DataLoader worker is forked
 # cheaply, so the run is byte-for-byte the original configuration.
-srun python -u experiments/no_shallow_matched/sanity_check.py --repeats 2 --regenerate-panels
+python -u experiments/no_shallow_matched/sanity_check.py --repeats 2 --regenerate-panels
 
 echo "=== end: $(date '+%F %T')"
