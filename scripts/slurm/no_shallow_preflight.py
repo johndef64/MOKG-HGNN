@@ -42,7 +42,7 @@ REQUIRED_FILES = [
     "data/prior_knowledge/GGI/GGI_edges_undirected.csv",
     "data/prior_knowledge/miRNA/miRNA_gene_interactions.csv",
     "data/prior_knowledge/TF/TF_interactions.tsv",
-    "scripts/preprocessing/priors/hgcn_mart_conversion_table.zip",   # NOT in git: copy it
+    "scripts/preprocessing/priors/hgcn_mart_conversion_table.zip",   # HGNC symbol <-> Entrez
     # existing series (read only) and the published table used as a cross-check
     "results/feature_collapse/collapse_mognntf_summary.csv",
     "supplementary/tables/S2_feature_collapse.csv",
