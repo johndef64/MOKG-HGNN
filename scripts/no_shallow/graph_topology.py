@@ -48,21 +48,23 @@ def _stats(adj, mol_mask):
             "n_components": int(lab.max() + 1)}
 
 
-def molecular_graph(level, seed):
+def molecular_graph(level, seed, n_expected):
+    """n_expected: molecular nodes of the multi-scale template of the same (level, split);
+    the molecular graph must have exactly these nodes (same panel)."""
     import yaml
-    for uc in glob.glob(str(C.EXISTING_ROOT / f"mognntf_g{level}" / "run_*" / "used_config.yaml")):
+    run = C.existing_mognntf_run_dirs(level).get(seed)
+    if run is None or not (run / "adj_used.npz").exists():
+        return None
+    adj = sp.load_npz(run / "adj_used.npz")
+    uc = run / "used_config.yaml"
+    if uc.exists():
         cfg = yaml.safe_load(open(uc))
-        if int(cfg["project"]["split_seed"]) != seed:
-            continue
-        f = Path(uc).parent / "adj_used.npz"
-        if not f.exists():
-            return None
-        adj = sp.load_npz(f)
         n = len(cfg["data"]["gene_list"]) + len(cfg["data"]["mirna_keep"]) + len(cfg["data"]["tf_list"])
         if adj.shape[0] != n:
             raise RuntimeError(f"g{level} s{seed}: adj has {adj.shape[0]} nodes, panel has {n}")
-        return _stats(adj, np.ones(adj.shape[0], bool)) | {"n_nodes": n}
-    return None
+    if n_expected is not None and adj.shape[0] != n_expected:
+        raise RuntimeError(f"g{level} s{seed}: adj has {adj.shape[0]} nodes, template {n_expected}")
+    return _stats(adj, np.ones(adj.shape[0], bool)) | {"n_nodes": int(adj.shape[0])}
 
 
 def multiscale_graph(level, seed):
@@ -104,7 +106,8 @@ def main():
     rows = []
     for g in C.LEVELS:
         for s in C.SEEDS:
-            mg, ms = molecular_graph(g, s), multiscale_graph(g, s)
+            ms = multiscale_graph(g, s)
+            mg = molecular_graph(g, s, ms["n_molecular"] if ms else None)
             r = {"genes": g, "split_seed": s}
             if mg:
                 r |= {"mol_n_nodes": mg["n_nodes"], "mol_isolated_frac": round(mg["isolated_frac"], 4),

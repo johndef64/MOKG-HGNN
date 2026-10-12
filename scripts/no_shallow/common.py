@@ -243,6 +243,30 @@ def existing_mognntf_run_configs():
     return out
 
 
+def existing_mognntf_run_dirs(level):
+    """{split seed: run folder} of the existing with-shallow runs of one level. A run
+    folder without used_config.yaml (one run was left incomplete on the server: confusion
+    matrix, adjacency and log are there, the config is not) is identified by recomputing
+    its test macro-F1 from the confusion matrix and matching it to the summary CSV; the
+    match must be unique within 1e-6, otherwise the folder is ignored."""
+    import yaml
+    out, unknown = {}, []
+    for run in sorted(glob.glob(str(EXISTING_ROOT / f"mognntf_g{level}" / "run_*"))):
+        run = Path(run)
+        uc = run / "used_config.yaml"
+        if uc.exists():
+            out[int(yaml.safe_load(open(uc))["project"]["split_seed"])] = run
+        elif (run / "confusion_matrix_cm.csv").exists():
+            unknown.append(run)
+    summary = read_with_shallow_existing()
+    for run in unknown:
+        _, _, macro = per_class_from_confusion(run)
+        hits = [s for (g, s), r in summary.items() if g == level and abs(r["f1"] - macro) < 1e-6]
+        if len(hits) == 1 and hits[0] not in out:
+            out[hits[0]] = run
+    return out
+
+
 def read_with_shallow_existing():
     """{(level, seed): {f1, acc, val_f1, n_mirna, n_tf}} from the original summary CSV."""
     rows = {}
