@@ -116,12 +116,9 @@ Makefile*
 
 
 # ============================================
-# No-shallow matched experiment (experiments/no_shallow_matched + scripts/slurm)
+# No-shallow matched experiment (scripts/no_shallow + scripts/slurm)
 # ============================================
-# outputs are produced on the cluster: version only the preliminary check
-experiments/no_shallow_matched/results/*
-!experiments/no_shallow_matched/results/preliminary_check.md
-experiments/no_shallow_matched/slurm_logs/
+# outputs (results/no_shallow/, slurm logs included) are covered by results/* above
 # cluster guide: internal addresses and procedures, keep it local
 scripts/slurm/server-guide.md
 # HGNC symbol <-> Entrez table: required to build the graph (was excluded by *.zip)

@@ -13,7 +13,7 @@ bars (stated in the captions).
   fig_shallow_effect         (NS - WS) per level: 5 paired points + mean segment
   fig_spread_vs_panel        s.d. across splits per level, three series
 
-  python experiments/no_shallow_matched/plot_comparison.py [--allow-partial]
+  python scripts/no_shallow/plot_comparison.py [--allow-partial]
 """
 
 import argparse

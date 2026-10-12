@@ -1,6 +1,6 @@
 # Esperimento no-shallow sul cluster iknos (Slurm)
 
-Script per lanciare `experiments/no_shallow_matched/` (ticket del 2026-10-10) sul cluster
+Script per lanciare `scripts/no_shallow/` (ticket del 2026-10-10) sul cluster
 iknos, seguendo la guida del cluster (`server-guide.md`, tenuta solo in locale e non versionata:
 contiene indirizzi e dettagli interni). Tutto è nuovo: nessuno script esistente viene modificato.
 
@@ -29,7 +29,7 @@ diverso da quello del sanity.
 Struttura attesa (percorsi relativi alla radice del repo; serve circa 1.8 GB):
 
 - il codice, via git (`git clone https://github.com/johndef64/MOKG-HGNN.git`, poi `git pull`):
-  porta `experiments/no_shallow_matched/`, `scripts/slurm/` e
+  porta `scripts/no_shallow/`, `scripts/slurm/` e
   `scripts/preprocessing/priors/hgcn_mart_conversion_table.zip`;
 - **fuori da git** (dati, gitignored), da copiare a parte:
   - `data/training/`: `expression_data_pancan.tsv`, `cnv_data_pancan.tsv`, `mirna_data_top_100.tsv`,
@@ -57,7 +57,7 @@ rsync -av --prune-empty-dirs \
 ```
 
 Da Windows: `scp -r` dal PowerShell, oppure Files nel portale (upload). Gli output
-dell'esperimento (`experiments/no_shallow_matched/results/`, tranne `preliminary_check.md`)
+dell'esperimento (`results/no_shallow/`, tranne `preliminary_check.md`)
 sono gitignored: sanity e run si producono sul cluster.
 
 **Terminazioni di riga.** Gli script sono in LF. Se il trasferimento li converte in CRLF, bash
@@ -105,19 +105,19 @@ bash scripts/slurm/no_shallow_submit.sh
 
 Sottomette i tre passi con le dipendenze: i run partono solo se il sanity finisce bene,
 l'analisi solo se tutti i 7 task dei run finiscono bene. I log vanno in
-`experiments/no_shallow_matched/slurm_logs/`. Gli sbatch vanno sottomessi **dalla radice del
+`results/no_shallow/slurm_logs/`. Gli sbatch vanno sottomessi **dalla radice del
 repo**: i percorsi `#SBATCH --output` sono relativi alla cartella da cui si lancia, e i job
 usano quella cartella come repo (per forzarne un'altra: `export NS_REPO=<percorso>`).
-Lanciare un passo da solo: `mkdir -p experiments/no_shallow_matched/slurm_logs` e poi
+Lanciare un passo da solo: `mkdir -p results/no_shallow/slurm_logs` e poi
 `sbatch scripts/slurm/no_shallow_<passo>.sbatch`.
 
 Seguire:
 
 ```bash
 squeue -u $USER -o '%.10i %.12j %.8T %.10M %.10L %R'
-tail -f experiments/no_shallow_matched/slurm_logs/ns-sanity-<jobid>.out
-grep -E "\[repro\]|\[sanity\]" experiments/no_shallow_matched/slurm_logs/ns-sanity-*.out
-ls experiments/no_shallow_matched/results/runs/ | wc -l        # 35 a fine passo 2
+tail -f results/no_shallow/slurm_logs/ns-sanity-<jobid>.out
+grep -E "\[repro\]|\[sanity\]" results/no_shallow/slurm_logs/ns-sanity-*.out
+ls results/no_shallow/runs/ | wc -l        # 35 a fine passo 2
 sacct -j <jobid> -o JobID,JobName%15,State,Elapsed,MaxRSS,ExitCode
 ```
 
@@ -143,7 +143,7 @@ Sul server precedente un run di MOGNN-TF a 700 geni durava circa 3 minuti (3.5 s
 
 ## 6. Riportare i risultati
 
-A fine catena, `experiments/no_shallow_matched/results/` contiene `sanity_check.json`, `runs/`
+A fine catena, `results/no_shallow/` contiene `sanity_check.json`, `runs/`
 (35 JSON), `tables/`, `figures/` (PDF e PNG) e `REPORT_no_shallow.md`. Copiarli sul proprio
 computer (Files nel portale, oppure `scp -r`). `runs_raw/` contiene i checkpoint e le cartelle
 complete di MOGNN-TF: servono solo per eventuali analisi successive.

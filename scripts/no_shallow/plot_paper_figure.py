@@ -11,7 +11,7 @@
 Inputs: the three series (compare.load_series) and results/tables/graph_topology.csv.
 Writes results/figures/fig_paper_collapse_composite.{pdf,png}.
 
-  python experiments/no_shallow_matched/plot_paper_figure.py
+  python scripts/no_shallow/plot_paper_figure.py
 """
 
 import csv

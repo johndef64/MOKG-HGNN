@@ -17,8 +17,8 @@
 # =============================================================================
 #SBATCH --job-name=ns-runs
 #SBATCH --array=0-6%3
-#SBATCH --output=experiments/no_shallow_matched/slurm_logs/%x-%A_%a.out
-#SBATCH --error=experiments/no_shallow_matched/slurm_logs/%x-%A_%a.err
+#SBATCH --output=results/no_shallow/slurm_logs/%x-%A_%a.out
+#SBATCH --error=results/no_shallow/slurm_logs/%x-%A_%a.err
 #SBATCH --qos=low
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
@@ -34,6 +34,6 @@ LEVEL="${LEVELS[$SLURM_ARRAY_TASK_ID]}"
 echo "    level:  $LEVEL genes (splits 42-46)"
 
 python -u scripts/slurm/no_shallow_preflight.py --gpu
-python -u experiments/no_shallow_matched/run_no_shallow.py --levels "$LEVEL"
+python -u scripts/no_shallow/run_no_shallow.py --levels "$LEVEL"
 
 echo "=== end: $(date '+%F %T')"

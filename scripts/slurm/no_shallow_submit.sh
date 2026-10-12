@@ -14,7 +14,7 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."          # repository root: the #SBATCH paths are relative to it
-mkdir -p experiments/no_shallow_matched/slurm_logs
+mkdir -p results/no_shallow/slurm_logs
 
 SKIP_SANITY=0
 [ "${1:-}" = "--skip-sanity" ] && SKIP_SANITY=1
@@ -34,7 +34,7 @@ python scripts/slurm/no_shallow_preflight.py
 if [ "$SKIP_SANITY" = "1" ]; then
     python - <<'PY'
 import json, sys
-s = json.load(open("experiments/no_shallow_matched/results/sanity_check.json"))
+s = json.load(open("results/no_shallow/sanity_check.json"))
 if not s.get("passed"):
     sys.exit("sanity_check.json does not say passed=true: submit without --skip-sanity")
 print("[submit] using existing sanity check:", s["env"]["cuda_device"], "|", s["date"])
@@ -50,4 +50,4 @@ ANALYSIS=$(sbatch --parsable --dependency=afterok:"$RUNS" scripts/slurm/no_shall
 echo "[submit] analysis: job $ANALYSIS"
 echo
 echo "follow:  squeue -u \$USER -o '%.10i %.12j %.8T %.10M %.10L %R'"
-echo "logs:    experiments/no_shallow_matched/slurm_logs/"
+echo "logs:    results/no_shallow/slurm_logs/"

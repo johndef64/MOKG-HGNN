@@ -42,14 +42,14 @@ MODEL_SEED = 2025
 
 # --- inputs (read only) -----------------------------------------------------------
 ORIGINAL_CONFIG = REPO / "benchmark" / "MOGNN-TF" / "configs" / "config_final.yml"
-NO_SHALLOW_CONFIG = HERE / "configs" / "no_shallow.yaml"
+NO_SHALLOW_CONFIG = REPO / "configs" / "mognntf_no_shallow.yaml"
 EXISTING_ROOT = REPO / "results" / "feature_collapse"
 EXISTING_MOGNNTF_SUMMARY = EXISTING_ROOT / "collapse_mognntf_summary.csv"
 SPLITS_ROOT = REPO / "data" / "training" / "splits"
 SPLIT_PREFIX = "common_trimmed_shuffle_index"
 
-# --- outputs (all new, inside this folder) -----------------------------------------
-OUT = HERE / "results"
+# --- outputs (all new, under results/ like the other experiments) -----------------
+OUT = REPO / "results" / "no_shallow"
 PANELS = OUT / "panels"          # regenerated FS + survived panel per (level, split)
 RUNS = OUT / "runs"              # one JSON per completed run
 RUNS_RAW = OUT / "runs_raw"      # MOGNN-TF run folders (checkpoint, logs, confusion matrix)
@@ -58,6 +58,18 @@ FIGURES = OUT / "figures"
 SANITY_JSON = OUT / "sanity_check.json"
 
 VARIANTS = {"no_shallow": NO_SHALLOW_CONFIG, "with_shallow": ORIGINAL_CONFIG}
+
+# Run JSONs written before the move to scripts/ + results/ (2026-10-12) record their raw
+# folder under this prefix; the files themselves now live under OUT.
+LEGACY_OUT = "experiments/no_shallow_matched/results"
+
+
+def resolve_run_dir(run_dir):
+    """Absolute path of a run folder recorded in a run JSON (old or new layout)."""
+    p = REPO / run_dir
+    if not p.exists() and str(run_dir).replace("\\", "/").startswith(LEGACY_OUT):
+        p = OUT / str(run_dir).replace("\\", "/")[len(LEGACY_OUT):].lstrip("/")
+    return p
 
 # keys that legitimately differ between two runs of the same (variant, level, split):
 #   paths.results_dir : output location

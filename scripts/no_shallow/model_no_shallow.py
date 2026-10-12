@@ -12,10 +12,10 @@ So the variant is obtained by subclassing with parallel forced to False: nothing
 in the class changes (encoder, ChebConv layers, index-window pooling, linear1/2,
 decoder on theta1, loss with reconstruction + L2). The training pipeline instantiates
 GCN through builder.build_model from `model.parallel` in the config, which is exactly
-what configs/no_shallow.yaml sets; `verify_variant()` proves that the model built by the
+what configs/mognntf_no_shallow.yaml sets; `verify_variant()` proves that the model built by the
 pipeline is equivalent to this subclass and differs from the original only by the branch.
 
-Run `python experiments/no_shallow_matched/model_no_shallow.py` for the checks.
+Run `python scripts/no_shallow/model_no_shallow.py` for the checks.
 """
 
 import sys

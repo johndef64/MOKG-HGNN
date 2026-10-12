@@ -9,8 +9,8 @@
 #   cd ~/private/MOKG-HGNN && sbatch scripts/slurm/no_shallow_analysis.sbatch
 # =============================================================================
 #SBATCH --job-name=ns-analysis
-#SBATCH --output=experiments/no_shallow_matched/slurm_logs/%x-%j.out
-#SBATCH --error=experiments/no_shallow_matched/slurm_logs/%x-%j.err
+#SBATCH --output=results/no_shallow/slurm_logs/%x-%j.out
+#SBATCH --error=results/no_shallow/slurm_logs/%x-%j.err
 #SBATCH --qos=low
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
@@ -20,9 +20,9 @@
 set -euo pipefail
 source scripts/slurm/no_shallow_env.sh
 
-python -u experiments/no_shallow_matched/compare.py
-python -u experiments/no_shallow_matched/plot_comparison.py
-python -u experiments/no_shallow_matched/report.py
+python -u scripts/no_shallow/compare.py
+python -u scripts/no_shallow/plot_comparison.py
+python -u scripts/no_shallow/report.py
 
 echo "=== end: $(date '+%F %T')"
-echo "    report: $NS_REPO/experiments/no_shallow_matched/results/REPORT_no_shallow.md"
+echo "    report: $NS_REPO/results/no_shallow/REPORT_no_shallow.md"

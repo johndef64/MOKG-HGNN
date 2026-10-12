@@ -24,8 +24,8 @@ Part B (reproduction): re-run the ORIGINAL with-shallow model through this pipel
 Items that cannot be verified on this machine (e.g. run folders not transferred from
 the server) are reported as "unverifiable", never as passed.
 
-  python experiments/no_shallow_matched/sanity_check.py                 # A + B
-  python experiments/no_shallow_matched/sanity_check.py --static-only   # A only
+  python scripts/no_shallow/sanity_check.py                 # A + B
+  python scripts/no_shallow/sanity_check.py --static-only   # A only
 """
 
 import argparse

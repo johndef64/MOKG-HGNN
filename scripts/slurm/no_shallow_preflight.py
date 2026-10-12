@@ -47,8 +47,8 @@ REQUIRED_FILES = [
     "results/feature_collapse/collapse_mognntf_summary.csv",
     "supplementary/tables/S2_feature_collapse.csv",
     # the experiment itself (untracked in git: copy the folder)
-    "experiments/no_shallow_matched/common.py",
-    "experiments/no_shallow_matched/configs/no_shallow.yaml",
+    "scripts/no_shallow/common.py",
+    "configs/mognntf_no_shallow.yaml",
     "benchmark/MOGNN-TF/configs/config_final.yml",
 ]
 
@@ -68,7 +68,7 @@ def check_modules():
             bad.append(f"{m}: {type(e).__name__}: {e}")
             print(f"  [MISSING] {m:16s} {type(e).__name__}: {e}")
     # the real import chain of the experiment (catches anything not listed above)
-    sys.path.insert(0, str(REPO / "experiments" / "no_shallow_matched"))
+    sys.path.insert(0, str(REPO / "scripts" / "no_shallow"))
     cwd = os.getcwd()
     try:
         import common  # noqa: F401  (also adds src/ and benchmark/MOGNN-TF to sys.path)

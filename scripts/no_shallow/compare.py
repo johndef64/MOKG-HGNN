@@ -30,8 +30,8 @@ Statistics: with 5 splits the paired Wilcoxon cannot go below p = 0.0625, so no 
 are computed; differences are reported as effect sizes (mean paired difference, its
 s.d., dz = mean / s.d., and how many of the 5 splits agree in sign).
 
-  python experiments/no_shallow_matched/compare.py
-  python experiments/no_shallow_matched/compare.py --allow-partial   # draft tables
+  python scripts/no_shallow/compare.py
+  python scripts/no_shallow/compare.py --allow-partial   # draft tables
 """
 
 import argparse

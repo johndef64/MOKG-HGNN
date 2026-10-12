@@ -5,7 +5,7 @@ figures/*. Run after compare.py and plot_comparison.py.
 The "Lettura" section applies the criteria of ticket §8 as fixed in compare.py BEFORE
 the runs; it is a proposed reading to be validated by the author, not a conclusion.
 
-  python experiments/no_shallow_matched/report.py
+  python scripts/no_shallow/report.py
 """
 
 import csv
@@ -130,7 +130,7 @@ _EPOCH_RE = re.compile(r"Epoch (\d+) - Train \(with dropout\) Loss: (\S+),.*?Tra
 
 def _loss_trace(run_dir):
     """(n epochs, first / min train-eval loss, min val loss, n non-finite) from experiment.log."""
-    log = C.REPO / run_dir / "experiment.log"
+    log = C.resolve_run_dir(run_dir) / "experiment.log"
     if not log.exists():
         return None
     rows = [(int(m[1]), float(m[3]), float(m[4]))
@@ -292,14 +292,15 @@ Letti (sola lettura):
 - `benchmark/MOGNN-TF/configs/config_final.yml`, `scripts/collapse_mognntf.py` (riusati per import)
 - `supplementary/tables/S2_feature_collapse.csv`: tabella pubblicata, per il controllo di coerenza
 
-Prodotti (tutti in `experiments/no_shallow_matched/results/`): `preliminary_check.md`,
+Prodotti (tutti in `results/no_shallow/`):
 `sanity_check.json`, `panels/`, `runs/` (un JSON per run), `runs_raw/`, `tables/`, `figures/`,
 questo report.
 
 ## Verifica preliminare (§0bis)
 
 Premessa confermata: il multi-scala non ha alcuna via verso il classificatore che aggiri il
-backbone relazionale. Dettaglio con file e righe in [preliminary_check.md](preliminary_check.md).
+backbone relazionale. Dettaglio con file e righe in
+[scripts/no_shallow/preliminary_check.md](../../scripts/no_shallow/preliminary_check.md).
 
 ## Sanity check (§4)
 

@@ -14,7 +14,7 @@ the graph they belong to. Also the size of the semantic scales.
 
 Writes results/tables/graph_topology.csv (per run) and graph_topology_by_level.{csv,md}.
 
-  python experiments/no_shallow_matched/graph_topology.py
+  python scripts/no_shallow/graph_topology.py
 """
 
 import csv

@@ -2,7 +2,7 @@
 
 7 levels x 5 splits = 35 runs. Each run reuses, by import, the original data loading,
 panel construction (scripts/collapse_mognntf.py::_panel) and MOGNN-TF training /
-evaluation loop (ExperimentRunner); the only change is configs/no_shallow.yaml
+evaluation loop (ExperimentRunner); the only change is configs/mognntf_no_shallow.yaml
 (model.parallel: false). No re-tuning.
 
 Writes one JSON per run into results/runs/no_shallow_g<L>_seed<S>.json (level, split,
@@ -14,9 +14,9 @@ produced with the same torch version and num_workers. Re-run sanity_check.py on 
 machine. A different GPU model from the sanity one (e.g. on a cluster with several GPU
 types) is allowed but printed; each run JSON records its GPU and the report lists them.
 
-  python experiments/no_shallow_matched/run_no_shallow.py                # all 35, resumable
-  python experiments/no_shallow_matched/run_no_shallow.py --levels 700 --seeds 42
-  python experiments/no_shallow_matched/run_no_shallow.py --smoke        # 3 epochs, separate folder
+  python scripts/no_shallow/run_no_shallow.py                # all 35, resumable
+  python scripts/no_shallow/run_no_shallow.py --levels 700 --seeds 42
+  python scripts/no_shallow/run_no_shallow.py --smoke        # 3 epochs, separate folder
 """
 
 import argparse

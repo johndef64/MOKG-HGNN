@@ -1,5 +1,5 @@
 # no_shallow.yaml: copy of benchmark/MOGNN-TF/configs/config_final.yml (commit 8bf291e)
-# for the no-shallow matched experiment (experiments/no_shallow_matched).
+# for the no-shallow matched experiment (scripts/no_shallow).
 #
 # THE ONLY DIFFERENCE from the original file is `model.parallel: false`, which removes
 # the shallow parallel MLP branch (theta2) of MOGNN-TF, so that the classifier reads only

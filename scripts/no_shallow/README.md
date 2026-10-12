@@ -8,8 +8,9 @@ e lo confronta con le serie già ottenute, che si leggono soltanto:
 - **WS**: molecolare MOGNN-TF con shallow, stessi pannelli e split;
 - **NS**: molecolare MOGNN-TF senza shallow (nuovo, 35 run).
 
-Regola: nessun file esistente viene modificato; tutto il codice e gli output stanno in questa
-cartella. Verifica: `git status` deve mostrare solo `experiments/`.
+Regola: nessun file esistente della pipeline viene modificato; l'esperimento riusa per import
+il codice esistente. Come gli altri esperimenti della repo, il codice sta in `scripts/` e gli
+output in `results/`.
 
 ## Cosa riusa (per import, senza copiarlo)
 
@@ -18,7 +19,7 @@ cartella. Verifica: `git status` deve mostrare solo `experiments/`.
 | Script dell'esperimento appaiato | `scripts/collapse_mognntf.py` | `_panel` (pannello per livello e split) e `_set` (override di config) |
 | Feature selection unificata e sopravvivenza miRNA/TF | `src/.../preprocessing/feature_selection.py`, `scripts/kg_hgnn/survived_features.py` | chiamati da `_panel` |
 | Modello molecolare con ramo shallow | `benchmark/MOGNN-TF/multiomics_gnn/models/gcn_tf.py` (classe `GCN`, flag `parallel`) | sottoclasse `GCNNoShallow` |
-| Config molecolare dell'esperimento appaiato | `benchmark/MOGNN-TF/configs/config_final.yml` | copiata in `configs/no_shallow.yaml`, cambia solo `model.parallel` |
+| Config molecolare dell'esperimento appaiato | `benchmark/MOGNN-TF/configs/config_final.yml` | copiata in `configs/mognntf_no_shallow.yaml`, cambia solo `model.parallel` |
 | Caricamento dati, training, valutazione | `ExperimentDataLoader`, `ExperimentRunner` | invariati |
 | Split congelati | `data/training/splits/splits_seed_{42..46}/` | letti dal runner |
 | Risultati multi-scala | `results/feature_collapse/mokghgnn_g*/<ts>/` | sola lettura |
@@ -28,25 +29,30 @@ cartella. Verifica: `git status` deve mostrare solo `experiments/`.
 ## File
 
 ```
-experiments/no_shallow_matched/
+scripts/no_shallow/
 ├── README.md
+├── preliminary_check.md    verifica §0bis (scritta prima del codice)
 ├── common.py               helper condivisi (percorsi, pannelli, hash, un run, lettura serie)
 ├── model_no_shallow.py     variante senza shallow + verifica strutturale e funzionale
 ├── sanity_check.py         split, pannelli, config, variante, serie esistenti, riproduzione
 ├── run_no_shallow.py       i 35 run (ripartibile, protetto dal sanity check)
-├── compare.py              tabelle CSV + Markdown e lettura secondo il §8
+├── compare.py              tabelle CSV + Markdown, lettura secondo il §8, sensibilità post hoc
 ├── plot_comparison.py      4 figure in PDF + PNG 300 dpi
-├── report.py               assembla REPORT_no_shallow.md
-├── configs/no_shallow.yaml
-└── results/
-    ├── preliminary_check.md    verifica §0bis (scritta prima del codice)
-    ├── sanity_check.json
-    ├── panels/                 pannello rigenerato per (livello, split) + panel.json
-    ├── runs/                   un JSON per run
-    ├── runs_raw/               cartelle di run di MOGNN-TF (checkpoint, log, confusion matrix)
-    ├── sanity_runs/            run di riproduzione del modello con shallow
-    ├── tables/  figures/
-    └── REPORT_no_shallow.md
+├── graph_topology.py       connettività dei due grafi per (livello, split)
+├── plot_paper_figure.py    figura composita a tre pannelli
+└── report.py               assembla REPORT_no_shallow.md
+
+configs/mognntf_no_shallow.yaml   config della variante (solo model.parallel: false)
+
+results/no_shallow/               output (fuori da git)
+├── sanity_check.json
+├── panels/                 pannello rigenerato per (livello, split) + panel.json
+├── runs/                   un JSON per run
+├── runs_raw/               cartelle di run di MOGNN-TF (checkpoint, log, confusion matrix)
+├── sanity_runs/            run di riproduzione del modello con shallow
+├── slurm_logs/             log dei job sul cluster
+├── tables/  figures/
+└── REPORT_no_shallow.md
 ```
 
 ## Come si lancia
@@ -54,22 +60,24 @@ experiments/no_shallow_matched/
 Dalla radice del repository, nell'ambiente `gnn`:
 
 ```bash
-conda run --no-capture-output -n gnn python -u experiments/no_shallow_matched/model_no_shallow.py
-conda run --no-capture-output -n gnn python -u experiments/no_shallow_matched/sanity_check.py --repeats 2 --num-workers 0
-conda run --no-capture-output -n gnn python -u experiments/no_shallow_matched/run_no_shallow.py --num-workers 0
-conda run -n gnn python experiments/no_shallow_matched/compare.py
-conda run -n gnn python experiments/no_shallow_matched/plot_comparison.py
-conda run -n gnn python experiments/no_shallow_matched/report.py
+conda run --no-capture-output -n gnn python -u scripts/no_shallow/model_no_shallow.py
+conda run --no-capture-output -n gnn python -u scripts/no_shallow/sanity_check.py --repeats 2 --num-workers 0
+conda run --no-capture-output -n gnn python -u scripts/no_shallow/run_no_shallow.py --num-workers 0
+conda run -n gnn python scripts/no_shallow/compare.py
+conda run -n gnn python scripts/no_shallow/plot_comparison.py
+conda run -n gnn python scripts/no_shallow/graph_topology.py
+conda run -n gnn python scripts/no_shallow/plot_paper_figure.py
+conda run -n gnn python scripts/no_shallow/report.py
 ```
 
 Sul cluster iknos (Slurm) si usa la catena in `scripts/slurm/` (`no_shallow_submit.sh`): vedi
 `scripts/slurm/README_no_shallow.md`.
 
-`run_no_shallow.py` parte solo se `results/sanity_check.json` riporta `passed: true` ed è stato
+`run_no_shallow.py` parte solo se `results/no_shallow/sanity_check.json` riporta `passed: true` ed è stato
 prodotto con la stessa versione di torch: su una macchina nuova va rieseguito
 `sanity_check.py`. Un modello di GPU diverso da quello del sanity è ammesso ma segnalato: ogni
 JSON registra la sua GPU e il report le elenca. Il comando è ripartibile: salta i run il cui JSON esiste già.
-`--smoke` esegue 3 epoche in `results/smoke/` solo per collaudare la pipeline; quei run non
+`--smoke` esegue 3 epoche in `results/no_shallow/smoke/` solo per collaudare la pipeline; quei run non
 entrano mai nel confronto.
 
 ## Esecuzione su Windows e tempi (collaudo del 2026-10-11, Quadro M2200 4 GB)
@@ -101,7 +109,8 @@ entrano mai nel confronto.
 
 ## Sanity check
 
-- **Statici**: split identici byte per byte a una rigenerazione deterministica; pannelli
+- **Statici**: split con la stessa sequenza di indici di una rigenerazione deterministica (i
+  byte possono differire solo per le terminazioni di riga del sistema operativo); pannelli
   identici a quelli registrati nei run con shallow (`used_config.yaml`), ai conteggi del summary
   e ai nodi del grafo multi-scala; config ricostruita identica a quella dei run originali;
   serie esistenti complete e coerenti con la Tab. S2 pubblicata.
@@ -125,6 +134,7 @@ costanti: 2 run a 20 geni) e alle mediane per livello. Non sostituisce l'analisi
 
 ## Nota su git
 
-Il `.gitignore` della radice esclude `*.json`, `*.png`, `*.pdf`, `*.pt`, `*.log`, `*.txt`:
-JSON dei run, figure e checkpoint di questa cartella non vengono tracciati. Se servono nel
-repository, aggiungerli esplicitamente (`git add -f`).
+Gli output stanno in `results/no_shallow/`, escluso da git come il resto di `results/`. I run
+scritti prima dello spostamento in `scripts/` + `results/` (2026-10-12) registrano la propria
+cartella grezza con il prefisso `experiments/no_shallow_matched/results`: `common.resolve_run_dir`
+lo traduce, senza riscrivere i dati registrati.
