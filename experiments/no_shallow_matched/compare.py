@@ -13,6 +13,9 @@ Writes CSV + Markdown into results/tables/:
   paired_differences         one row per (level, split): paired differences
   paired_differences_summary one row per (level, contrast): mean, s.d., dz, sign
                              concordance across the 5 splits
+  sensitivity_by_panel /     POST HOC (rule fixed after the results, 2026-10-12): NS
+  sensitivity_summary /      without degenerate runs (constant predictors) and per-level
+  sensitivity.json           medians, with the same §8 thresholds. Never replaces the above.
 
 Definitions (identical to scripts/kg_hgnn/collapse_aggregate.py, which produced the
 published 0.014 / 0.029):
@@ -253,6 +256,60 @@ def interpretation(series, means):
     return out
 
 
+def degenerate_runs(runs_dir=C.RUNS):
+    """POST HOC rule, defined on 2026-10-12 AFTER seeing the results: a no-shallow run is
+    degenerate when its test F1 is > 0 for at most one class (a constant predictor).
+    Two such runs appeared (20 genes, splits 44 and 45)."""
+    return sorted(k for k, d in C.read_new_runs("no_shallow", runs_dir).items()
+                  if sum(v > 0 for v in d["per_class_f1"].values()) <= 1)
+
+
+def _median(vals):
+    v = sorted(vals)
+    n = len(v)
+    return v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2
+
+
+def sensitivity(series, means):
+    """POST HOC sensitivity analysis (not part of the criteria fixed before the runs).
+    Same §8 thresholds (interpretation()), applied to (a) NS without the degenerate runs,
+    (b) per-level MEDIANS of all three series instead of means. The primary analysis
+    (all 35 runs, means) is unchanged and stays the reference."""
+    degen = degenerate_runs()
+    ns_ok = {k: v for k, v in series["NS"].items() if k not in degen}
+    means_excl = {**means, "NS": {g: level_stats(ns_ok, g)[0] for g in C.LEVELS
+                                  if level_stats(ns_ok, g)[2]}}
+    medians = {k: {g: _median([v[(g, s)]["f1"] for s in C.SEEDS if (g, s) in v])
+                   for g in C.LEVELS if any((g, s) in v for s in C.SEEDS)}
+               for k, v in series.items()}
+    rows = []
+    for g in C.LEVELS:
+        m_all, sd_all, n_all = level_stats(series["NS"], g)
+        m_ok, sd_ok, n_ok = level_stats(ns_ok, g)
+        rows.append({"genes": g,
+                     "NS_all_mean": _pm(m_all, sd_all), "NS_all_n": n_all,
+                     "NS_excl_degenerate_mean": _pm(m_ok, sd_ok) if n_ok > 1 else
+                     (f"{m_ok:.4f}" if n_ok else ""), "NS_excl_n": n_ok,
+                     "MS_median": f"{medians['MS'][g]:.4f}", "WS_median": f"{medians['WS'][g]:.4f}",
+                     "NS_median": f"{medians['NS'][g]:.4f}",
+                     "delta_NS_excl_minus_MS": f"{means_excl['NS'][g] - means['MS'][g]:+.4f}",
+                     "delta_NS_median_minus_MS_median": f"{medians['NS'][g] - medians['MS'][g]:+.4f}"})
+    summary = []
+    for name, m in (("NS excl. degenerate (means)", means_excl), ("medians", medians)):
+        for k in ("MS", "WS", "NS") if name == "medians" else ("NS",):
+            pts = sorted(m[k].items())
+            summary.append({"analysis": name, "series": k,
+                            "f1_at_700": f"{m[k][700]:.4f}", "f1_at_20": f"{m[k][20]:.4f}",
+                            "drop_700_to_20": f"{m[k][700] - m[k][20]:.4f}",
+                            "loss_per_halving": f"{slope_per_halving(pts):.4f}",
+                            "crossing_with_MS": "n/a" if k == "MS" else fmt_cross(crossings(m[k], m["MS"]))})
+    out = {"rule": "post hoc (2026-10-12): degenerate = test F1 > 0 for at most one class",
+           "degenerate_runs": [{"genes": g, "split_seed": s} for g, s in degen],
+           "excl_degenerate_means": interpretation(None, means_excl),
+           "medians": interpretation(None, medians)}
+    return rows, summary, out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--allow-partial", action="store_true")
@@ -275,6 +332,18 @@ def main():
     interp = interpretation(series, means)
     (C.TABLES / "interpretation.json").write_text(json.dumps(interp, indent=2, default=str))
     print(json.dumps(interp, indent=2, default=str))
+
+    if not any(missing.values()):
+        s_rows, s_sum, s_out = sensitivity(series, means)
+        s_note = ("POST HOC sensitivity analysis (rule defined after seeing the results): NS "
+                  "without the degenerate runs (constant predictors), and per-level medians. "
+                  "The primary analysis is comparison_by_panel / summary_metrics.")
+        for name, rows in (("sensitivity_by_panel", s_rows), ("sensitivity_summary", s_sum)):
+            _w_csv(C.TABLES / f"{name}.csv", rows)
+            _w_md(C.TABLES / f"{name}.md", rows, name, s_note)
+            print(f"[saved] {C.TABLES / name}.csv / .md")
+        (C.TABLES / "sensitivity.json").write_text(json.dumps(s_out, indent=2, default=str))
+        print(json.dumps(s_out, indent=2, default=str))
 
 
 if __name__ == "__main__":

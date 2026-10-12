@@ -138,7 +138,7 @@ def fig_shallow_effect(series):
                 label="mean over 5 splits" if first else None)
         first = False
     _xaxis(ax)
-    ax.set_ylabel(r"$\Delta$ test macro-F1 (no shallow - with shallow)")
+    ax.set_ylabel(r"$\Delta$ macro-F1 (no shallow - shallow)")
     _legend_below(ax, fig, 2)
     _save(fig, "fig_shallow_effect")
 
@@ -151,7 +151,7 @@ def fig_spread(series):
             st = dict(STYLE[k])
             ax.plot([g for g, _ in pts], [s for _, s in pts], **st)
     _xaxis(ax)
-    ax.set_ylabel("s.d. of test macro-F1 across splits")
+    ax.set_ylabel("s.d. of test macro-F1")
     ax.set_ylim(bottom=0)
     _legend_below(ax, fig, 3)
     _save(fig, "fig_spread_vs_panel")

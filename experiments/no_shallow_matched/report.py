@@ -8,7 +8,10 @@ the runs; it is a proposed reading to be validated by the author, not a conclusi
   python experiments/no_shallow_matched/report.py
 """
 
+import csv
 import json
+import math
+import re
 import sys
 from pathlib import Path
 
@@ -44,6 +47,10 @@ identici a meno del grafo. Restano, dichiarati e non risolti qui:
    indici e poi appiattisce, quindi conserva la posizione (l'identità) del nodo; il multi-scala fa
    mean pooling per tipo, invariante all'ordine, e l'identità del gene arriva solo dalla topologia.
    Anche senza ramo shallow, il molecolare resta un classificatore sensibile all'identità dei nodi.
+   La larghezza del readout molecolare scala con il pannello (floor(N/16)·6 valori, poi un quarto:
+   circa 80 unità a 700 geni, 58 a 500, 36 a 300, 19 a 150, 13 a 100, 6 a 50, 1-3 a 20), mentre
+   quella del multi-scala è fissa (4 scale × 256). Ai livelli bassi il declino senza shallow
+   riflette anche questa capacità ridotta, non solo il grafo.
 3. **Grafo molecolare**: il molecolare include gli archi co-target miRNA-miRNA, TF-TF e TF-miRNA
    (config_final: `mirna_mirna`, `tf_tf`, `tf_mirna` attivi); il multi-scala appaiato non ha
    metapath.
@@ -117,6 +124,98 @@ def _sanity_section():
     return "\n".join(out) + "\n"
 
 
+_EPOCH_RE = re.compile(r"Epoch (\d+) - Train \(with dropout\) Loss: (\S+),.*?Train \(eval mode\) "
+                       r"Loss: (\S+),.*?Val Loss: (\S+),")
+
+
+def _loss_trace(run_dir):
+    """(n epochs, first / min train-eval loss, min val loss, n non-finite) from experiment.log."""
+    log = C.REPO / run_dir / "experiment.log"
+    if not log.exists():
+        return None
+    rows = [(int(m[1]), float(m[3]), float(m[4]))
+            for m in _EPOCH_RE.finditer(log.read_text(encoding="utf-8", errors="ignore"))]
+    if not rows:
+        return None
+    tr = [r[1] for r in rows]
+    va = [r[2] for r in rows]
+    bad = sum(not math.isfinite(x) for x in tr + va)
+    fin = [x for x in tr if math.isfinite(x)]
+    return {"epochs": len(rows), "first": tr[0], "min_train": min(fin) if fin else float("nan"),
+            "min_val": min(x for x in va if math.isfinite(x)) if fin else float("nan"), "nonfinite": bad}
+
+
+def _sensitivity():
+    p = C.TABLES / "sensitivity.json"
+    if not p.exists():
+        return "_sensitivity.json assente: eseguire compare.py sulle serie complete._\n"
+    s = json.loads(p.read_text())
+    runs = C.read_new_runs()
+    degen = {(d["genes"], d["split_seed"]) for d in s["degenerate_runs"]}
+    out = [f"Regola **definita dopo aver visto i risultati** (2026-10-12): è degenere un run il cui "
+           f"F1 di test è maggiore di zero per al più una classe, cioè un predittore costante. "
+           f"Run degeneri: {', '.join(f'{g} geni split {sd}' for g, sd in sorted(degen)) or 'nessuno'}. "
+           f"L'analisi primaria (sopra, tutti i 35 run) resta il riferimento; questa sezione verifica "
+           f"solo se la lettura §8 dipende da quei run."]
+    if degen:
+        levels = sorted({g for g, _ in degen})
+        ln_k = math.log(27)
+        topo = {}
+        tp = C.TABLES / "graph_topology.csv"
+        if tp.exists():
+            with open(tp, newline="", encoding="utf-8") as fh:
+                for r in csv.DictReader(fh):
+                    topo[(int(r["genes"]), int(r["split_seed"]))] = int(r["ms_n_molecular"])
+        out += ["", f"Diagnosi dai log di training (loss di cross-entropy; predizione uniforme su 27 "
+                    f"classi = ln 27 = {ln_k:.3f}) e dalla larghezza del readout del ramo grafo di "
+                    f"MOGNN-TF (max-pool su finestre di 16 nodi, 6 canali, poi `linear1` a un quarto: "
+                    f"floor(N/16)·6 // 4 unità; N da `graph_topology.py`):", "",
+                "| geni | split | degenere | nodi N | unità dopo linear1 | epoche | loss train iniziale | "
+                "loss train minima | loss val minima | valori non finiti |",
+                "|---|---|---|---|---|---|---|---|---|---|"]
+        for g in levels:
+            for sd in C.SEEDS:
+                d = runs.get((g, sd))
+                t = _loss_trace(d["run_dir"]) if d else None
+                n = topo.get((g, sd))
+                units = "" if n is None else str((n // 16) * 6 // 4)
+                if t:
+                    out.append(f"| {g} | {sd} | {'sì' if (g, sd) in degen else 'no'} | {n or ''} | {units} | "
+                               f"{t['epochs']} | {t['first']:.3f} | {t['min_train']:.3f} | "
+                               f"{t['min_val']:.3f} | {t['nonfinite']} |")
+        out += ["", "Nei run degeneri la loss non scende mai in modo apprezzabile sotto ln 27, senza "
+                    "valori non finiti: non è un guasto numerico ma un mancato avvio "
+                    "dell'apprendimento. Senza ramo shallow il classificatore riceve solo theta1, e "
+                    "theta1 passa per un readout la cui larghezza scala con il numero di nodi. I run "
+                    "degeneri sono esattamente quelli con N < 32: una sola finestra di pooling, "
+                    "compressa in una sola unità ReLU prima del classificatore; se quell'unità resta "
+                    "spenta il classificatore riceve una costante. I run che imparano hanno 3 unità. "
+                    "La corrispondenza (2 su 2) indica il meccanismo; non è stata verificata "
+                    "ispezionando le attivazioni. Il valore a 20 geni senza shallow riflette quindi "
+                    "anche il collo di bottiglia del readout di MOGNN-TF, non solo il grafo."]
+
+    def line(name, it):
+        g, sl, c = it.get("gap_700"), it.get("slope"), it.get("crossing")
+        parts = []
+        if g:
+            parts.append(f"divario a 700 {g['G_WS']:+.4f} → {g['G_NS']:+.4f} "
+                         f"(riduzione {100 * g['relative_reduction']:.0f}%, **{g['verdict']}**)")
+        if sl:
+            parts.append(f"perdita per dimezzamento {sl['NS']:.4f} senza shallow contro {sl['WS']:.4f} "
+                         f"con shallow ({'**più in fretta**' if sl['NS_degrades_faster'] else 'non più in fretta'})")
+        if c:
+            parts.append("incrocio con il multi-scala " + (", ".join(
+                f"{x['between'][0]}-{x['between'][1]} (circa {x['approx_genes']:.0f})"
+                for x in c["NS_vs_MS"]) or "nessuno"))
+        return f"- **{name}**: " + "; ".join(parts) + "."
+
+    out += ["", line("Senza i run degeneri (medie)", s["excl_degenerate_means"]),
+            line("Mediane per livello (tutti i run)", s["medians"])]
+    for name in ("sensitivity_by_panel", "sensitivity_summary"):
+        out += ["", f"### {name}", "", _strip_title(_read(C.TABLES / f"{name}.md"))]
+    return "\n".join(out) + "\n"
+
+
 def _reading():
     p = C.TABLES / "interpretation.json"
     if not p.exists():
@@ -149,10 +248,27 @@ def _reading():
     return "\n".join(out) + "\n"
 
 
+def _degenerate_note():
+    p = C.TABLES / "sensitivity.json"
+    if not p.exists():
+        return ""
+    d = json.loads(p.read_text())["degenerate_runs"]
+    if not d:
+        return ""
+    by = {}
+    for r in d:
+        by.setdefault(r["genes"], []).append(str(r["split_seed"]))
+    where = "; ".join(f"at {g} genes, splits {', '.join(s)}" for g, s in sorted(by.items(), reverse=True))
+    return (f" Without the shallow branch, {len(d)} of the 35 runs never started learning and "
+            f"predict a single class ({where}); they are included here and drive the no-shallow "
+            f"value and spread at that panel size (see the post hoc sensitivity analysis).")
+
+
 def main():
+    note = _degenerate_note()
     figs = "\n".join(
         f"### {name}\n\n![{name}](figures/{name}.png)\n\nPDF: `figures/{name}.pdf`\n\n"
-        f"*Bozza di didascalia.* {cap}\n" for name, cap in CAPTIONS.items())
+        f"*Bozza di didascalia.* {cap}{note}\n" for name, cap in CAPTIONS.items())
     md = f"""# Report: confronto appaiato senza ramo shallow nel modello molecolare
 
 ## Scopo e motivazione
@@ -210,6 +326,9 @@ La tabella per split è in `tables/paired_differences.csv`.
 ## Lettura dei risultati (§8)
 
 {_reading()}
+## Analisi di sensibilità (post hoc)
+
+{_sensitivity()}
 ## Confondenti residui
 
 {CONFOUNDERS}"""

@@ -118,6 +118,11 @@ Con 5 split il Wilcoxon appaiato non scende sotto p = 0.0625, quindi le differen
 riportate come effect size (differenza media appaiata, deviazione standard, dz, concordanza
 dei segni). I criteri di lettura del §8 del ticket sono fissati in `compare.py` prima dei run.
 
+Dopo i run (2026-10-12) è stata aggiunta un'analisi di sensibilità **post hoc**, dichiarata
+come tale (`tables/sensitivity_*`, `sensitivity.json`, sezione dedicata nel report): stesse
+soglie del §8, applicate alla serie senza shallow privata dei run degeneri (predittori
+costanti: 2 run a 20 geni) e alle mediane per livello. Non sostituisce l'analisi primaria.
+
 ## Nota su git
 
 Il `.gitignore` della radice esclude `*.json`, `*.png`, `*.pdf`, `*.pt`, `*.log`, `*.txt`:
