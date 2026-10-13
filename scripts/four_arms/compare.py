@@ -44,6 +44,12 @@ CONTRASTS = [
     ("A_MOL", "molecular graph alone vs features alone (MOL - SH-tf)", {"mol": 1, "sh_tf": -1}),
     ("A_KG", "knowledge graph alone vs features alone (KG - SH-kg)", {"kg": 1, "sh_kg": -1}),
 ]
+# Added AFTER seeing the results (declared as post hoc in the report): the same shallow MLP
+# under the two training recipes. Since G_S = GAMMA_KG - GAMMA_MOL + R_RECIPE exactly, it
+# tells how much of the graph-vs-graph difference with shallow comes from the recipe.
+POST_HOC = [
+    ("R_RECIPE", "POST HOC: training recipe, same MLP (SH-kg - SH-tf)", {"sh_kg": 1, "sh_tf": -1}),
+]
 
 
 def paired(series, weights, level):
@@ -137,7 +143,7 @@ def main():
         })
 
     contrasts, cjson = [], {}
-    for key, label, w in CONTRASTS:
+    for key, label, w in CONTRASTS + POST_HOC:
         pooled = []
         cjson[key] = {"label": label, "levels": {}}
         for g in core.LEVELS:

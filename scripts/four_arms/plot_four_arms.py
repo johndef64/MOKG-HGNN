@@ -1,11 +1,10 @@
 """Figures of the version-3 factorial experiment (plan §4). Arms with no data are skipped.
 
   fig_four_arms_composite  (a) macro-F1 vs panel size, six arms (mean +- 1 s.d.);
-                           (b) shallow contribution in each architecture (S_MOL, S_KG);
-                           (c) contribution of each graph on top of the features alone
-                               (GAMMA_MOL, GAMMA_KG), with the fraction of molecular nodes
-                               in the largest connected component (right axis, from
-                               results/no_shallow/tables/graph_topology_by_level.csv)
+                           (b) graph alone vs features alone (A_MOL, A_KG);
+                           (c) shallow contribution in each architecture (S_MOL, S_KG);
+                           (d) contribution of each graph on top of the features (GAMMA);
+                           (b-d) with the materiality band +-0.02 fixed before the runs
   fig_decomposition_700    features only / graph only / graph + shallow, per architecture
 
 Writes results/four_arms/figures/*.{pdf,png}.
@@ -13,7 +12,6 @@ Writes results/four_arms/figures/*.{pdf,png}.
   python scripts/four_arms/plot_four_arms.py
 """
 
-import csv
 import sys
 from pathlib import Path
 
@@ -34,9 +32,10 @@ STY = {
     "sh_tf": dict(color=BLACK, ls=":", marker="^", ms=4),
     "sh_kg": dict(color=TEAL, ls=":", marker="^", ms=4),
 }
-LAB = {"mol_s": "MOGNN-TF + shallow", "mol": "MOGNN-TF, graph only",
-       "kg_s": "MOKG-HGNN + shallow", "kg": "MOKG-HGNN, graph only",
-       "sh_tf": "shallow only (MOGNN-TF recipe)", "sh_kg": "shallow only (MOKG-HGNN recipe)"}
+LAB = {"mol_s": "MOL+S: MOGNN-TF with shallow branch", "mol": "MOL: MOGNN-TF, graph only",
+       "kg_s": "KG+S: MOKG-HGNN with shallow branch", "kg": "KG: MOKG-HGNN, graph only",
+       "sh_tf": "SH-tf: shallow branch only, MOGNN-TF recipe",
+       "sh_kg": "SH-kg: shallow branch only, MOKG-HGNN recipe"}
 plt.rcParams.update({"font.size": 7.5, "axes.spines.top": False, "axes.spines.right": False})
 
 
@@ -68,14 +67,6 @@ def _series_band(ax, series, weights, label, **sty):
         _band(ax, xs, vals, label=label, **sty)
 
 
-def _lcc():
-    f = core.REPO / "results" / "no_shallow" / "tables" / "graph_topology_by_level.csv"
-    if not f.exists():
-        return None
-    rows = list(csv.DictReader(open(f, newline="", encoding="utf-8")))
-    return {int(r["genes"]): (float(r["mol_in_lcc_frac"]), float(r["ms_full_in_lcc_frac"])) for r in rows}
-
-
 def _save(fig, name):
     core.FIGURES.mkdir(parents=True, exist_ok=True)
     for ext in ("pdf", "png"):
@@ -84,10 +75,16 @@ def _save(fig, name):
     print(f"[plot] {core.FIGURES / name}.pdf/.png")
 
 
+def _threshold(ax, lo=-0.02, hi=0.02):
+    """Materiality threshold fixed before the runs (plan §3): |mean paired difference| < 0.02."""
+    ax.axhspan(lo, hi, color="0.88", lw=0, zorder=0)
+    ax.axhline(0, color="k", lw=0.5, zorder=1)
+
+
 def composite(series):
-    fig, axs = plt.subplots(1, 3, figsize=(7.16, 2.5), constrained_layout=True)
-    ax = axs[0]
-    for arm in ("mol_s", "kg_s", "kg", "mol", "sh_tf", "sh_kg"):
+    fig, axs = plt.subplots(2, 2, figsize=(7.16, 5.0), constrained_layout=True)
+    ax = axs[0, 0]
+    for arm in ("mol_s", "kg_s", "sh_tf", "sh_kg", "kg", "mol"):
         xs = [g for g in core.LEVELS if any((g, s) in series[arm] for s in core.SEEDS)]
         if xs:
             vals = [[series[arm][(g, s)] for s in core.SEEDS if (g, s) in series[arm]] for g in xs]
@@ -95,45 +92,53 @@ def composite(series):
     _xaxis(ax)
     ax.set_ylim(0, 0.86)
     ax.set_ylabel("test macro-F1")
-    ax.set_title("(a) six arms", loc="left", fontsize=8)
+    ax.set_title("(a) the six arms", loc="left", fontsize=8)
 
-    ax = axs[1]
-    ax.axhline(0, color="k", lw=0.5)
-    _series_band(ax, series, {"mol_s": 1, "mol": -1}, "MOGNN-TF: S$_{MOL}$", color=GREY, marker="o")
-    _series_band(ax, series, {"kg_s": 1, "kg": -1}, "MOKG-HGNN: S$_{KG}$", color=TEAL, marker="s")
+    ax = axs[0, 1]
+    _threshold(ax)
+    _series_band(ax, series, {"mol": 1, "sh_tf": -1}, "molecular graph: MOL $-$ SH-tf",
+                 color=GREY, marker="o", mfc="white")
+    _series_band(ax, series, {"kg": 1, "sh_kg": -1}, "knowledge graph: KG $-$ SH-kg",
+                 color=TEAL, marker="s", mfc="white")
     _xaxis(ax)
-    ax.set_ylabel("$\\Delta$ macro-F1, + shallow $-$ graph only")
-    ax.set_title("(b) contribution of the shallow branch", loc="left", fontsize=8)
-    ax.legend(frameon=False, fontsize=6.5)
+    ax.set_ylim(-0.66, 0.06)
+    ax.set_ylabel("$\Delta$ macro-F1")
+    ax.set_title("(b) graph alone vs. features alone", loc="left", fontsize=8)
+    ax.legend(frameon=False, fontsize=6.5, loc="lower left")
 
-    ax = axs[2]
-    ax.axhline(0, color="k", lw=0.5)
-    _series_band(ax, series, {"mol_s": 1, "sh_tf": -1}, "molecular graph: $\\Gamma_{MOL}$",
+    ax = axs[1, 0]
+    _threshold(ax)
+    _series_band(ax, series, {"mol_s": 1, "mol": -1}, "MOGNN-TF: MOL+S $-$ MOL", color=GREY, marker="o")
+    _series_band(ax, series, {"kg_s": 1, "kg": -1}, "MOKG-HGNN: KG+S $-$ KG", color=TEAL, marker="s")
+    _xaxis(ax)
+    ax.set_ylim(-0.06, 0.66)
+    ax.set_ylabel("$\Delta$ macro-F1")
+    ax.set_title("(c) what the shallow branch adds to the graph", loc="left", fontsize=8)
+    ax.legend(frameon=False, fontsize=6.5, loc="upper left")
+
+    ax = axs[1, 1]
+    _threshold(ax)
+    _series_band(ax, series, {"mol_s": 1, "sh_tf": -1}, "molecular graph: MOL+S $-$ SH-tf",
                  color=GREY, marker="o")
-    _series_band(ax, series, {"kg_s": 1, "sh_kg": -1}, "knowledge graph: $\\Gamma_{KG}$",
+    _series_band(ax, series, {"kg_s": 1, "sh_kg": -1}, "knowledge graph: KG+S $-$ SH-kg",
                  color=TEAL, marker="s")
     _xaxis(ax)
-    ax.set_ylabel("$\\Delta$ macro-F1, + graph $-$ shallow only")
-    ax.set_title("(c) contribution of the graph", loc="left", fontsize=8)
-    lcc = _lcc()
-    if lcc:
-        ax2 = ax.twinx()
-        ax2.spines["right"].set_visible(True)
-        gs = [g for g in core.LEVELS if g in lcc]
-        ax2.plot(gs, [lcc[g][0] for g in gs], color=GREY, lw=0.8, ls=(0, (1, 1)), label="LCC, molecular")
-        ax2.plot(gs, [lcc[g][1] for g in gs], color=TEAL, lw=0.8, ls=(0, (1, 1)), label="LCC, multi-scale")
-        ax2.set_ylim(0, 1.05)
-        ax2.set_ylabel("molecular nodes in largest component", fontsize=6.5)
-    ax.legend(frameon=False, fontsize=6.5, loc="upper right")
-    h, l = axs[0].get_legend_handles_labels()
-    fig.legend(h, l, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.16))
+    ax.set_ylim(-0.066, 0.066)
+    ax.set_ylabel("$\Delta$ macro-F1")
+    ax.set_title("(d) what the graph adds to the features", loc="left", fontsize=8)
+    ax.legend(frameon=False, fontsize=6.5, loc="upper left", ncol=1)
+    ax.text(0.99, 0.03, "grey band: $\pm0.02$ (materiality threshold)", transform=ax.transAxes,
+            ha="right", va="bottom", fontsize=6, color="0.35")
+
+    h, l = axs[0, 0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.075))
     _save(fig, "fig_four_arms_composite")
 
 
 def decomposition(series):
     fig, ax = plt.subplots(figsize=(3.4, 2.3), constrained_layout=True)
     groups = {"MOGNN-TF": ("sh_tf", "mol", "mol_s"), "MOKG-HGNN": ("sh_kg", "kg", "kg_s")}
-    names = ("features only", "graph only", "graph + shallow")
+    names = ("features\nonly", "graph\nonly", "graph +\nshallow")
     for i, (arch, arms) in enumerate(groups.items()):
         for j, arm in enumerate(arms):
             v = [series[arm][(700, s)] for s in core.SEEDS if (700, s) in series[arm]]
@@ -145,10 +150,10 @@ def decomposition(series):
                    capsize=2, width=0.8)
             ax.text(x, m + sd + 0.01, f"{m:.3f}", ha="center", fontsize=6)
     ax.set_xticks([0, 1, 2, 4, 5, 6])
-    ax.set_xticklabels(list(names) * 2, rotation=30, ha="right", fontsize=6.5)
+    ax.set_xticklabels(list(names) * 2, fontsize=6.3)
     for i, arch in enumerate(groups):
-        ax.text(i * 4 + 1, -0.33, arch, ha="center", transform=ax.get_xaxis_transform(), fontsize=7.5)
-    ax.set_ylim(0, 0.9)
+        ax.text(i * 4 + 1, 0.93, arch, ha="center", fontsize=7.5, fontweight="bold")
+    ax.set_ylim(0, 0.98)
     ax.set_ylabel("test macro-F1, 700 genes")
     _save(fig, "fig_decomposition_700")
 
