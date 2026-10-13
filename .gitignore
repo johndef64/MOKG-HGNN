@@ -131,3 +131,7 @@ scripts/slurm/server-guide.md
 /ticket_*.md
 scripts/kg_hgnn/fix_per_class_names.py
 scripts/kg_hgnn/render_semantic_graph_v0.py
+
+# Supplementary material of the revised manuscript (v4): kept local until the revision is
+# decided; the submitted version stays in supplementary/
+supplementary_v4/
