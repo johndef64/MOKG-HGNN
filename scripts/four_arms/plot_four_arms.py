@@ -7,11 +7,14 @@
                            (b-d) with the materiality band +-0.02 fixed before the runs
   fig_decomposition_700    features only / graph only / graph + shallow, per architecture
 
-Writes results/four_arms/figures/*.{pdf,png}.
+Writes results/four_arms/figures/*.{pdf,png}. With --labels thesis the same figures are written
+with neutral model names (multi-scale / molecular scale, SH-mol) as *_thesis.{pdf,png}; the paper
+figures are left untouched.
 
-  python scripts/four_arms/plot_four_arms.py
+  python scripts/four_arms/plot_four_arms.py [--labels thesis]
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -38,6 +41,17 @@ LAB = {"mol_s": "MOL+S: MOGNN-TF with shallow branch", "mol": "MOL: MOGNN-TF, gr
        "sh_kg": "SH-kg: shallow branch only, MOKG-HGNN recipe"}
 plt.rcParams.update({"font.size": 7.5, "axes.spines.top": False, "axes.spines.right": False})
 
+# neutral names for the thesis (--labels thesis); the paper keeps the model names
+THESIS = (("SH-tf", "SH-mol"), ("MOKG-HGNN", "multi-scale"), ("MOGNN-TF", "molecular scale"))
+MODE = {"labels": "paper"}
+
+
+def T(text):
+    if MODE["labels"] == "thesis":
+        for a, b in THESIS:
+            text = text.replace(a, b)
+    return text
+
 
 def _xaxis(ax):
     ax.set_xscale("log")
@@ -53,6 +67,8 @@ def _band(ax, xs, vals, **sty):
     sd = [core.NS.mean_sd(v)[1] for v in vals]
     ax.fill_between(xs, [a - b for a, b in zip(m, sd)], [a + b for a, b in zip(m, sd)],
                     color=sty["color"], alpha=0.12, lw=0)
+    if "label" in sty:
+        sty = {**sty, "label": T(sty["label"])}
     ax.plot(xs, m, lw=1.2, **sty)
 
 
@@ -69,6 +85,8 @@ def _series_band(ax, series, weights, label, **sty):
 
 def _save(fig, name):
     core.FIGURES.mkdir(parents=True, exist_ok=True)
+    if MODE["labels"] == "thesis":
+        name += "_thesis"
     for ext in ("pdf", "png"):
         fig.savefig(core.FIGURES / f"{name}.{ext}", dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -152,13 +170,16 @@ def decomposition(series):
     ax.set_xticks([0, 1, 2, 4, 5, 6])
     ax.set_xticklabels(list(names) * 2, fontsize=6.3)
     for i, arch in enumerate(groups):
-        ax.text(i * 4 + 1, 0.93, arch, ha="center", fontsize=7.5, fontweight="bold")
+        ax.text(i * 4 + 1, 0.93, T(arch), ha="center", fontsize=7.5, fontweight="bold")
     ax.set_ylim(0, 0.98)
     ax.set_ylabel("test macro-F1, 700 genes")
     _save(fig, "fig_decomposition_700")
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--labels", choices=("paper", "thesis"), default="paper")
+    MODE["labels"] = ap.parse_args().labels
     series = core.load_f1_series()
     composite(series)
     decomposition(series)

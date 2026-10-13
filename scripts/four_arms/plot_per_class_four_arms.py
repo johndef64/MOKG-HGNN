@@ -8,11 +8,13 @@ Same panel and the same five splits for all arms.
 
 Reads results/four_arms/tables/per_class_four_arms.csv only for the order check; the values
 come from the runs (per_class_four_arms.py logic). Writes
-results/four_arms/figures/fig_per_class_four_arms.{pdf,png}.
+results/four_arms/figures/fig_per_class_four_arms.{pdf,png}; with --labels thesis, neutral model
+names (multi-scale / molecular scale) in fig_per_class_four_arms_thesis.{pdf,png}.
 
-  python scripts/four_arms/plot_per_class_four_arms.py
+  python scripts/four_arms/plot_per_class_four_arms.py [--labels thesis]
 """
 
+import argparse
 import csv
 import importlib.util
 import sys
@@ -20,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import core  # noqa: E402
-from plot_four_arms import TEAL, GREY, BLACK, plt  # noqa: E402
+from plot_four_arms import TEAL, GREY, BLACK, MODE, T, plt  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location(
     "ns_per_class", core.REPO / "scripts" / "no_shallow" / "per_class_three_arms.py")
@@ -45,6 +47,9 @@ def labels():
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--labels", choices=("paper", "thesis"), default="paper")
+    MODE["labels"] = ap.parse_args().labels
     names, seeds, per_old, support = ns_pc.load(LEVEL)
     kg, mol, mol_s = per_old["MS"], per_old["NS"], per_old["WS"]
     runs = core.read_runs("kg_s")
@@ -78,7 +83,7 @@ def main():
         if r[0] in TRANSVERSAL:
             t.set_color(ORANGE)
     ax.set_ylim(-0.7, len(rows) - 0.3)
-    ax.set_xlabel(r"$\Delta$ F1, MOKG-HGNN minus MOGNN-TF")
+    ax.set_xlabel(T(r"$\Delta$ F1, MOKG-HGNN minus MOGNN-TF"))
     ax.grid(axis="x", alpha=0.25, lw=0.5)
     ax.tick_params(axis="y", length=0)
     ax.spines["left"].set_visible(False)
@@ -88,7 +93,7 @@ def main():
     ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.32, -0.07), frameon=False, fontsize=6.3,
               handlelength=1.6)
     core.FIGURES.mkdir(parents=True, exist_ok=True)
-    name = "fig_per_class_four_arms"
+    name = "fig_per_class_four_arms" + ("_thesis" if MODE["labels"] == "thesis" else "")
     for ext, kw in (("pdf", {}), ("png", {"dpi": 300})):
         fig.savefig(core.FIGURES / f"{name}.{ext}", bbox_inches="tight", **kw)
     plt.close(fig)

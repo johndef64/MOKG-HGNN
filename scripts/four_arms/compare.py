@@ -6,7 +6,8 @@ splits shared by the arms involved:
                 (4 of 5); 0.02 = twice the run-to-run noise between replicates (~0.01)
   parity        |mean| < 0.01
   inconclusive  otherwise
-Across all levels: sign test (two-sided binomial) on the pooled paired differences.
+Across all levels: number of the 35 panels on which the contrast is positive, as a descriptive
+count (panels share their splits and are not independent, so no p-value is computed).
 
 Writes results/four_arms/tables/{summary_metrics,by_level,paired_contrasts,
 decomposition_700}.{csv,md} and contrasts.json.
@@ -71,14 +72,8 @@ def verdict(diffs):
     return "inconclusive"
 
 
-def sign_test(diffs):
-    pos, neg = sum(d > 0 for d in diffs), sum(d < 0 for d in diffs)
-    n = pos + neg
-    if n == 0:
-        return pos, neg, float("nan")
-    k = min(pos, neg)
-    p = sum(math.comb(n, i) for i in range(k + 1)) / 2 ** n
-    return pos, neg, min(1.0, 2 * p)
+def sign_counts(diffs):
+    return sum(d > 0 for d in diffs), sum(d < 0 for d in diffs)
 
 
 def _write(name, rows, title, note=""):
@@ -158,12 +153,13 @@ def main():
                               "n_pos": sum(x > 0 for x in d), "n_neg": sum(x < 0 for x in d),
                               "verdict": v})
             cjson[key]["levels"][g] = {"splits": seeds, "diffs": d, "mean": m, "verdict": v}
-        pos, neg, p = sign_test(pooled)
-        cjson[key]["sign_test"] = {"n_pos": pos, "n_neg": neg, "p_two_sided": p}
+        pos, neg = sign_counts(pooled)
+        cjson[key]["all_panels"] = {"n_panels": len(pooled), "n_pos": pos, "n_neg": neg,
+                                    "note": "descriptive count; panels share splits"}
         contrasts.append({"contrast": key, "genes": "all", "n_splits": len(pooled),
                           "mean_diff": f4(sum(pooled) / len(pooled)) if pooled else "",
                           "sd_diff": "", "dz": "", "n_pos": pos, "n_neg": neg,
-                          "verdict": f"sign test p={p:.3g}" if pooled else "missing"})
+                          "verdict": f"positive on {pos}/{len(pooled)} (descriptive)" if pooled else "missing"})
 
     decomp = []
     for arch, (sh, graph, full) in {"MOGNN-TF": ("sh_tf", "mol", "mol_s"),
